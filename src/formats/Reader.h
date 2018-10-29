@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <string>
+#include <QString>
 #include "../structures/MoleculeSet.h"
 
 class Reader {
 public:
-    virtual MoleculeSet read_file(const std::string &filename) = 0;
+    virtual MoleculeSet read_file(const QString &filename) = 0;
 };
 
 

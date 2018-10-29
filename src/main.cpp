@@ -1,8 +1,6 @@
-#include <iostream>
-#include <string>
-
 #include "formats/SDF.h"
 #include "structures/MoleculeSet.h"
+#include "PeriodicTable.h"
 
 int main() {
     SDF reader;

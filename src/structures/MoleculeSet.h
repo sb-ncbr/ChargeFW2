@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include <vector>
+#include <QVector>
 #include <utility>
 
 #include "Molecule.h"
 
 class MoleculeSet {
-    std::vector<Molecule> molecules;
+    QVector<Molecule> molecules;
 public:
-    explicit MoleculeSet(std::vector<Molecule> molecules) : molecules{std::move(molecules)} {};
+    explicit MoleculeSet(const QVector<Molecule> &molecules) : molecules{std::move(molecules)} {};
 
     void info();
 };

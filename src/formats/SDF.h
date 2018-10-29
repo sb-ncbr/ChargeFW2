@@ -4,14 +4,14 @@
 
 #pragma once
 
-#include <string>
+#include <QString>
 
 #include "Reader.h"
 
 class SDF: public Reader {
 
 public:
-    MoleculeSet read_file(const std::string &filename) override;
+    MoleculeSet read_file(const QString &filename) override;
 };
 
 

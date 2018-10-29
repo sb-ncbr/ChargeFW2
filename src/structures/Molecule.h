@@ -6,20 +6,25 @@
 
 #include <string>
 #include <utility>
-#include <vector>
+#include <QString>
+#include <QVector>
 
 #include "Atom.h"
 #include "Bond.h"
 
 class Molecule {
-    std::string name_;
-    std::vector<Atom> atoms_;
-    std::vector<Bond> bonds_;
+    QString name_;
+    QVector<Atom> atoms_;
+    QVector<Bond> bonds_;
 
 public:
-    Molecule(std::string name, std::vector<Atom> atoms, std::vector<Bond> bonds) : name_{std::move(name)},
-                                                                                   atoms_{std::move(atoms)},
-                                                                                   bonds_{std::move(bonds)} {};
+    const QVector<Atom> &atoms() const { return atoms_; }
 
-    std::vector<Atom> &atoms() {return atoms_;}
+    const QVector<Bond> &bonds() const { return bonds_; }
+
+    const QString &name() const { return name_; }
+
+    Molecule() = default;
+
+    Molecule(QString name, QVector<Atom> atoms, QVector<Bond> bonds);
 };

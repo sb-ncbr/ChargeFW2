@@ -5,15 +5,20 @@
 #pragma once
 
 #include <array>
+#include <QString>
 
 #include "../Element.h"
 
 class Atom {
-    int index_;
-    std::string symbol_;
-    std::array<double, 3> pos_;
+    int index_{};
+    Element element_;
+    std::array<double, 3> pos_{};
 public:
-    Atom(int index, std::string symbol, double x, double y, double z);
-    int index() {return index_;}
-    std::string symbol() {return symbol_;}
+    Atom() = default;
+
+    Atom(int index, Element element, double x, double y, double z);
+
+    int index() { return index_; }
+
+    QString symbol() { return element_.symbol(); }
 };

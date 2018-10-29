@@ -4,14 +4,16 @@
 
 #pragma once
 
+#include <utility>
+
 #include "Atom.h"
 
 class Bond {
-    const Atom &first_;
-    const Atom &second_;
-    int order_;
+    Atom first_;
+    Atom second_;
+    int order_{};
 public:
-    Bond(const Atom &a1, const Atom &a2, int order) : first_{a1}, second_{a2}, order_{order} {};
+    Bond() = default;
+    Bond(Atom &atom1, Atom &atom2, int order);
 };
-
 

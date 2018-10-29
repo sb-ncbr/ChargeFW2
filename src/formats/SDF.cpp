@@ -2,68 +2,70 @@
 // Created by krab1k on 24/10/18.
 //
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <vector>
+#include <QFile>
+#include <QString>
+#include <QVector>
+#include <QTextStream>
+#include <QDebug>
 
 #include "../structures/Atom.h"
 #include "../structures/Bond.h"
 #include "../structures/Molecule.h"
+#include "../PeriodicTable.h"
 #include "SDF.h"
 
-using std::cout;        using std::endl;
-using std::getline;     using std::string;
-using std::ifstream;    using std::stoi;
-using std::stod;        using std::vector;
-using std::stringstream;
 
-MoleculeSet SDF::read_file(const std::string &filename) {
-    ifstream file(filename);
-    if (!file) exit(EXIT_FAILURE);
+MoleculeSet SDF::read_file(const QString &filename) {
+    QFile file(filename);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) exit(EXIT_FAILURE);
 
-    string line;
+    QTextStream in(&file);
 
-    vector<Molecule> molecules;
-    while (getline(file, line)) {
-        string name = line; // Read name_ of the molecule
-        getline(file, line); // Line with comments
-        getline(file, line); // Line with comments
+    QString line = in.readLine();
+
+    PeriodicTable pte = PeriodicTable::pte();
+
+    QVector<Molecule> molecules;
+    while (!line.isNull()) {
+        QString name = line; // Read name_ of the molecule
+        line = in.readLine(); // Line with comments
+        line = in.readLine(); // Line with comments
 
         // Read line with counts
-        getline(file, line);
+        line = in.readLine();
 
-        int n_atoms = stoi(line.substr(0, 3));
-        int n_bonds = stoi(line.substr(3, 3));
+        int n_atoms = line.mid(0, 3).toInt();
+        int n_bonds = line.mid(3, 3).toInt();
 
-        vector<Atom> atoms;
+        QVector<Atom> atoms;
         for (int i = 0; i < n_atoms; i++) {
-            getline(file, line);
-            double x = stod(line.substr(0, 10));
-            double y = stod(line.substr(10, 10));
-            double z = stod(line.substr(20, 10));
+            line = in.readLine();
+            double x = line.mid(0, 10).toDouble();
+            double y = line.mid(10, 10).toDouble();
+            double z = line.mid(20, 10).toDouble();
 
-            string symbol;
-            // Strips whitespace from symbol
-            stringstream(line.substr(31, 3)) >> symbol;
+            auto element = pte.getElement(line.mid(31, 3).trimmed());
+            auto atom = Atom(i, element, x, y, z);
 
-            atoms.emplace_back(Atom(i, symbol, x, y, z));
+            atoms.push_back(atom);
         }
 
-        vector<Bond> bonds;
+        QVector<Bond> bonds;
         for (int i = 0; i < n_bonds; i++) {
-            getline(file, line);
-            int first = stoi(line.substr(0, 3));
-            int second = stoi(line.substr(0, 3));
-            int order = stoi(line.substr(0, 3));
+            line = in.readLine();
+            int first = line.mid(0, 3).toInt();
+            int second =line.mid(0, 3).toInt();
+            int order = line.mid(0, 3).toInt();
 
-            bonds.emplace_back(Bond(atoms[first - 1], atoms[second - 1], order));
+            auto bond = Bond(atoms[first - 1], atoms[second - 1], order);
+            bonds.push_back(bond);
         }
 
-        molecules.emplace_back(Molecule(name, atoms, bonds));
+        auto molecule = Molecule(name, atoms, bonds);
+        molecules.push_back(molecule);
 
-        while (getline(file, line));
+        while (!in.readLine().isNull());
+
     }
     return MoleculeSet(molecules);
 }
