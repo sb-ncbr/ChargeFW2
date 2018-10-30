@@ -12,21 +12,22 @@
 
 PeriodicTable::PeriodicTable() {
     QFile file("../data/pte.csv");
-    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         exit(EXIT_FAILURE);
 
     QTextStream in(&file);
     // Read header;
     QString line = in.readLine();
-    while(!in.atEnd()) {
+    while (!in.atEnd()) {
         line = in.readLine();
         QStringList cols = line.split(',');
         int index = cols[0].toInt();
         QString name = cols[1];
         QString symbol = cols[2];
-        Element element(index, symbol, name);
+        float electronegativity = cols[12].toFloat();
+        Element element(index, symbol, name, electronegativity);
         elements_.push_back(element);
-        symbol_element_[symbol] = element;
+        symbol_Z_[symbol] = index;
     }
 }
 

@@ -10,11 +10,13 @@
 #include "Molecule.h"
 
 class MoleculeSet {
-    QVector<Molecule> molecules;
+    QVector<Molecule> molecules_;
 public:
-    explicit MoleculeSet(const QVector<Molecule> &molecules) : molecules{std::move(molecules)} {};
+    explicit MoleculeSet(const QVector<Molecule> &molecules) : molecules_{std::move(molecules)} {};
 
-    void info();
+    void info() const;
+
+    const QVector<Molecule> molecules() const { return molecules_; }
 };
 
 

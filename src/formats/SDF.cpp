@@ -6,7 +6,8 @@
 #include <QString>
 #include <QVector>
 #include <QTextStream>
-#include <QDebug>
+#include <iostream>
+
 
 #include "../structures/Atom.h"
 #include "../structures/Bond.h"
@@ -14,10 +15,14 @@
 #include "../PeriodicTable.h"
 #include "SDF.h"
 
+using std::cerr;    using std::endl;
 
 MoleculeSet SDF::read_file(const QString &filename) {
     QFile file(filename);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) exit(EXIT_FAILURE);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        cerr << "Cannot open file: " << filename.toStdString() << endl;
+        exit(EXIT_FAILURE);
+    }
 
     QTextStream in(&file);
 
@@ -44,8 +49,7 @@ MoleculeSet SDF::read_file(const QString &filename) {
             double y = line.mid(10, 10).toDouble();
             double z = line.mid(20, 10).toDouble();
 
-            auto element = pte.getElement(line.mid(31, 3).trimmed());
-            auto atom = Atom(i, element, x, y, z);
+            auto atom = Atom(i, &pte.getElement(line.mid(31, 3).trimmed()), x, y, z);
 
             atoms.push_back(atom);
         }
@@ -54,8 +58,8 @@ MoleculeSet SDF::read_file(const QString &filename) {
         for (int i = 0; i < n_bonds; i++) {
             line = in.readLine();
             int first = line.mid(0, 3).toInt();
-            int second =line.mid(0, 3).toInt();
-            int order = line.mid(0, 3).toInt();
+            int second = line.mid(3, 3).toInt();
+            int order = line.mid(6, 3).toInt();
 
             auto bond = Bond(atoms[first - 1], atoms[second - 1], order);
             bonds.push_back(bond);

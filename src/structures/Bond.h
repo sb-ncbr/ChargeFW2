@@ -5,6 +5,7 @@
 #pragma once
 
 #include <utility>
+#include <iostream>
 
 #include "Atom.h"
 
@@ -14,6 +15,15 @@ class Bond {
     int order_{};
 public:
     Bond() = default;
+
     Bond(Atom &atom1, Atom &atom2, int order);
+
+    bool hasAtom(const Atom &atom) { return atom == first_ or atom == second_; }
+
+    int order() const { return order_; }
+
+    friend std::ostream &operator<<(std::ostream &str, const Bond &bond);
+
+    void print() const;
 };
 

@@ -6,10 +6,35 @@
 #include "Atom.h"
 #include "../Element.h"
 
-Atom::Atom(int idx, Element element, double x, double y, double z) {
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
+
+Atom::Atom(int idx, const Element *element, double x, double y, double z) {
     index_ = idx;
     element_ = element;
     pos_[0] = x;
     pos_[1] = y;
     pos_[2] = z;
+}
+
+bool Atom::operator==(const Atom &other) const {
+    if (index_ != other.index_)
+        return false;
+
+    if (element_ != other.element_)
+        return false;
+
+    return !(pos_ != other.pos_);
+
+}
+
+void Atom::print() const {
+    cout << *this << endl;
+}
+
+std::ostream &operator<<(std::ostream &str, const Atom &atom) {
+    return str << "Atom " << atom.element_->symbol().toStdString() << " Idx: " << atom.index_;
 }
