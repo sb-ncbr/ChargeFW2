@@ -68,7 +68,10 @@ MoleculeSet SDF::read_file(const QString &filename) {
         auto molecule = Molecule(name, atoms, bonds);
         molecules.push_back(molecule);
 
-        while (!in.readLine().isNull());
+        do {
+            line = in.readLine();
+        } while (line != "$$$$");
+        line = in.readLine();
 
     }
     return MoleculeSet(molecules);
