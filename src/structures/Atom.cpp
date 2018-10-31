@@ -31,10 +31,6 @@ bool Atom::operator==(const Atom &other) const {
 
 }
 
-void Atom::print() const {
-    cout << *this << endl;
-}
-
 std::ostream &operator<<(std::ostream &str, const Atom &atom) {
     return str << "Atom " << atom.element_->symbol().toStdString() << " Idx: " << atom.index_;
 }

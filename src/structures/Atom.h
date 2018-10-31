@@ -23,8 +23,6 @@ public:
 
     const QString &symbol() const { return element_->symbol(); }
 
-    void print() const;
-
     friend std::ostream &operator<<(std::ostream &str, const Atom &atom);
 
     bool operator==(const Atom &other) const;

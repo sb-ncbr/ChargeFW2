@@ -24,6 +24,5 @@ public:
 
     friend std::ostream &operator<<(std::ostream &str, const Bond &bond);
 
-    void print() const;
 };
 

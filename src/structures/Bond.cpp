@@ -15,10 +15,6 @@ Bond::Bond(Atom &atom1, Atom &atom2, int order) {
     order_ = order;
 }
 
-void Bond::print() const {
-    cout << *this << endl;
-}
-
 std::ostream &operator<<(std::ostream &str, const Bond &bond) {
     return str << "Bond: (" << bond.first_ << ", " << bond.second_ << ")";
 }

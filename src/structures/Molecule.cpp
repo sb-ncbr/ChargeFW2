@@ -11,3 +11,8 @@ Molecule::Molecule(QString name, QVector<Atom> atoms, QVector<Bond> bonds) {
     atoms_ = atoms;
     bonds_ = bonds;
 }
+
+std::ostream &operator<<(std::ostream &str, const Molecule &molecule) {
+    return str << "Molecule: " << molecule.name_.toStdString() << " Atoms: " << molecule.atoms_.size() << " Bonds: "
+               << molecule.bonds_.size();
+}

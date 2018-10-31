@@ -18,5 +18,3 @@ public:
 
     const QVector<Molecule> molecules() const { return molecules_; }
 };
-
-

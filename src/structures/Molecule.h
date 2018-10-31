@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <string>
+#include <iostream>
 #include <utility>
 #include <QString>
 #include <QVector>
@@ -27,4 +27,6 @@ public:
     Molecule() = default;
 
     Molecule(QString name, QVector<Atom> atoms, QVector<Bond> bonds);
+
+    friend std::ostream &operator<<(std::ostream &str, const Molecule &molecule);
 };
