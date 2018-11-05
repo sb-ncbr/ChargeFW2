@@ -10,6 +10,18 @@
 #include "MoleculeSet.h"
 #include "../Classifier.h"
 #include "../PeriodicTable.h"
+#include "../Parameters.h"
+
+MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : molecules_{std::move(molecules)} {
+    for (auto &molecule: *molecules_) {
+        for (auto &atom: *molecule.atoms_)
+            atom.molecule_ = &molecule;
+
+        for (auto &bond: *molecule.bonds_)
+            bond.molecule_ = &molecule;
+    }
+}
+
 
 void MoleculeSet::info() const {
     std::map<std::tuple<QString, QString, QString>, int> counts;
@@ -45,12 +57,26 @@ void MoleculeSet::classify_atoms(QString classifier) {
     }
 }
 
-MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : molecules_{std::move(molecules)} {
-    for (auto &molecule: *molecules_) {
-        for (auto &atom: *molecule.atoms_)
-            atom.molecule_ = &molecule;
 
-        for (auto &bond: *molecule.bonds_)
-            bond.molecule_ = &molecule;
+void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
+    for (auto &molecule: *molecules_) {
+        for (auto &atom: *molecule.atoms_) {
+            for(const auto &key: parameters.atom().keys())    {
+                auto &[symbol, cls, type] = key;
+                if(atom.element().symbol() != symbol)
+                    continue;
+                if(cls == "plain") {
+                    atom.atom_type_ = std::make_tuple(atom.element().symbol(), "plain", "*");
+                }
+                else if(cls == "hbo") {
+                    auto hbo = HBOClassifier();
+                    atom.atom_type_ = std::make_tuple(atom.element().symbol(), "hbo", hbo.get_type(atom));
+                }
+                else {
+                    std::cerr << "Classifier " << cls.toStdString() << " not found" << std::endl;
+                    exit(EXIT_FAILURE);
+                }
+            }
+        }
     }
 }

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "Molecule.h"
+#include "../Parameters.h"
 
 class MoleculeSet {
     std::unique_ptr<std::vector<Molecule> > molecules_;
@@ -20,4 +21,5 @@ public:
     const std::vector<Molecule> &molecules() const { return *molecules_; }
 
     void classify_atoms(QString classifier);
+    void classify_atoms_from_parameters(const Parameters &parameters);
 };
