@@ -5,7 +5,7 @@
 #include <QFile>
 #include <QStringList>
 #include <QTextStream>
-#include <QDebug>
+#include <iostream>
 
 #include "Element.h"
 #include "PeriodicTable.h"
@@ -34,4 +34,12 @@ PeriodicTable::PeriodicTable() {
 const PeriodicTable &PeriodicTable::pte() {
     static PeriodicTable pte;
     return pte;
+}
+
+const Element *PeriodicTable::getElement(const QString &symbol) const {
+    if(!symbol_Z_.count(symbol)) {
+        std::cerr << "No such element " << symbol.toStdString() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    return getElement(symbol_Z_.at(symbol) - 1);
 }

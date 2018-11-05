@@ -4,9 +4,11 @@
 
 #include <QFile>
 #include <QString>
-#include <QVector>
 #include <QTextStream>
 #include <iostream>
+#include <tuple>
+#include <vector>
+#include <memory>
 
 
 #include "../structures/Atom.h"
@@ -28,9 +30,7 @@ MoleculeSet SDF::read_file(const QString &filename) {
 
     QString line = in.readLine();
 
-    PeriodicTable pte = PeriodicTable::pte();
-
-    QVector<Molecule> molecules;
+    auto molecules = std::make_unique<std::vector<Molecule> >();
     while (!line.isNull()) {
         QString name = line; // Read name_ of the molecule
         line = in.readLine(); // Line with comments
@@ -39,34 +39,36 @@ MoleculeSet SDF::read_file(const QString &filename) {
         // Read line with counts
         line = in.readLine();
 
-        int n_atoms = line.mid(0, 3).toInt();
-        int n_bonds = line.mid(3, 3).toInt();
+        size_t n_atoms = line.mid(0, 3).toUInt();
+        size_t n_bonds = line.mid(3, 3).toUInt();
 
-        QVector<Atom> atoms;
-        for (int i = 0; i < n_atoms; i++) {
+        auto atoms = std::make_unique<std::vector<Atom> >();
+        atoms->reserve(n_atoms);
+
+        for (unsigned i = 0; i < n_atoms; i++) {
             line = in.readLine();
             double x = line.mid(0, 10).toDouble();
             double y = line.mid(10, 10).toDouble();
             double z = line.mid(20, 10).toDouble();
 
-            auto atom = Atom(i, &pte.getElement(line.mid(31, 3).trimmed()), x, y, z);
+            auto element = PeriodicTable::pte().getElement(line.mid(31, 3).trimmed());
 
-            atoms.push_back(atom);
+            atoms->emplace_back(i, element, x, y, z);
         }
 
-        QVector<Bond> bonds;
-        for (int i = 0; i < n_bonds; i++) {
+        auto bonds = std::make_unique<std::vector<Bond> >();
+        bonds->reserve(n_bonds);
+
+        for (unsigned i = 0; i < n_bonds; i++) {
             line = in.readLine();
             int first = line.mid(0, 3).toInt();
             int second = line.mid(3, 3).toInt();
             int order = line.mid(6, 3).toInt();
 
-            auto bond = Bond(atoms[first - 1], atoms[second - 1], order);
-            bonds.push_back(bond);
+            bonds->emplace_back(&((*atoms)[first - 1]), &((*atoms)[second - 1]), order);
         }
 
-        auto molecule = Molecule(name, atoms, bonds);
-        molecules.push_back(molecule);
+        molecules->emplace_back(name, std::move(atoms), std::move(bonds));
 
         do {
             line = in.readLine();
@@ -74,5 +76,5 @@ MoleculeSet SDF::read_file(const QString &filename) {
         line = in.readLine();
 
     }
-    return MoleculeSet(molecules);
+    return MoleculeSet(std::move(molecules));
 }

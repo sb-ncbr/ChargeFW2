@@ -3,16 +3,21 @@
 //
 
 #include "Atom.h"
+#include "Bond.h"
 #include "Molecule.h"
 #include <utility>
+#include <tuple>
+#include <vector>
 
-Molecule::Molecule(QString name, QVector<Atom> atoms, QVector<Bond> bonds) {
+#include <iostream>
+
+Molecule::Molecule(QString name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds) {
     name_ = std::move(name);
-    atoms_ = atoms;
-    bonds_ = bonds;
+    atoms_ = std::move(atoms);
+    bonds_ = std::move(bonds);
 }
 
 std::ostream &operator<<(std::ostream &str, const Molecule &molecule) {
-    return str << "Molecule: " << molecule.name_.toStdString() << " Atoms: " << molecule.atoms_.size() << " Bonds: "
-               << molecule.bonds_.size();
+    return str << "Molecule: " << molecule.name_.toStdString() << " Atoms: " << molecule.atoms_->size() << " Bonds: "
+               << molecule.bonds_->size();
 }

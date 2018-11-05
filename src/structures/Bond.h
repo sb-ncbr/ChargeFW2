@@ -4,25 +4,25 @@
 
 #pragma once
 
-#include <utility>
 #include <iostream>
 
 #include "Atom.h"
 
 class Bond {
-    Atom first_;
-    Atom second_;
+    const Atom *first_{};
+    const Atom *second_{};
     int order_{};
+    const Molecule *molecule_{};
 public:
-    Bond() = default;
+    Bond(const Atom *atom1, const Atom *atom2, int order) : first_{atom1}, second_{atom2}, order_{order} {}
 
-    Bond(Atom &atom1, Atom &atom2, int order);
-
-    bool hasAtom(const Atom &atom) { return atom == first_ or atom == second_; }
+    bool hasAtom(const Atom &atom) const { return atom == *first_ or atom == *second_; }
 
     int order() const { return order_; }
 
+
     friend std::ostream &operator<<(std::ostream &str, const Bond &bond);
 
+    friend class MoleculeSet;
 };
 

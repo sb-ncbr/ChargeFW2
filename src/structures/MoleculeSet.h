@@ -4,17 +4,20 @@
 
 #pragma once
 
-#include <QVector>
+#include <vector>
+#include <memory>
 #include <utility>
 
 #include "Molecule.h"
 
 class MoleculeSet {
-    QVector<Molecule> molecules_;
+    std::unique_ptr<std::vector<Molecule> > molecules_;
 public:
-    explicit MoleculeSet(const QVector<Molecule> &molecules) : molecules_{std::move(molecules)} {};
+    explicit MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules);
 
     void info() const;
 
-    const QVector<Molecule> molecules() const { return molecules_; }
+    const std::vector<Molecule> &molecules() const { return *molecules_; }
+
+    void classify_atoms(QString classifier);
 };

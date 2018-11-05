@@ -9,6 +9,7 @@
 int main() {
     SDF reader;
     MoleculeSet m = reader.read_file("/home/krab1k/Research/ChargeFW2/test/set01.sdf");
+    m.classify_atoms("plain");
     m.info();
     return 0;
 }

@@ -4,20 +4,20 @@
 
 #pragma once
 
-#include <QVector>
-#include <QMap>
+#include <vector>
+#include <map>
 
 #include "Element.h"
 
 class PeriodicTable {
-    QVector<Element> elements_;
-    QMap<QString, int> symbol_Z_;
+    std::vector<Element> elements_;
+    std::map<QString, int> symbol_Z_;
 public:
     static const PeriodicTable &pte();
 
-    const Element &getElement(int Z) const { return elements_[Z - 1]; }
+    const Element *getElement(int Z) const { return &elements_[Z]; }
 
-    const Element &getElement(const QString &symbol) const { return elements_[symbol_Z_[symbol] - 1]; }
+    const Element *getElement(const QString &symbol) const;
 
     PeriodicTable();
 };

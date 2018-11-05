@@ -6,15 +6,7 @@
 
 #include "Bond.h"
 
-using std::cout;
-using std::endl;
-
-Bond::Bond(Atom &atom1, Atom &atom2, int order) {
-    first_ = atom1;
-    second_ = atom2;
-    order_ = order;
-}
 
 std::ostream &operator<<(std::ostream &str, const Bond &bond) {
-    return str << "Bond: (" << bond.first_ << ", " << bond.second_ << ")";
+    return str << "Bond: (" << *bond.first_ << ", " << *bond.second_ << "): " << bond.order_;
 }

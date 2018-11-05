@@ -5,12 +5,9 @@
 #include <utility>
 #include "Atom.h"
 #include "../Element.h"
+#include "../PeriodicTable.h"
 
 #include <iostream>
-
-using std::cout;
-using std::endl;
-
 
 Atom::Atom(int idx, const Element *element, double x, double y, double z) {
     index_ = idx;
@@ -32,5 +29,6 @@ bool Atom::operator==(const Atom &other) const {
 }
 
 std::ostream &operator<<(std::ostream &str, const Atom &atom) {
+    auto pte = PeriodicTable::pte();
     return str << "Atom " << atom.element_->symbol().toStdString() << " Idx: " << atom.index_;
 }
