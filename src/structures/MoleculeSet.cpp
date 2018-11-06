@@ -61,21 +61,32 @@ void MoleculeSet::classify_atoms(QString classifier) {
 void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
     for (auto &molecule: *molecules_) {
         for (auto &atom: *molecule.atoms_) {
-            for(const auto &key: parameters.atom().keys())    {
+            bool found = false;
+            for (const auto &key: parameters.atom().keys()) {
                 auto &[symbol, cls, type] = key;
-                if(atom.element().symbol() != symbol)
+                if (atom.element().symbol() != symbol)
                     continue;
-                if(cls == "plain") {
+                if (cls == "plain") {
                     atom.atom_type_ = std::make_tuple(atom.element().symbol(), "plain", "*");
-                }
-                else if(cls == "hbo") {
+                    found = true;
+                    break;
+                } else if (cls == "hbo") {
                     auto hbo = HBOClassifier();
-                    atom.atom_type_ = std::make_tuple(atom.element().symbol(), "hbo", hbo.get_type(atom));
-                }
-                else {
+                    auto current_type = hbo.get_type(atom);
+                    if (current_type == type) {
+                        atom.atom_type_ = std::make_tuple(atom.element().symbol(), "hbo", current_type);
+                        found = true;
+                        break;
+                    }
+                } else {
                     std::cerr << "Classifier " << cls.toStdString() << " not found" << std::endl;
                     exit(EXIT_FAILURE);
                 }
+            }
+            if (!found) {
+                std::cerr << "No parameters for atom " << atom.element().symbol().toStdString() << " in molecule "
+                          << molecule.name().toStdString() << std::endl;
+                exit(EXIT_FAILURE);
             }
         }
     }
