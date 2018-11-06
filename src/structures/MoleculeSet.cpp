@@ -64,7 +64,7 @@ void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
     for (auto &molecule: *molecules_) {
         for (auto &atom: *molecule.atoms_) {
             bool found = false;
-            for (const auto &key: parameters.atom().keys()) {
+            for (const auto &key: parameters.atom()->keys()) {
                 auto &[symbol, cls, type] = key;
                 if (atom.element().symbol() != symbol)
                     continue;

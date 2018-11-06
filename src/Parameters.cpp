@@ -25,19 +25,22 @@ Parameters::Parameters(const QString &filename) {
     QJsonObject document = QJsonDocument::fromJson(json_data).object();
     if (document.contains("common")) {
         QJsonObject common = document["common"].toObject();
-        QJsonArray names = common["names"].toArray();
-        QJsonArray values = common["values"].toArray();
-        if (names.size() != values.size()) {
+        QJsonArray names_json = common["names"].toArray();
+        QJsonArray values_json = common["values"].toArray();
+        if (names_json.size() != values_json.size()) {
             std::cerr << "Incorrect parameter file" << std::endl;
             exit(EXIT_FAILURE);
         }
 
+        std::vector<QString> names;
+
         std::map<QString, double> parameters;
-        for (int i = 0; i < names.size(); i++) {
-            parameters[names[i].toString()] = values[i].toDouble();
+        for (int i = 0; i < names_json.size(); i++) {
+            names.emplace_back(names_json[i].toString());
+            parameters[names_json[i].toString()] = values_json[i].toDouble();
         }
 
-        common_ = std::make_unique<CommonParameters>(parameters);
+        common_ = std::make_unique<CommonParameters>(names, parameters);
     }
 
     if (document.contains("atom")) {
@@ -131,7 +134,6 @@ void Parameters::print() const {
             std::cout << std::endl;
         }
     }
-
     if (bonds_) {
         std::cout << "Bond parameters" << std::endl;
         for (const auto &key: bonds_->parameter_order_) {
@@ -145,10 +147,9 @@ void Parameters::print() const {
             std::cout << std::endl;
         }
     }
-
 }
 
-std::function<double(const Atom &)> AtomParameters::operator[](const QString &name) const {
+std::function<double(const Atom &)> AtomParameters::parameter(const QString &name) const {
     long idx;
     auto it = std::find(names_.begin(), names_.end(), name);
     if (it != names_.end()) {

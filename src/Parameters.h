@@ -17,16 +17,23 @@
 #include "structures/Atom.h"
 
 class CommonParameters {
+    friend class Parameters;
+
+    std::vector<QString> names_;
     std::map<QString, double> parameters_;
 public:
-    explicit CommonParameters(std::map<QString, double> parameters) : parameters_{std::move(parameters)} {}
+    explicit CommonParameters(std::vector<QString> names, std::map<QString, double> parameters) :
+            names_{std::move(names)}, parameters_{std::move(parameters)} {}
 
-    double operator[](const QString &name) { return parameters_.at(name); }
+    const std::vector<QString> &names() const { return names_; }
 
-    friend class Parameters;
+    double parameter(const QString &name) const { return parameters_.at(name); }
+
 };
 
 class AtomParameters {
+    friend class Parameters;
+
     std::vector<QString> names_;
     std::vector<std::tuple<QString, QString, QString>> parameter_order_;
     std::map<std::tuple<QString, QString, QString>, std::vector<double>> parameters_;
@@ -37,15 +44,18 @@ public:
             : names_{std::move(names)}, parameter_order_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
+    const std::vector<QString> &names() const { return names_; }
+
     const std::vector<std::tuple<QString, QString, QString>> &keys() const { return parameter_order_; }
 
-    std::function<double(const Atom &)> operator[](const QString &name) const;
+    std::function<double(const Atom &)> parameter(const QString &name) const;
 
-    friend class Parameters;
 
 };
 
 class BondParameters {
+    friend class Parameters;
+
     std::vector<QString> names_;
     std::vector<std::tuple<QString, QString, QString, QString>> parameter_order_;
     std::map<std::tuple<QString, QString, QString, QString>, std::vector<double>> parameters_;
@@ -56,9 +66,10 @@ public:
             : names_{std::move(names)}, parameter_order_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
+    const std::vector<QString> &names() const { return names_; }
+
     const std::vector<std::tuple<QString, QString, QString, QString>> &keys() const { return parameter_order_; }
 
-    friend class Parameters;
 };
 
 class Parameters {
@@ -71,11 +82,11 @@ public:
 
     void print() const;
 
-    const CommonParameters &common() const { return *common_; }
+    const CommonParameters *common() const { return common_.get(); }
 
-    const AtomParameters &atom() const { return *atoms_; }
+    const AtomParameters *atom() const { return atoms_.get(); }
 
-    const BondParameters &bond() const { return *bonds_; }
+    const BondParameters *bond() const { return bonds_.get(); }
 };
 
 

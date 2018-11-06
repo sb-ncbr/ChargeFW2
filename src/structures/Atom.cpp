@@ -24,7 +24,7 @@ bool Atom::operator==(const Atom &other) const {
     if (element_ != other.element_)
         return false;
 
-    return !(pos_ != other.pos_);
+    return pos_ == other.pos_;
 
 }
 
