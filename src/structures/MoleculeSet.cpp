@@ -47,8 +47,10 @@ void MoleculeSet::classify_atoms(QString classifier) {
         cls = std::make_unique<PlainClassifier>();
     } else if (classifier == "hbo") {
         cls = std::make_unique<HBOClassifier>();
-    } else
+    } else {
+        std::cerr << "Unknown classifier " << classifier.toStdString() << std::endl;
         exit(EXIT_FAILURE);
+    }
 
     for (auto &molecule: *molecules_) {
         for (auto &atom: *molecule.atoms_) {

@@ -12,8 +12,10 @@
 
 PeriodicTable::PeriodicTable() {
     QFile file("../data/pte.csv");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        std::cerr << "Unable to open periodic table data file data/pte.csv" << std::endl;
         exit(EXIT_FAILURE);
+    }
 
     QTextStream in(&file);
     // Read header;
@@ -37,7 +39,7 @@ const PeriodicTable &PeriodicTable::pte() {
 }
 
 const Element *PeriodicTable::getElement(const QString &symbol) const {
-    if(!symbol_Z_.count(symbol)) {
+    if (!symbol_Z_.count(symbol)) {
         std::cerr << "No such element " << symbol.toStdString() << std::endl;
         exit(EXIT_FAILURE);
     }
