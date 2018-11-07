@@ -39,5 +39,7 @@ public:
 
     friend std::ostream &operator<<(std::ostream &str, const Atom &atom);
 
-    bool operator==(const Atom &other) const;
+    bool inline operator==(const Atom &other) const {
+        return this->index_ == other.index_ and this->molecule_ == other.molecule_;
+    };
 };
