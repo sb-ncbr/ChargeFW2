@@ -5,6 +5,7 @@
 #include "Parameters.h"
 
 #include <iostream>
+#include <string>
 #include <map>
 #include <vector>
 #include <QString>
@@ -14,10 +15,10 @@
 #include <QJsonArray>
 
 
-Parameters::Parameters(const QString &filename) {
-    QFile file(filename);
+Parameters::Parameters(const std::string &filename) {
+    QFile file(QString::fromStdString(filename));
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        std::cerr << "Cannot open file: " << filename.toStdString() << std::endl;
+        std::cerr << "Cannot open file: " << filename << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -32,12 +33,12 @@ Parameters::Parameters(const QString &filename) {
             exit(EXIT_FAILURE);
         }
 
-        std::vector<QString> names;
+        std::vector<std::string> names;
 
-        std::map<QString, double> parameters;
+        std::map<std::string, double> parameters;
         for (int i = 0; i < names_json.size(); i++) {
-            names.emplace_back(names_json[i].toString());
-            parameters[names_json[i].toString()] = values_json[i].toDouble();
+            names.emplace_back(names_json[i].toString().toStdString());
+            parameters[names_json[i].toString().toStdString()] = values_json[i].toDouble();
         }
 
         common_ = std::make_unique<CommonParameters>(names, parameters);
@@ -48,13 +49,13 @@ Parameters::Parameters(const QString &filename) {
         QJsonArray names_json = atom["names"].toArray();
         QJsonArray data_json = atom["data"].toArray();
 
-        std::vector<QString> names;
-        for(auto &&name: names_json) {
-            names.emplace_back(name.toString());
+        std::vector<std::string> names;
+        for (auto &&name: names_json) {
+            names.emplace_back(name.toString().toStdString());
         }
 
-        std::vector<std::tuple<QString, QString, QString> > parameter_order;
-        std::map<std::tuple<QString, QString, QString>, std::vector<double>> parameters;
+        std::vector<std::tuple<std::string, std::string, std::string>> parameter_order;
+        std::map<std::tuple<std::string, std::string, std::string>, std::vector<double>> parameters;
         for (auto &&ref_pair: data_json) {
             QJsonObject pair = ref_pair.toObject();
             QJsonArray json_key = pair["key"].toArray();
@@ -65,7 +66,8 @@ Parameters::Parameters(const QString &filename) {
                 exit(EXIT_FAILURE);
             }
 
-            auto key = std::make_tuple(json_key[0].toString(), json_key[1].toString(), json_key[2].toString());
+            auto key = std::make_tuple(json_key[0].toString().toStdString(), json_key[1].toString().toStdString(),
+                                       json_key[2].toString().toStdString());
             parameter_order.push_back(key);
 
             std::vector<double> values;
@@ -82,12 +84,12 @@ Parameters::Parameters(const QString &filename) {
         QJsonArray names_json = bond["names"].toArray();
         QJsonArray data_json = bond["data"].toArray();
 
-        std::vector<QString> names;
-        std::vector<std::tuple<QString, QString, QString, QString>> parameter_order;
-        std::map<std::tuple<QString, QString, QString, QString>, std::vector<double>> parameters;
+        std::vector<std::string> names;
+        std::vector<std::tuple<std::string, std::string, std::string, std::string>> parameter_order;
+        std::map<std::tuple<std::string, std::string, std::string, std::string>, std::vector<double>> parameters;
 
-        for(auto &&name: names_json) {
-            names.emplace_back(name.toString());
+        for (auto &&name: names_json) {
+            names.emplace_back(name.toString().toStdString());
         }
 
         for (auto &&ref_pair: data_json) {
@@ -100,8 +102,8 @@ Parameters::Parameters(const QString &filename) {
                 exit(EXIT_FAILURE);
             }
 
-            auto key = std::make_tuple(json_key[0].toString(), json_key[1].toString(), json_key[2].toString(),
-                                       json_key[3].toString());
+            auto key = std::make_tuple(json_key[0].toString().toStdString(), json_key[1].toString().toStdString(),
+                                       json_key[2].toString().toStdString(), json_key[3].toString().toStdString());
 
             parameter_order.push_back(key);
 
@@ -120,14 +122,14 @@ void Parameters::print() const {
     if (common_) {
         std::cout << "Common parameters" << std::endl;
         for (auto &[key, val]: common_->parameters_) {
-            std::cout << key.toStdString() << ": " << val << std::endl;
+            std::cout << key << ": " << val << std::endl;
         }
     }
     if (atoms_) {
         std::cout << "Atom parameters" << std::endl;
-        for (const auto &key: atoms_->parameter_order_) {
+        for (const auto &key: atoms_->keys_) {
             auto &[symbol, cls, type] = key;
-            std::cout << symbol.toStdString() << " " << cls.toStdString() << " " << type.toStdString() << ": ";
+            std::cout << symbol << " " << cls << " " << type << ": ";
             for (double val: atoms_->parameters_[key]) {
                 std::cout << val << " ";
             }
@@ -136,10 +138,9 @@ void Parameters::print() const {
     }
     if (bonds_) {
         std::cout << "Bond parameters" << std::endl;
-        for (const auto &key: bonds_->parameter_order_) {
+        for (const auto &key: bonds_->keys_) {
             auto &[symbol1, symbol2, cls, type] = key;
-            std::cout << symbol1.toStdString() << " " << symbol2.toStdString() << " " << cls.toStdString() << " "
-                      << type.toStdString() << ": ";
+            std::cout << symbol1 << " " << symbol2 << " " << cls << " " << type << ": ";
 
             for (double val: bonds_->parameters_[key]) {
                 std::cout << val << " ";
@@ -149,13 +150,13 @@ void Parameters::print() const {
     }
 }
 
-std::function<double(const Atom &)> AtomParameters::parameter(const QString &name) const {
+std::function<double(const Atom &)> AtomParameters::parameter(const std::string &name) const {
     long idx;
     auto it = std::find(names_.begin(), names_.end(), name);
     if (it != names_.end()) {
         idx = std::distance(names_.begin(), it);
     } else {
-        std::cerr << "Invalid parameter name: " << name.toStdString() << std::endl;
+        std::cerr << "Invalid parameter name: " << name << std::endl;
         exit(EXIT_FAILURE);
     }
     return [this, idx](const Atom &atom) { return parameters_.at(atom.atom_type())[idx]; };

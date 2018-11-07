@@ -1,16 +1,15 @@
 // Created by krab1k on 01/11/18.
 //
 
-#include <QString>
+#include <string>
 
 #include "Classifier.h"
 #include "structures/Molecule.h"
 #include "structures/MoleculeSet.h"
 
-
 #include <iostream>
 
-QString HBOClassifier::get_type(const Atom &atom) const {
+std::string HBOClassifier::get_type(const Atom &atom) const {
     const Molecule *molecule = atom.molecule();
     int max_order = 0;
 
@@ -18,5 +17,5 @@ QString HBOClassifier::get_type(const Atom &atom) const {
         if (bond.hasAtom(atom) && max_order < bond.order())
             max_order = bond.order();
     }
-    return QString::number(max_order);
+    return std::to_string(max_order);
 }

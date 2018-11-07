@@ -6,9 +6,6 @@
 
 #include <iostream>
 #include <vector>
-#include <QString>
-
-std::ostream &operator<<(std::ostream &os, const std::vector<QString> &vec);
 
 template<typename T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &vec) {

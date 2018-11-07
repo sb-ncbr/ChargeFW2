@@ -21,7 +21,7 @@ int main() {
 
     auto eem = EEM(&p);
     for(auto &mol: m.molecules()) {
-        std::cout << mol.name().toStdString() << std::endl;
+        std::cout << mol.name() << std::endl;
         auto res = eem.calculate_charges(mol);
         std::cout << res << std::endl;
     }

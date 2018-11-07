@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <utility>
+#include <string>
 
 #include "Molecule.h"
 #include "../Parameters.h"
@@ -20,6 +21,6 @@ public:
 
     const std::vector<Molecule> &molecules() const { return *molecules_; }
 
-    void classify_atoms(QString classifier);
+    void classify_atoms(std::string classifier);
     void classify_atoms_from_parameters(const Parameters &parameters);
 };

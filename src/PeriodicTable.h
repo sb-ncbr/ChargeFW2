@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <string>
 #include <vector>
 #include <map>
 
@@ -11,13 +12,13 @@
 
 class PeriodicTable {
     std::vector<Element> elements_;
-    std::map<QString, int> symbol_Z_;
+    std::map<std::string, int> symbol_Z_;
 public:
     static const PeriodicTable &pte();
 
     const Element *getElement(int Z) const { return &elements_[Z]; }
 
-    const Element *getElement(const QString &symbol) const;
+    const Element *getElement(const std::string &symbol) const;
 
     PeriodicTable();
 };

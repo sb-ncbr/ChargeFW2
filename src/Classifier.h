@@ -5,28 +5,28 @@
 #pragma once
 
 
-#include <QString>
+#include <string>
 #include "structures/Atom.h"
 #include "structures/MoleculeSet.h"
 
 class Classifier {
 public:
-    virtual QString get_type(const Atom &atom) const = 0;
+    virtual std::string get_type(const Atom &atom) const = 0;
 
-    virtual QString name() const = 0;
+    virtual std::string name() const = 0;
 };
 
 class PlainClassifier : public Classifier {
 public:
-    QString name() const override { return QString("plain"); }
+    std::string name() const override { return std::string("plain"); }
 
-    QString get_type(const Atom &) const override { return QString("*"); }
+    std::string get_type(const Atom &) const override { return std::string("*"); }
 };
 
 
 class HBOClassifier : public Classifier {
 public:
-    QString name() const override { return QString("hbo"); }
+    std::string name() const override { return std::string("hbo"); }
 
-    QString get_type(const Atom &atom) const override;
+    std::string get_type(const Atom &atom) const override;
 };

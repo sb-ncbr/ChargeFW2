@@ -30,5 +30,5 @@ bool Atom::operator==(const Atom &other) const {
 
 std::ostream &operator<<(std::ostream &str, const Atom &atom) {
     auto pte = PeriodicTable::pte();
-    return str << "Atom " << atom.element_->symbol().toStdString() << " Idx: " << atom.index_;
+    return str << "Atom " << atom.element_->symbol() << " Idx: " << atom.index_;
 }

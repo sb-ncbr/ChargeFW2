@@ -6,7 +6,7 @@
 
 #include <iostream>
 #include <utility>
-#include <QString>
+#include <string>
 #include <QVector>
 #include <vector>
 #include <tuple>
@@ -16,7 +16,7 @@
 #include "Bond.h"
 
 class Molecule {
-    QString name_;
+    std::string name_;
     std::unique_ptr<std::vector<Atom> > atoms_;
     std::unique_ptr<std::vector<Bond> > bonds_;
 
@@ -25,11 +25,11 @@ public:
 
     const std::vector<Bond> &bonds() const { return *bonds_; }
 
-    const QString &name() const { return name_; }
+    const std::string &name() const { return name_; }
 
     Molecule() = default;
 
-    Molecule(QString name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds);
+    Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds);
 
     friend std::ostream &operator<<(std::ostream &str, const Molecule &molecule);
 

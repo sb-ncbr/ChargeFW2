@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <QString>
+#include <array>
+#include <string>
 #include <iostream>
 #include <tuple>
-#include <Eigen/Dense>
 
 #include "../Element.h"
 
@@ -16,9 +16,9 @@ class Molecule;
 class Atom {
     int index_{};
     const Element *element_{};
-    Eigen::Vector3d pos_{};
+    std::array<double, 3> pos_{};
     const Molecule *molecule_{};
-    std::tuple<QString, QString, QString> atom_type_{};
+    std::tuple<std::string, std::string, std::string> atom_type_{};
 
     friend class Molecule;
 
@@ -33,9 +33,9 @@ public:
 
     const Molecule *molecule() const { return molecule_; }
 
-    const Eigen::Vector3d &pos() const { return pos_; }
+    const std::array<double, 3> &pos() const { return pos_; }
 
-    const std::tuple<QString, QString, QString> atom_type() const { return atom_type_; }
+    const std::tuple<std::string, std::string, std::string> atom_type() const { return atom_type_; }
 
     friend std::ostream &operator<<(std::ostream &str, const Atom &atom);
 

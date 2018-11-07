@@ -4,6 +4,7 @@
 
 #include <QFile>
 #include <QString>
+#include <string>
 #include <QTextStream>
 #include <iostream>
 #include <tuple>
@@ -17,12 +18,11 @@
 #include "../PeriodicTable.h"
 #include "SDF.h"
 
-using std::cerr;    using std::endl;
 
-MoleculeSet SDF::read_file(const QString &filename) {
-    QFile file(filename);
+MoleculeSet SDF::read_file(const std::string &filename) {
+    QFile file(QString::fromStdString(filename));
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        cerr << "Cannot open file: " << filename.toStdString() << endl;
+        std::cerr << "Cannot open file: " << filename << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -32,7 +32,7 @@ MoleculeSet SDF::read_file(const QString &filename) {
 
     auto molecules = std::make_unique<std::vector<Molecule> >();
     while (!line.isNull()) {
-        QString name = line; // Read name_ of the molecule
+        std::string name = line.toStdString(); // Read name_ of the molecule
         line = in.readLine(); // Line with comments
         line = in.readLine(); // Line with comments
 
@@ -51,7 +51,7 @@ MoleculeSet SDF::read_file(const QString &filename) {
             double y = line.mid(10, 10).toDouble();
             double z = line.mid(20, 10).toDouble();
 
-            auto element = PeriodicTable::pte().getElement(line.mid(31, 3).trimmed());
+            auto element = PeriodicTable::pte().getElement(line.mid(31, 3).trimmed().toStdString());
 
             atoms->emplace_back(i, element, x, y, z);
         }

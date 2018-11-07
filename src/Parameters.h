@@ -12,43 +12,43 @@
 #include <vector>
 #include <functional>
 #include <tuple>
-#include<QString>
+#include <string>
 
 #include "structures/Atom.h"
 
 class CommonParameters {
     friend class Parameters;
 
-    std::vector<QString> names_;
-    std::map<QString, double> parameters_;
+    std::vector<std::string> names_;
+    std::map<std::string, double> parameters_;
 public:
-    explicit CommonParameters(std::vector<QString> names, std::map<QString, double> parameters) :
+    explicit CommonParameters(std::vector<std::string> names, std::map<std::string, double> parameters) :
             names_{std::move(names)}, parameters_{std::move(parameters)} {}
 
-    const std::vector<QString> &names() const { return names_; }
+    const std::vector<std::string> &names() const { return names_; }
 
-    double parameter(const QString &name) const { return parameters_.at(name); }
+    double parameter(const std::string &name) const { return parameters_.at(name); }
 
 };
 
 class AtomParameters {
     friend class Parameters;
 
-    std::vector<QString> names_;
-    std::vector<std::tuple<QString, QString, QString>> parameter_order_;
-    std::map<std::tuple<QString, QString, QString>, std::vector<double>> parameters_;
+    std::vector<std::string> names_;
+    std::vector<std::tuple<std::string, std::string, std::string>> keys_;
+    std::map<std::tuple<std::string, std::string, std::string>, std::vector<double>> parameters_;
 public:
-    explicit AtomParameters(std::vector<QString> names,
-                            std::map<std::tuple<QString, QString, QString>, std::vector<double> > parameters,
-                            std::vector<std::tuple<QString, QString, QString>> parameter_order)
-            : names_{std::move(names)}, parameter_order_{std::move(parameter_order)},
+    explicit AtomParameters(std::vector<std::string> names,
+                            std::map<std::tuple<std::string, std::string, std::string>, std::vector<double> > parameters,
+                            std::vector<std::tuple<std::string, std::string, std::string>> parameter_order)
+            : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
-    const std::vector<QString> &names() const { return names_; }
+    const std::vector<std::string> &names() const { return names_; }
 
-    const std::vector<std::tuple<QString, QString, QString>> &keys() const { return parameter_order_; }
+    const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    std::function<double(const Atom &)> parameter(const QString &name) const;
+    std::function<double(const Atom &)> parameter(const std::string &name) const;
 
 
 };
@@ -56,19 +56,19 @@ public:
 class BondParameters {
     friend class Parameters;
 
-    std::vector<QString> names_;
-    std::vector<std::tuple<QString, QString, QString, QString>> parameter_order_;
-    std::map<std::tuple<QString, QString, QString, QString>, std::vector<double>> parameters_;
+    std::vector<std::string> names_;
+    std::vector<std::tuple<std::string, std::string, std::string, std::string>> keys_;
+    std::map<std::tuple<std::string, std::string, std::string, std::string>, std::vector<double>> parameters_;
 public:
-    explicit BondParameters(std::vector<QString> names,
-                            std::map<std::tuple<QString, QString, QString, QString>, std::vector<double>> parameters,
-                            std::vector<std::tuple<QString, QString, QString, QString>> parameter_order)
-            : names_{std::move(names)}, parameter_order_{std::move(parameter_order)},
+    explicit BondParameters(std::vector<std::string> names,
+                            std::map<std::tuple<std::string, std::string, std::string, std::string>, std::vector<double>> parameters,
+                            std::vector<std::tuple<std::string, std::string, std::string, std::string>> parameter_order)
+            : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
-    const std::vector<QString> &names() const { return names_; }
+    const std::vector<std::string> &names() const { return names_; }
 
-    const std::vector<std::tuple<QString, QString, QString, QString>> &keys() const { return parameter_order_; }
+    const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
 
 };
 
@@ -78,7 +78,7 @@ class Parameters {
     std::unique_ptr<BondParameters> bonds_{nullptr};
 
 public:
-    explicit Parameters(const QString &filename);
+    explicit Parameters(const std::string &filename);
 
     void print() const;
 

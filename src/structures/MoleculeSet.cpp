@@ -6,6 +6,7 @@
 #include <iostream>
 #include <memory>
 #include <tuple>
+#include <string>
 
 #include "MoleculeSet.h"
 #include "../Classifier.h"
@@ -24,7 +25,7 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
 
 
 void MoleculeSet::info() const {
-    std::map<std::tuple<QString, QString, QString>, int> counts;
+    std::map<std::tuple<std::string, std::string, std::string>, int> counts;
     for (const Molecule &m: *molecules_) {
         for (auto &a : m.atoms()) {
             counts[a.atom_type()] += 1;
@@ -33,14 +34,14 @@ void MoleculeSet::info() const {
 
     for (auto &[key, val]: counts) {
         auto[symbol, cls, type] = key;
-        std::cout << symbol.toStdString() << " " << cls.toStdString() << " " << type.toStdString() << ": "
+        std::cout << symbol << " " << cls << " " << type << ": "
                   << val << std::endl;
 
     }
 }
 
 
-void MoleculeSet::classify_atoms(QString classifier) {
+void MoleculeSet::classify_atoms(std::string classifier) {
     auto cls = std::unique_ptr<Classifier>(nullptr);
 
     if (classifier == "plain") {
@@ -48,7 +49,7 @@ void MoleculeSet::classify_atoms(QString classifier) {
     } else if (classifier == "hbo") {
         cls = std::make_unique<HBOClassifier>();
     } else {
-        std::cerr << "Unknown classifier " << classifier.toStdString() << std::endl;
+        std::cerr << "Unknown classifier " << classifier << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -81,13 +82,13 @@ void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
                         break;
                     }
                 } else {
-                    std::cerr << "Classifier " << cls.toStdString() << " not found" << std::endl;
+                    std::cerr << "Classifier " << cls << " not found" << std::endl;
                     exit(EXIT_FAILURE);
                 }
             }
             if (!found) {
-                std::cerr << "No parameters for atom " << atom.element().symbol().toStdString() << " in molecule "
-                          << molecule.name().toStdString() << std::endl;
+                std::cerr << "No parameters for atom " << atom.element().symbol() << " in molecule "
+                          << molecule.name() << std::endl;
                 exit(EXIT_FAILURE);
             }
         }

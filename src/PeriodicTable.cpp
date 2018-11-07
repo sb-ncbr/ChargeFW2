@@ -24,8 +24,8 @@ PeriodicTable::PeriodicTable() {
         line = in.readLine();
         QStringList cols = line.split(',');
         int index = cols[0].toInt();
-        QString name = cols[1];
-        QString symbol = cols[2];
+        std::string name = cols[1].toStdString();
+        std::string symbol = cols[2].toStdString();
         float electronegativity = cols[12].toFloat();
         Element element(index, symbol, name, electronegativity);
         elements_.push_back(element);
@@ -38,9 +38,9 @@ const PeriodicTable &PeriodicTable::pte() {
     return pte;
 }
 
-const Element *PeriodicTable::getElement(const QString &symbol) const {
+const Element *PeriodicTable::getElement(const std::string &symbol) const {
     if (!symbol_Z_.count(symbol)) {
-        std::cerr << "No such element " << symbol.toStdString() << std::endl;
+        std::cerr << "No such element " << symbol << std::endl;
         exit(EXIT_FAILURE);
     }
     return getElement(symbol_Z_.at(symbol) - 1);
