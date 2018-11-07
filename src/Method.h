@@ -7,7 +7,6 @@
 #pragma once
 
 #include <vector>
-#include <Eigen/Dense>
 
 #include "structures/Molecule.h"
 #include "Parameters.h"
@@ -31,6 +30,6 @@ public:
 
     void set_parameters(const Parameters *parameters);
 
-    virtual Eigen::VectorXd calculate_charges(const Molecule &molecule) = 0;
+    virtual std::vector<double> calculate_charges(const Molecule &molecule) = 0;
 };
 

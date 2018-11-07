@@ -2,15 +2,13 @@
 // Created by krab1k on 24/10/18.
 //
 
-#include <QFile>
-#include <QString>
 #include <string>
-#include <QTextStream>
+#include <fstream>
 #include <iostream>
 #include <tuple>
 #include <vector>
 #include <memory>
-
+#include <boost/algorithm/string.hpp>
 
 #include "../structures/Atom.h"
 #include "../structures/Bond.h"
@@ -20,40 +18,40 @@
 
 
 MoleculeSet SDF::read_file(const std::string &filename) {
-    QFile file(QString::fromStdString(filename));
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    std::ifstream file(filename);
+    if (!file) {
         std::cerr << "Cannot open file: " << filename << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    QTextStream in(&file);
-
-    QString line = in.readLine();
+    std::string line;
 
     auto molecules = std::make_unique<std::vector<Molecule> >();
-    while (!line.isNull()) {
-        std::string name = line.toStdString(); // Read name_ of the molecule
-        line = in.readLine(); // Line with comments
-        line = in.readLine(); // Line with comments
 
-        // Read line with counts
-        line = in.readLine();
+    while (std::getline(file, line)) {
+        std::string name = line; // Read name_ of the molecule
+        std::getline(file, line); // Line with comments
+        std::getline(file, line); // Line with comments
 
-        size_t n_atoms = line.mid(0, 3).toUInt();
-        size_t n_bonds = line.mid(3, 3).toUInt();
+        std::getline(file, line); // Line with counts
+
+        size_t n_atoms = std::stoul(line.substr(0, 3));
+        size_t n_bonds = std::stoul(line.substr(3, 3));
 
         auto atoms = std::make_unique<std::vector<Atom> >();
         atoms->reserve(n_atoms);
 
         for (unsigned i = 0; i < n_atoms; i++) {
-            line = in.readLine();
-            double x = line.mid(0, 10).toDouble();
-            double y = line.mid(10, 10).toDouble();
-            double z = line.mid(20, 10).toDouble();
+            std::getline(file, line);
+            double x = std::stod(line.substr(0, 10));
+            double y = std::stod(line.substr(10, 10));
+            double z = std::stod(line.substr(20, 10));
 
-            QString element_symbol = line.mid(31, 3).trimmed();
-            element_symbol = element_symbol.left(1).toUpper() + element_symbol.mid(1).toLower();
-            auto element = PeriodicTable::pte().getElement(element_symbol.toStdString());
+            auto element_symbol = boost::trim_copy(line.substr(31, 3));
+            boost::to_lower(element_symbol);
+            element_symbol[0] = static_cast<char>(std::toupper(element_symbol[0]));
+
+            auto element = PeriodicTable::pte().getElement(element_symbol);
 
             atoms->emplace_back(i, element, x, y, z);
         }
@@ -62,10 +60,10 @@ MoleculeSet SDF::read_file(const std::string &filename) {
         bonds->reserve(n_bonds);
 
         for (unsigned i = 0; i < n_bonds; i++) {
-            line = in.readLine();
-            int first = line.mid(0, 3).toInt();
-            int second = line.mid(3, 3).toInt();
-            int order = line.mid(6, 3).toInt();
+            std::getline(file, line);
+            int first = std::stoi(line.substr(0, 3));
+            int second = std::stoi(line.substr(3, 3));
+            int order = std::stoi(line.substr(6, 3));
 
             bonds->emplace_back(&((*atoms)[first - 1]), &((*atoms)[second - 1]), order);
         }
@@ -73,10 +71,8 @@ MoleculeSet SDF::read_file(const std::string &filename) {
         molecules->emplace_back(name, std::move(atoms), std::move(bonds));
 
         do {
-            line = in.readLine();
+            std::getline(file, line);
         } while (line != "$$$$");
-        line = in.readLine();
-
     }
     return MoleculeSet(std::move(molecules));
 }
