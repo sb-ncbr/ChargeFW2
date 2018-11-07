@@ -51,7 +51,9 @@ MoleculeSet SDF::read_file(const std::string &filename) {
             double y = line.mid(10, 10).toDouble();
             double z = line.mid(20, 10).toDouble();
 
-            auto element = PeriodicTable::pte().getElement(line.mid(31, 3).trimmed().toStdString());
+            QString element_symbol = line.mid(31, 3).trimmed();
+            element_symbol = element_symbol.left(1).toUpper() + element_symbol.mid(1).toLower();
+            auto element = PeriodicTable::pte().getElement(element_symbol.toStdString());
 
             atoms->emplace_back(i, element, x, y, z);
         }
