@@ -20,14 +20,14 @@ class CommonParameters {
     friend class Parameters;
 
     std::vector<std::string> names_;
-    std::map<std::string, double> parameters_;
+    std::vector<double> parameters_;
 public:
-    explicit CommonParameters(std::vector<std::string> names, std::map<std::string, double> parameters) :
+    explicit CommonParameters(std::vector<std::string> names, std::vector<double> parameters) :
             names_{std::move(names)}, parameters_{std::move(parameters)} {}
 
     const std::vector<std::string> &names() const { return names_; }
 
-    double parameter(const std::string &name) const { return parameters_.at(name); }
+    double parameter(int idx) const { return parameters_[idx]; }
 
 };
 
@@ -36,10 +36,10 @@ class AtomParameters {
 
     std::vector<std::string> names_;
     std::vector<std::tuple<std::string, std::string, std::string>> keys_;
-    std::map<std::tuple<std::string, std::string, std::string>, std::vector<double>> parameters_;
+    std::vector<std::vector<double>> parameters_;
 public:
     explicit AtomParameters(std::vector<std::string> names,
-                            std::map<std::tuple<std::string, std::string, std::string>, std::vector<double> > parameters,
+                            std::vector<std::vector<double>> parameters,
                             std::vector<std::tuple<std::string, std::string, std::string>> parameter_order)
             : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
@@ -48,7 +48,7 @@ public:
 
     const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    std::function<double(const Atom &)> parameter(const std::string &name) const;
+    std::function<double(const Atom &)> parameter(int idx) const;
 
 
 };
@@ -58,10 +58,10 @@ class BondParameters {
 
     std::vector<std::string> names_;
     std::vector<std::tuple<std::string, std::string, std::string, std::string>> keys_;
-    std::map<std::tuple<std::string, std::string, std::string, std::string>, std::vector<double>> parameters_;
+    std::vector<std::vector<double>> parameters_;
 public:
     explicit BondParameters(std::vector<std::string> names,
-                            std::map<std::tuple<std::string, std::string, std::string, std::string>, std::vector<double>> parameters,
+                            std::vector<std::vector<double>> parameters,
                             std::vector<std::tuple<std::string, std::string, std::string, std::string>> parameter_order)
             : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}

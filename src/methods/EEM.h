@@ -11,6 +11,8 @@
 #include "../Method.h"
 
 class EEM : public Method {
+    enum common{kappa};
+    enum atom{A, B};
 public:
     explicit EEM(const Parameters *parameters) : Method({"kappa"}, {"A", "B"}, {}, parameters) {}
 

@@ -25,7 +25,7 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
 
 
 void MoleculeSet::info() const {
-    std::map<std::tuple<std::string, std::string, std::string>, int> counts;
+    std::map<size_t, int> counts;
     for (const Molecule &m: *molecules_) {
         for (auto &a : m.atoms()) {
             counts[a.atom_type()] += 1;
@@ -33,7 +33,7 @@ void MoleculeSet::info() const {
     }
 
     for (auto &[key, val]: counts) {
-        auto[symbol, cls, type] = key;
+        auto[symbol, cls, type] = atom_types_[key];
         std::cout << symbol << " " << cls << " " << type << ": "
                   << val << std::endl;
 
@@ -41,43 +41,24 @@ void MoleculeSet::info() const {
 }
 
 
-void MoleculeSet::classify_atoms(std::string classifier) {
-    auto cls = std::unique_ptr<Classifier>(nullptr);
-
-    if (classifier == "plain") {
-        cls = std::make_unique<PlainClassifier>();
-    } else if (classifier == "hbo") {
-        cls = std::make_unique<HBOClassifier>();
-    } else {
-        std::cerr << "Unknown classifier " << classifier << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
-    for (auto &molecule: *molecules_) {
-        for (auto &atom: *molecule.atoms_) {
-            atom.atom_type_ = std::make_tuple(atom.element().symbol(), cls->name(), cls->get_type(atom));
-        }
-    }
-}
-
-
 void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
+    atom_types_ = parameters.atom()->keys();
     for (auto &molecule: *molecules_) {
         for (auto &atom: *molecule.atoms_) {
             bool found = false;
-            for (const auto &key: parameters.atom()->keys()) {
-                auto &[symbol, cls, type] = key;
+            for (size_t i = 0; i < atom_types_.size(); i++) {
+                auto &[symbol, cls, type] = atom_types_[i];
                 if (atom.element().symbol() != symbol)
                     continue;
                 if (cls == "plain") {
-                    atom.atom_type_ = std::make_tuple(atom.element().symbol(), "plain", "*");
+                    atom.atom_type_ = i;
                     found = true;
                     break;
                 } else if (cls == "hbo") {
                     auto hbo = HBOClassifier();
                     auto current_type = hbo.get_type(atom);
                     if (current_type == type) {
-                        atom.atom_type_ = std::make_tuple(atom.element().symbol(), "hbo", current_type);
+                        atom.atom_type_ = i;
                         found = true;
                         break;
                     }

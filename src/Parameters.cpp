@@ -35,10 +35,10 @@ Parameters::Parameters(const std::string &filename) {
 
         std::vector<std::string> names;
 
-        std::map<std::string, double> parameters;
+        std::vector<double> parameters;
         for (int i = 0; i < names_json.size(); i++) {
             names.emplace_back(names_json[i].toString().toStdString());
-            parameters[names_json[i].toString().toStdString()] = values_json[i].toDouble();
+            parameters.push_back(values_json[i].toDouble());
         }
 
         common_ = std::make_unique<CommonParameters>(names, parameters);
@@ -55,7 +55,7 @@ Parameters::Parameters(const std::string &filename) {
         }
 
         std::vector<std::tuple<std::string, std::string, std::string>> parameter_order;
-        std::map<std::tuple<std::string, std::string, std::string>, std::vector<double>> parameters;
+        std::vector<std::vector<double>> parameters;
         for (auto &&ref_pair: data_json) {
             QJsonObject pair = ref_pair.toObject();
             QJsonArray json_key = pair["key"].toArray();
@@ -74,7 +74,7 @@ Parameters::Parameters(const std::string &filename) {
             for (auto &&value: json_values) {
                 values.push_back(value.toDouble());
             }
-            parameters[key] = values;
+            parameters.push_back(values);
         }
 
         atoms_ = std::make_unique<AtomParameters>(names, parameters, parameter_order);
@@ -86,7 +86,7 @@ Parameters::Parameters(const std::string &filename) {
 
         std::vector<std::string> names;
         std::vector<std::tuple<std::string, std::string, std::string, std::string>> parameter_order;
-        std::map<std::tuple<std::string, std::string, std::string, std::string>, std::vector<double>> parameters;
+        std::vector<std::vector<double>> parameters;
 
         for (auto &&name: names_json) {
             names.emplace_back(name.toString().toStdString());
@@ -111,7 +111,7 @@ Parameters::Parameters(const std::string &filename) {
             for (auto &&value: json_values) {
                 values.push_back(value.toDouble());
             }
-            parameters[key] = values;
+            parameters.push_back(values);
         }
 
         bonds_ = std::make_unique<BondParameters>(names, parameters, parameter_order);
@@ -121,16 +121,16 @@ Parameters::Parameters(const std::string &filename) {
 void Parameters::print() const {
     if (common_) {
         std::cout << "Common parameters" << std::endl;
-        for (auto &[key, val]: common_->parameters_) {
-            std::cout << key << ": " << val << std::endl;
+        for(size_t i = 0; i < common_->names().size(); i++) {
+            std::cout << common_->names()[i] << ": " << common_->parameters_[i] << std::endl;
         }
     }
     if (atoms_) {
         std::cout << "Atom parameters" << std::endl;
-        for (const auto &key: atoms_->keys_) {
-            auto &[symbol, cls, type] = key;
+        for (size_t i = 0; i < atoms_->parameters_.size(); i++) {
+            auto &[symbol, cls, type] = atoms_->keys()[i];
             std::cout << symbol << " " << cls << " " << type << ": ";
-            for (double val: atoms_->parameters_[key]) {
+            for (double val: atoms_->parameters_[i]) {
                 std::cout << val << " ";
             }
             std::cout << std::endl;
@@ -138,11 +138,11 @@ void Parameters::print() const {
     }
     if (bonds_) {
         std::cout << "Bond parameters" << std::endl;
-        for (const auto &key: bonds_->keys_) {
-            auto &[symbol1, symbol2, cls, type] = key;
+        for (size_t i = 0; i < bonds_->parameters_.size(); i++) {
+            auto &[symbol1, symbol2, cls, type] = bonds_->keys()[i];
             std::cout << symbol1 << " " << symbol2 << " " << cls << " " << type << ": ";
 
-            for (double val: bonds_->parameters_[key]) {
+            for (double val: bonds_->parameters_[i]) {
                 std::cout << val << " ";
             }
             std::cout << std::endl;
@@ -150,14 +150,7 @@ void Parameters::print() const {
     }
 }
 
-std::function<double(const Atom &)> AtomParameters::parameter(const std::string &name) const {
-    long idx;
-    auto it = std::find(names_.begin(), names_.end(), name);
-    if (it != names_.end()) {
-        idx = std::distance(names_.begin(), it);
-    } else {
-        std::cerr << "Invalid parameter name: " << name << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    return [this, idx](const Atom &atom) { return parameters_.at(atom.atom_type())[idx]; };
+std::function<double(const Atom &)> AtomParameters::parameter(int idx) const {
+
+    return [this, idx](const Atom &atom) { return parameters_[atom.atom_type()][idx]; };
 }

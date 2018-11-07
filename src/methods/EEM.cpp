@@ -26,14 +26,12 @@ Eigen::VectorXd EEM::calculate_charges(const Molecule &molecule) {
 
     for (int i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];
-        vec(i) = - parameters_->atom()->parameter("A")(atom_i);
-        for (int j = 0; j < n; j++) {
+        matrix(i, i) = parameters_->atom()->parameter(atom::B)(atom_i);
+        vec(i) = - parameters_->atom()->parameter(atom::A)(atom_i);
+        for (int j = i + 1; j < n; j++) {
             const auto &atom_j = molecule.atoms()[j];
-            if (i == j) {
-                matrix(i, i) = parameters_->atom()->parameter("B")(atom_i);
-            } else {
-                matrix(i, j) = parameters_->common()->parameter("kappa") / distance(atom_i, atom_j);
-            }
+            matrix(i, j) = parameters_->common()->parameter(common::kappa) / distance(atom_i, atom_j);
+            matrix(j, i) = matrix(i, j);
         }
     }
 
@@ -42,7 +40,5 @@ Eigen::VectorXd EEM::calculate_charges(const Molecule &molecule) {
     matrix(n, n) = 0;
     vec(n) = 0;
 
-    Eigen::VectorXd res = matrix.partialPivLu().solve(vec);
-
-    return res.head(n);
+    return matrix.partialPivLu().solve(vec).head(n);
 }

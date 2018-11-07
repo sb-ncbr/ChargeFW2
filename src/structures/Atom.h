@@ -18,7 +18,7 @@ class Atom {
     const Element *element_{};
     std::array<double, 3> pos_{};
     const Molecule *molecule_{};
-    std::tuple<std::string, std::string, std::string> atom_type_{};
+    size_t atom_type_{};
 
     friend class Molecule;
 
@@ -35,7 +35,7 @@ public:
 
     const std::array<double, 3> &pos() const { return pos_; }
 
-    const std::tuple<std::string, std::string, std::string> atom_type() const { return atom_type_; }
+    size_t atom_type() const { return atom_type_; }
 
     friend std::ostream &operator<<(std::ostream &str, const Atom &atom);
 
