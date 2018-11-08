@@ -8,113 +8,78 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <QString>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 Parameters::Parameters(const std::string &filename) {
-    QFile file(QString::fromStdString(filename));
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        std::cerr << "Cannot open file: " << filename << std::endl;
-        exit(EXIT_FAILURE);
+    namespace pt = boost::property_tree;
+
+    pt::ptree iroot;
+    pt::read_json(filename, iroot);
+
+    auto it = iroot.find("common");
+    if (it != iroot.not_found()){
+        std::vector<std::string> names;
+        std::vector<double> values;
+        for(const auto &name: iroot.get_child("common.names")) {
+            names.push_back(name.second.data());
+        }
+        for(const auto &value: iroot.get_child("common.values")) {
+            values.push_back(value.second.get_value<double>());
+        }
+        common_ = std::make_unique<CommonParameters>(names, values);
     }
 
-    QByteArray json_data = file.readAll();
-    QJsonObject document = QJsonDocument::fromJson(json_data).object();
-    if (document.contains("common")) {
-        QJsonObject common = document["common"].toObject();
-        QJsonArray names_json = common["names"].toArray();
-        QJsonArray values_json = common["values"].toArray();
-        if (names_json.size() != values_json.size()) {
-            std::cerr << "Incorrect parameter file" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-
+    it = iroot.find("atom");
+    if (it != iroot.not_found()) {
         std::vector<std::string> names;
-
-        std::vector<double> parameters;
-        for (int i = 0; i < names_json.size(); i++) {
-            names.emplace_back(names_json[i].toString().toStdString());
-            parameters.push_back(values_json[i].toDouble());
-        }
-
-        common_ = std::make_unique<CommonParameters>(names, parameters);
-    }
-
-    if (document.contains("atom")) {
-        QJsonObject atom = document["atom"].toObject();
-        QJsonArray names_json = atom["names"].toArray();
-        QJsonArray data_json = atom["data"].toArray();
-
-        std::vector<std::string> names;
-        for (auto &&name: names_json) {
-            names.emplace_back(name.toString().toStdString());
-        }
-
-        std::vector<std::tuple<std::string, std::string, std::string>> parameter_order;
+        std::vector<std::tuple<std::string, std::string, std::string>> keys;
         std::vector<std::vector<double>> parameters;
-        for (auto &&ref_pair: data_json) {
-            QJsonObject pair = ref_pair.toObject();
-            QJsonArray json_key = pair["key"].toArray();
-            QJsonArray json_values = pair["value"].toArray();
 
-            if (names_json.size() != json_values.size()) {
-                std::cerr << "Incorrect parameter file" << std::endl;
-                exit(EXIT_FAILURE);
-            }
+        for(const auto &name: iroot.get_child("atom.names")) {
+            names.push_back(name.second.data());
+        }
 
-            auto key = std::make_tuple(json_key[0].toString().toStdString(), json_key[1].toString().toStdString(),
-                                       json_key[2].toString().toStdString());
-            parameter_order.push_back(key);
-
+        for(const auto &pair: iroot.get_child("atom.data")) {
+            std::vector<std::string> tmp_types;
             std::vector<double> values;
-            for (auto &&value: json_values) {
-                values.push_back(value.toDouble());
+            for(const auto &t: pair.second.get_child("key")) {
+                tmp_types.push_back(t.second.data());
+            }
+            keys.emplace_back(std::make_tuple(tmp_types[0], tmp_types[1], tmp_types[2]));
+            tmp_types.clear();
+            for(const auto &v: pair.second.get_child("value")) {
+                values.push_back(v.second.get_value<double>());
             }
             parameters.push_back(values);
         }
-
-        atoms_ = std::make_unique<AtomParameters>(names, parameters, parameter_order);
+        atoms_ = std::make_unique<AtomParameters>(names, parameters, keys);
     }
-    if (document.contains("bond")) {
-        QJsonObject bond = document["bond"].toObject();
-        QJsonArray names_json = bond["names"].toArray();
-        QJsonArray data_json = bond["data"].toArray();
 
+    it = iroot.find("bond");
+    if (it != iroot.not_found()) {
         std::vector<std::string> names;
-        std::vector<std::tuple<std::string, std::string, std::string, std::string>> parameter_order;
+        std::vector<std::tuple<std::string, std::string, std::string, std::string>> keys;
         std::vector<std::vector<double>> parameters;
 
-        for (auto &&name: names_json) {
-            names.emplace_back(name.toString().toStdString());
+        for(const auto &name: iroot.get_child("bond.names")) {
+            names.push_back(name.second.data());
         }
 
-        for (auto &&ref_pair: data_json) {
-            QJsonObject pair = ref_pair.toObject();
-            QJsonArray json_key = pair["key"].toArray();
-            QJsonArray json_values = pair["value"].toArray();
-
-            if (names_json.size() != json_values.size()) {
-                std::cerr << "Incorrect parameter file" << std::endl;
-                exit(EXIT_FAILURE);
-            }
-
-            auto key = std::make_tuple(json_key[0].toString().toStdString(), json_key[1].toString().toStdString(),
-                                       json_key[2].toString().toStdString(), json_key[3].toString().toStdString());
-
-            parameter_order.push_back(key);
-
+        for(const auto &pair: iroot.get_child("bond.data")) {
+            std::vector<std::string> tmp_types;
             std::vector<double> values;
-            for (auto &&value: json_values) {
-                values.push_back(value.toDouble());
+            for(const auto &t: pair.second.get_child("key")) {
+                tmp_types.push_back(t.second.data());
+            }
+            keys.emplace_back(std::make_tuple(tmp_types[0], tmp_types[1], tmp_types[2], tmp_types[3]));
+            tmp_types.clear();
+            for(const auto &v: pair.second.get_child("value")) {
+                values.push_back(v.second.get_value<double>());
             }
             parameters.push_back(values);
         }
-
-        bonds_ = std::make_unique<BondParameters>(names, parameters, parameter_order);
+        bonds_ = std::make_unique<BondParameters>(names, parameters, keys);
     }
 }
 

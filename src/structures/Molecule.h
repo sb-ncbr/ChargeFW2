@@ -7,7 +7,6 @@
 #include <iostream>
 #include <utility>
 #include <string>
-#include <QVector>
 #include <vector>
 #include <tuple>
 #include <memory>

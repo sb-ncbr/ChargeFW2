@@ -2,31 +2,39 @@
 // Created by krab1k on 29/10/18.
 //
 
-#include <QFile>
-#include <QStringList>
-#include <QTextStream>
+
+#include <fstream>
 #include <iostream>
+#include <string>
+#include <sstream>
 
 #include "Element.h"
 #include "PeriodicTable.h"
 
 PeriodicTable::PeriodicTable() {
-    QFile file("../data/pte.csv");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    std::ifstream file("../data/pte.csv");
+    if (!file) {
         std::cerr << "Unable to open periodic table data file data/pte.csv" << std::endl;
         exit(EXIT_FAILURE);
     }
 
-    QTextStream in(&file);
-    // Read header;
-    QString line = in.readLine();
-    while (!in.atEnd()) {
-        line = in.readLine();
-        QStringList cols = line.split(',');
-        int index = cols[0].toInt();
-        std::string name = cols[1].toStdString();
-        std::string symbol = cols[2].toStdString();
-        float electronegativity = cols[12].toFloat();
+    std::string line;
+    // Read header
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        std::stringstream line_stream(line);
+        std::string cell;
+        std::vector<std::string> cols;
+
+        while(std::getline(line_stream, cell, ',')) {
+            cols.emplace_back(cell);
+        };
+
+        int index = std::stoi(cols[0]);
+        std::string name = cols[1];
+        std::string symbol = cols[2];
+        float electronegativity = std::stof(cols[11]);
         Element element(index, symbol, name, electronegativity);
         elements_.push_back(element);
         symbol_Z_[symbol] = index;
