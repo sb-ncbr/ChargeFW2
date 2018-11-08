@@ -6,5 +6,5 @@ add_subdirectory(formats)
 
 set(CMAKE_AUTOMOC ON)
 
-add_executable(chargefw2 main.cpp Element.h PeriodicTable.cpp PeriodicTable.h Method.h Classifier.cpp Classifier.h Parameters.cpp Parameters.h Method.cpp)
+add_executable(chargefw2 main.cpp Element.h PeriodicTable.cpp PeriodicTable.h Method.h Classifier.cpp Classifier.h Parameters.cpp Parameters.h Method.cpp Charges.cpp Charges.h)
 target_link_libraries(chargefw2 formats methods structures Boost::program_options ${MKL_LINKER_FLAGS})

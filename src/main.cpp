@@ -8,6 +8,7 @@
 #include "PeriodicTable.h"
 #include "Parameters.h"
 #include "Classifier.h"
+#include "Charges.h"
 #include "methods/EEM.h"
 #include "utility/Utility.h"
 
@@ -85,20 +86,13 @@ int main(int argc, char **argv) {
         m.info();
 
         auto eem = EEM(&p);
-
-        std::ofstream f(chg_name);
-
-        std::vector<std::vector<double>> grr;
+        auto charges = Charges();
 
         for (auto &mol: m.molecules()) {
-            grr.emplace_back(eem.calculate_charges(mol));
+            charges.insert(mol.name(), eem.calculate_charges(mol));
         }
 
-        for (const auto &v: grr) {
-            f << v << std::endl;
-        }
-
-        f.close();
+        charges.save_to_file(chg_name);
 
     } else {
         std::cerr << "Unknown mode: " << mode << std::endl;
