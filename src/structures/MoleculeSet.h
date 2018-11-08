@@ -11,7 +11,10 @@
 #include <string>
 
 #include "Molecule.h"
+#include "../Classifier.h"
 #include "../Parameters.h"
+
+class Classifier;
 
 class MoleculeSet {
     std::vector<std::tuple<std::string, std::string, std::string>> atom_types_{};
@@ -23,5 +26,6 @@ public:
 
     const std::vector<Molecule> &molecules() const { return *molecules_; }
 
+    void classify_atoms(const Classifier &cls);
     void classify_atoms_from_parameters(const Parameters &parameters);
 };

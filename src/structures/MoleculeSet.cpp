@@ -3,6 +3,7 @@
 //
 
 #include <map>
+#include <algorithm>
 #include <iostream>
 #include <memory>
 #include <tuple>
@@ -12,6 +13,7 @@
 #include "../Classifier.h"
 #include "../PeriodicTable.h"
 #include "../Parameters.h"
+
 
 MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : molecules_{std::move(molecules)} {
     for (auto &molecule: *molecules_) {
@@ -37,6 +39,23 @@ void MoleculeSet::info() const {
         std::cout << symbol << " " << cls << " " << type << ": "
                   << val << std::endl;
 
+    }
+}
+
+
+void MoleculeSet::classify_atoms(const Classifier &cls) {
+    for (auto &molecule: *molecules_) {
+        for (auto &atom: *molecule.atoms_) {
+            auto type = cls.get_type(atom);
+            auto tuple = std::make_tuple(atom.element().symbol(), cls.name(), type);
+            auto it = std::find(atom_types_.begin(), atom_types_.end(), tuple);
+            if (it == atom_types_.end()) {
+                atom_types_.push_back(tuple);
+                atom.atom_type_ = atom_types_.size() - 1;
+            } else {
+                atom.atom_type_ = static_cast<size_t>(std::distance(atom_types_.begin(), it));
+            }
+        }
     }
 }
 
