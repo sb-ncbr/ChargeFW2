@@ -1,16 +1,14 @@
 #include <iostream>
-#include <fstream>
-#include <vector>
 #include <boost/program_options.hpp>
+#include <boost/dll/import.hpp>
+#include <memory>
 
 #include "formats/SDF.h"
 #include "structures/MoleculeSet.h"
-#include "PeriodicTable.h"
 #include "Parameters.h"
 #include "Classifier.h"
 #include "Charges.h"
-#include "methods/EEM.h"
-#include "utility/Utility.h"
+#include "Method.h"
 
 int main(int argc, char **argv) {
     namespace po = boost::program_options;
@@ -21,7 +19,8 @@ int main(int argc, char **argv) {
             ("mode", po::value<std::string>()->required(), "Mode")
             ("sdf-file", po::value<std::string>(), "Input SDF file")
             ("par-file", po::value<std::string>(), "File with parameters (json)")
-            ("chg-file", po::value<std::string>(), "File to output charges to");
+            ("chg-file", po::value<std::string>(), "File to output charges to")
+            ("method", po::value<std::string>(), "Method");
 
 
     po::variables_map vm;
@@ -61,35 +60,63 @@ int main(int argc, char **argv) {
             std::cerr << "SDF must be provided" << std::endl;
             exit(EXIT_FAILURE);
         }
-        if (!vm.count("par-file")) {
-            std::cerr << "File with parameters must be provided" << std::endl;
-            exit(EXIT_FAILURE);
-        }
 
         if (!vm.count("chg-file")) {
             std::cerr << "File where to store charges must be provided" << std::endl;
             exit(EXIT_FAILURE);
         }
 
+        if (!vm.count("method")) {
+            std::cerr << "No method selected" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
         auto sdf_name = vm["sdf-file"].as<std::string>();
-        auto par_name = vm["par-file"].as<std::string>();
         auto chg_name = vm["chg-file"].as<std::string>();
+        auto method_name = vm["method"].as<std::string>();
 
         SDF reader;
         MoleculeSet m = reader.read_file(sdf_name);
-        const auto p = Parameters(par_name);
 
-        std::cout << "Parameters:" << std::endl;
-        p.print();
-        m.classify_atoms_from_parameters(p);
+        boost::shared_ptr<Method> method;
+
+        try {
+            method = boost::dll::import<Method>("../lib/" + method_name, "method",
+                                                boost::dll::load_mode::append_decorations);
+        } catch (std::exception &e) {
+            std::cerr << "Unable to load method " << method_name << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        auto p = std::unique_ptr<Parameters>();
+
+        if (method->has_parameters()) {
+            if (!vm.count("par-file")) {
+                std::cerr << "File with parameters must be provided" << std::endl;
+                exit(EXIT_FAILURE);
+            }
+            auto par_name = vm["par-file"].as<std::string>();
+
+            p = std::make_unique<Parameters>(par_name);
+
+            std::cout << "Parameters:" << std::endl;
+            p->print();
+
+            m.classify_atoms_from_parameters(*p);
+
+            method->set_parameters(p.get());
+        } else {
+            auto plain = PlainClassifier();
+            m.classify_atoms(plain);
+        }
+
         std::cout << "Set info:" << std::endl;
         m.info();
 
-        auto eem = EEM(&p);
         auto charges = Charges();
 
         for (auto &mol: m.molecules()) {
-            charges.insert(mol.name(), eem.calculate_charges(mol));
+            charges.insert(mol.name(), method->calculate_charges(mol));
         }
 
         charges.save_to_file(chg_name);

@@ -12,7 +12,7 @@
 #include "PeriodicTable.h"
 
 PeriodicTable::PeriodicTable() {
-    std::ifstream file("../data/pte.csv");
+    std::ifstream file("../share/pte.csv");
     if (!file) {
         std::cerr << "Unable to open periodic table data file data/pte.csv" << std::endl;
         exit(EXIT_FAILURE);

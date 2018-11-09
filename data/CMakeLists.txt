@@ -1,0 +1,1 @@
+install(FILES pte.csv DESTINATION share)

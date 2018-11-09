@@ -1,10 +1,12 @@
-find_package(Boost COMPONENTS program_options REQUIRED)
+find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
 
 add_subdirectory(structures)
 add_subdirectory(methods)
 add_subdirectory(formats)
 
-set(CMAKE_AUTOMOC ON)
-
 add_executable(chargefw2 main.cpp Element.h PeriodicTable.cpp PeriodicTable.h Method.h Classifier.cpp Classifier.h Parameters.cpp Parameters.h Method.cpp Charges.cpp Charges.h)
-target_link_libraries(chargefw2 formats methods structures Boost::program_options ${MKL_LINKER_FLAGS})
+add_dependencies(chargefw2 dummy eem)
+
+target_link_libraries(chargefw2 formats structures Boost::program_options Boost::system Boost::filesystem ${MKL_LINKER_FLAGS})
+
+install(TARGETS chargefw2 DESTINATION bin)
