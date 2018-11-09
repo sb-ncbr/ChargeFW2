@@ -7,6 +7,6 @@ add_subdirectory(formats)
 add_executable(chargefw2 main.cpp Element.h PeriodicTable.cpp PeriodicTable.h Method.h Classifier.cpp Classifier.h Parameters.cpp Parameters.h Method.cpp Charges.cpp Charges.h)
 add_dependencies(chargefw2 dummy eem)
 
-target_link_libraries(chargefw2 formats structures Boost::program_options Boost::system Boost::filesystem ${MKL_LINKER_FLAGS})
+target_link_libraries(chargefw2 formats structures Boost::program_options Boost::system Boost::filesystem dl)
 
 install(TARGETS chargefw2 DESTINATION bin)
