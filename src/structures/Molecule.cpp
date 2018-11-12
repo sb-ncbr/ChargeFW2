@@ -7,15 +7,20 @@
 #include "Molecule.h"
 #include <utility>
 #include <tuple>
+#include <map>
 #include <string>
 #include <vector>
 #include <iostream>
 
 
-Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds) {
+Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
+                   std::unique_ptr<std::vector<Bond> > bonds, const std::map<int, int> &charges) {
     name_ = std::move(name);
     atoms_ = std::move(atoms);
     bonds_ = std::move(bonds);
+    for (auto &[atom_no, charge]: charges) {
+        (*atoms_)[atom_no].formal_charge_ = charge;
+    }
 }
 
 std::ostream &operator<<(std::ostream &str, const Molecule &molecule) {

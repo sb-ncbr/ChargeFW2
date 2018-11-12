@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <map>
 #include <memory>
 
 #include "Atom.h"
@@ -28,7 +29,8 @@ public:
 
     Molecule() = default;
 
-    Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds);
+    Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds,
+             const std::map<int, int> &charges);
 
     friend std::ostream &operator<<(std::ostream &str, const Molecule &molecule);
 

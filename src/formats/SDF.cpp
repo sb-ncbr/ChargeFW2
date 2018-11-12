@@ -68,11 +68,21 @@ MoleculeSet SDF::read_file(const std::string &filename) {
             bonds->emplace_back(&((*atoms)[first - 1]), &((*atoms)[second - 1]), order);
         }
 
-        molecules->emplace_back(name, std::move(atoms), std::move(bonds));
-
+        std::map<int, int> charges;
         do {
             std::getline(file, line);
+            if(line.substr(0, 6) == "M  CHG") {
+                int count = std::stoi(line.substr(6, 3));
+                const int base = 9;
+                for(int i = 0; i < count; i++) {
+                    int atom_no = std::stoi(line.substr(base + i * 8, 4));
+                    int charge = std::stoi(line.substr(base + i * 8 + 4, 4));
+                    charges[atom_no - 1] = charge;
+                }
+            }
         } while (line != "$$$$");
+
+        molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
     }
     return MoleculeSet(std::move(molecules));
 }

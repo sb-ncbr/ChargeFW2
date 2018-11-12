@@ -11,6 +11,7 @@
 
 #include "../Element.h"
 
+
 class Molecule;
 
 class Atom {
@@ -19,6 +20,7 @@ class Atom {
     std::array<double, 3> pos_{};
     const Molecule *molecule_{};
     size_t atom_type_{};
+    int formal_charge_{};
 
     friend class Molecule;
 
@@ -28,6 +30,8 @@ public:
     Atom(int index, const Element *element, double x, double y, double z);
 
     int index() const { return index_; }
+
+    int formal_charge() const { return formal_charge_; }
 
     const Element &element() const { return *element_; }
 

@@ -19,5 +19,5 @@ Atom::Atom(int idx, const Element *element, double x, double y, double z) {
 
 std::ostream &operator<<(std::ostream &str, const Atom &atom) {
     auto pte = PeriodicTable::pte();
-    return str << "Atom " << atom.element_->symbol() << " Idx: " << atom.index_;
+    return str << "Atom " << atom.element_->symbol() << " Idx: " << atom.index_ << " Charge: " << atom.formal_charge_;
 }
