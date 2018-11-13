@@ -18,11 +18,13 @@ public:
 
     bool hasAtom(const Atom &atom) const { return atom == *first_ or atom == *second_; }
 
-    int order() const { return order_; }
+    const Atom &first() const { return *first_; }
 
+    const Atom &second() const { return *second_; }
+
+    int order() const { return order_; }
 
     friend std::ostream &operator<<(std::ostream &str, const Bond &bond);
 
     friend class MoleculeSet;
 };
-
