@@ -19,6 +19,7 @@ class Molecule {
     std::string name_;
     std::unique_ptr<std::vector<Atom> > atoms_;
     std::unique_ptr<std::vector<Bond> > bonds_;
+    std::vector<char> bond_info_{};
 
 public:
     const std::vector<Atom> &atoms() const { return *atoms_; }
@@ -26,6 +27,8 @@ public:
     const std::vector<Bond> &bonds() const { return *bonds_; }
 
     const std::string &name() const { return name_; }
+
+    bool bonded(const Atom &atom1, const Atom &atom2) const;
 
     Molecule() = default;
 
