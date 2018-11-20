@@ -2,6 +2,8 @@
 #include <boost/program_options.hpp>
 #include <boost/dll/import.hpp>
 #include <memory>
+#include <ctime>
+#include <iomanip>
 
 #include "formats/SDF.h"
 #include "structures/MoleculeSet.h"
@@ -110,14 +112,21 @@ int main(int argc, char **argv) {
             m.classify_atoms(plain);
         }
 
-        std::cout << "Set info:" << std::endl;
+        std::cout << "\nSet info:" << std::endl;
         m.info();
 
         auto charges = Charges();
 
+        clock_t begin = clock();
+
         for (auto &mol: m.molecules()) {
             charges.insert(mol.name(), method->calculate_charges(mol));
         }
+
+        clock_t end = clock();
+
+        std::cout << "Computation took " << std::setprecision(2) << double(end - begin) / CLOCKS_PER_SEC << " seconds"
+                  << std::endl;
 
         charges.save_to_file(chg_name);
 
