@@ -3,7 +3,9 @@
 #include <boost/dll/import.hpp>
 #include <memory>
 #include <ctime>
+#include <algorithm>
 #include <iomanip>
+#include <filesystem>
 
 #include "formats/sdf.h"
 #include "structures/molecule_set.h"
@@ -130,6 +132,55 @@ int main(int argc, char **argv) {
                   << std::endl;
 
         charges.save_to_file(chg_name);
+
+    } else if (mode == "best-parameters") {
+        if (!vm.count("sdf-file")) {
+            std::cerr << "SDF must be provided" << std::endl;
+            exit(EXIT_PARAMETER_ERROR);
+        }
+
+        if (!vm.count("method")) {
+            std::cerr << "No method selected" << std::endl;
+            exit(EXIT_PARAMETER_ERROR);
+        }
+
+        auto sdf_name = vm["sdf-file"].as<std::string>();
+        auto method_name = vm["method"].as<std::string>();
+
+        boost::shared_ptr<Method> method;
+
+        try {
+            method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
+                                                boost::dll::load_mode::append_decorations);
+        } catch (std::exception &e) {
+            std::cerr << "Unable to load method " << method_name << std::endl;
+            exit(EXIT_PARAMETER_ERROR);
+        }
+
+        if (!method->has_parameters()) {
+            std::cerr << "Method uses no parameters" << std::endl;
+            exit(EXIT_PARAMETER_ERROR);
+        }
+
+        SDF reader;
+        MoleculeSet m = reader.read_file(sdf_name);
+
+        std::map<std::string, int> missing;
+
+        for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
+            auto p = std::make_unique<Parameters>(set.path());
+
+            if (method->name() != p->method_name())
+                continue;
+
+            int unclassified = m.get_unclassified_molecules_count(*p);
+            missing[p->name()] = unclassified;
+        }
+
+        auto x = std::min_element(missing.begin(), missing.end(), [](const auto &p1, const auto &p2) {
+                                      return p1.second < p2.second; });
+
+        std::cout << "Best parameters are: " << x->first << std::endl;
 
     } else {
         std::cerr << "Unknown mode: " << mode << std::endl;

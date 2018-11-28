@@ -28,4 +28,5 @@ public:
 
     void classify_atoms(const Classifier &cls);
     void classify_atoms_from_parameters(const Parameters &parameters);
+    int get_unclassified_molecules_count(const Parameters &parameters);
 };

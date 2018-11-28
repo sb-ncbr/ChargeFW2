@@ -9,9 +9,8 @@
 #include "../method.h"
 
 class Dummy : public Method {
-
 public:
-    explicit Dummy() : Method({}, {}, {}) {};
+    explicit Dummy() : Method("Dummy", {}, {}, {}) {};
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

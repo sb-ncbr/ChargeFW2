@@ -73,6 +73,9 @@ public:
 };
 
 class Parameters {
+    std::string name_{};
+    std::string method_name_{};
+
     std::unique_ptr<CommonParameters> common_{nullptr};
     std::unique_ptr<AtomParameters> atoms_{nullptr};
     std::unique_ptr<BondParameters> bonds_{nullptr};
@@ -81,6 +84,11 @@ public:
     explicit Parameters(const std::string &filename);
 
     void print() const;
+
+    const std::string &name() const { return name_; }
+
+    const std::string &method_name() const { return method_name_; }
+
 
     const CommonParameters *common() const { return common_.get(); }
 

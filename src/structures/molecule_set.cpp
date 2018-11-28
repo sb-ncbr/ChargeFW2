@@ -95,3 +95,45 @@ void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
         }
     }
 }
+
+
+int MoleculeSet::get_unclassified_molecules_count(const Parameters &parameters) {
+    int unclassified_molecules_count = 0;
+    atom_types_ = parameters.atom()->keys();
+    for(const auto &molecule: *molecules_) {
+        bool found_all = true;
+        for (const auto &atom: *molecule.atoms_) {
+            bool found_type = false;
+            for(const auto &[symbol, cls, type]: atom_types_) {
+                if (atom.element().symbol() != symbol)
+                    continue;
+                if (cls == "plain") {
+                    found_type = true;
+                    break;
+                } else if (cls == "hbo") {
+                    auto hbo = HBOClassifier();
+                    auto current_type = hbo.get_type(atom);
+                    if (current_type == type) {
+                        found_type = true;
+                        break;
+                    }
+                } else {
+                    std::cerr << "Classifier " << cls << " not found" << std::endl;
+                    exit(EXIT_INTERNAL_ERROR);
+                }
+
+            }
+            if(!found_type) {
+                found_all = false;
+                break;
+            }
+
+        }
+        if(!found_all) {
+            unclassified_molecules_count++;
+        }
+
+    }
+
+    return unclassified_molecules_count;
+}

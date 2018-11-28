@@ -10,9 +10,8 @@
 #include "../method.h"
 
 class Formal : public Method {
-
 public:
-    explicit Formal() : Method({}, {}, {}) {};
+    explicit Formal() : Method("Formal", {}, {}, {}) {};
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

@@ -25,7 +25,16 @@ Parameters::Parameters(const std::string &filename) {
         exit(EXIT_FILE_ERROR);
     }
 
-    auto it = iroot.find("common");
+    auto it = iroot.find("metadata");
+    if (it == iroot.not_found()) {
+        std::cerr << "Invalid parameter file " << filename << std::endl;
+        exit(EXIT_FILE_ERROR);
+    }
+
+    name_ = iroot.get<std::string>("metadata.name");
+    method_name_ = iroot.get<std::string>("metadata.method");
+
+    it = iroot.find("common");
     if (it != iroot.not_found()){
         std::vector<std::string> names;
         std::vector<double> values;
@@ -122,6 +131,7 @@ void Parameters::print() const {
         }
     }
 }
+
 
 std::function<double(const Atom &)> AtomParameters::parameter(int idx) const {
 
