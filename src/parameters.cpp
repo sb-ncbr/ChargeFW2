@@ -2,8 +2,6 @@
 // Created by krab1k on 05/11/18.
 //
 
-#include "parameters.h"
-
 #include <iostream>
 #include <string>
 #include <map>
@@ -11,11 +9,21 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
+#include "parameters.h"
+#include "config.h"
+
+
 Parameters::Parameters(const std::string &filename) {
     namespace pt = boost::property_tree;
 
     pt::ptree iroot;
-    pt::read_json(filename, iroot);
+    try {
+        pt::read_json(filename, iroot);
+    }
+    catch (const boost::exception &e) {
+        std::cerr << "Cannot open file with parameters " << filename << std::endl;
+        exit(EXIT_FILE_ERROR);
+    }
 
     auto it = iroot.find("common");
     if (it != iroot.not_found()){
