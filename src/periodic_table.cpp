@@ -10,11 +10,13 @@
 
 #include "element.h"
 #include "periodic_table.h"
+#include "config.h"
 
 PeriodicTable::PeriodicTable() {
-    std::ifstream file("../share/pte.csv");
+    std::string filename(std::string(INSTALL_DIR) + "/share/pte.csv");
+    std::ifstream file(filename);
     if (!file) {
-        std::cerr << "Unable to open periodic table data file data/pte.csv" << std::endl;
+        std::cerr << "Unable to open periodic table data file: " << filename << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -29,7 +31,7 @@ PeriodicTable::PeriodicTable() {
 
         while(std::getline(line_stream, cell, ',')) {
             cols.emplace_back(cell);
-        };
+        };x\
 
         int index = std::stoi(cols[0]);
         std::string name = cols[1];

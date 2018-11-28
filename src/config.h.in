@@ -1,0 +1,8 @@
+//
+// Created by krab1k on 28/11/18.
+//
+
+#pragma once
+
+#define VERSION "0.0.1"
+#define INSTALL_DIR "@CMAKE_INSTALL_PREFIX@"

@@ -11,6 +11,7 @@
 #include "classifier.h"
 #include "charges.h"
 #include "method.h"
+#include "config.h"
 
 int main(int argc, char **argv) {
     namespace po = boost::program_options;
@@ -31,7 +32,7 @@ int main(int argc, char **argv) {
                 po::command_line_style::unix_style ^ po::command_line_style::allow_guessing).run(), vm);
 
         if (vm.count("help")) {
-            std::cout << "ChargeFW2" << std::endl;
+            std::cout << "ChargeFW2 (version " << VERSION << ")" << std::endl;
             std::cout << "by Tomáš Raček (2018)\n" << std::endl;
             std::cout << desc << std::endl;
             exit(EXIT_SUCCESS);
@@ -83,7 +84,7 @@ int main(int argc, char **argv) {
         boost::shared_ptr<Method> method;
 
         try {
-            method = boost::dll::import<Method>("../lib/" + method_name, "method",
+            method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
                                                 boost::dll::load_mode::append_decorations);
         } catch (std::exception &e) {
             std::cerr << "Unable to load method " << method_name << std::endl;
