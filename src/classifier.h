@@ -6,8 +6,8 @@
 
 
 #include <string>
-#include "structures/Atom.h"
-#include "structures/MoleculeSet.h"
+#include "structures/atom.h"
+#include "structures/molecule_set.h"
 
 class Classifier {
 public:

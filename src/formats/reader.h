@@ -5,9 +5,9 @@
 #pragma once
 
 #include <string>
-#include "../structures/MoleculeSet.h"
+#include "../structures/molecule_set.h"
 
-class Reader {
+class reader {
 public:
     virtual MoleculeSet read_file(const std::string &filename) = 0;
 };

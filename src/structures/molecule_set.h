@@ -10,9 +10,9 @@
 #include <tuple>
 #include <string>
 
-#include "Molecule.h"
-#include "../Classifier.h"
-#include "../Parameters.h"
+#include "molecule.h"
+#include "../classifier.h"
+#include "../parameters.h"
 
 class Classifier;
 

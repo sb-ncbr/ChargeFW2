@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "Bond.h"
+#include "bond.h"
 
 
 std::ostream &operator<<(std::ostream &str, const Bond &bond) {

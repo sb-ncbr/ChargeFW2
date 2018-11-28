@@ -8,8 +8,8 @@
 
 #include <vector>
 
-#include "structures/Molecule.h"
-#include "Parameters.h"
+#include "structures/molecule.h"
+#include "parameters.h"
 
 class Method {
 protected:

@@ -9,7 +9,7 @@
 #include <iostream>
 #include <tuple>
 
-#include "../Element.h"
+#include "../element.h"
 
 
 class Molecule;

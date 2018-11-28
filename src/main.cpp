@@ -5,12 +5,12 @@
 #include <ctime>
 #include <iomanip>
 
-#include "formats/SDF.h"
-#include "structures/MoleculeSet.h"
-#include "Parameters.h"
-#include "Classifier.h"
-#include "Charges.h"
-#include "Method.h"
+#include "formats/sdf.h"
+#include "structures/molecule_set.h"
+#include "parameters.h"
+#include "classifier.h"
+#include "charges.h"
+#include "method.h"
 
 int main(int argc, char **argv) {
     namespace po = boost::program_options;

@@ -8,8 +8,8 @@
 #include <string>
 #include <sstream>
 
-#include "Element.h"
-#include "PeriodicTable.h"
+#include "element.h"
+#include "periodic_table.h"
 
 PeriodicTable::PeriodicTable() {
     std::ifstream file("../share/pte.csv");

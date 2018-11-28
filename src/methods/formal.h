@@ -7,7 +7,7 @@
 
 #include <boost/config.hpp>
 
-#include "../Method.h"
+#include "../method.h"
 
 class Formal : public Method {
 

@@ -3,9 +3,9 @@
 
 #include <string>
 
-#include "Classifier.h"
-#include "structures/Molecule.h"
-#include "structures/MoleculeSet.h"
+#include "classifier.h"
+#include "structures/molecule.h"
+#include "structures/molecule_set.h"
 
 #include <iostream>
 

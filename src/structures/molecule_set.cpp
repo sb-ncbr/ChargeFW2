@@ -9,10 +9,10 @@
 #include <tuple>
 #include <string>
 
-#include "MoleculeSet.h"
-#include "../Classifier.h"
-#include "../PeriodicTable.h"
-#include "../Parameters.h"
+#include "molecule_set.h"
+#include "../classifier.h"
+#include "../periodic_table.h"
+#include "../parameters.h"
 
 
 MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : molecules_{std::move(molecules)} {

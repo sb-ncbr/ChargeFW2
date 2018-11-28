@@ -1,1 +1,1 @@
-add_library(formats SDF.cpp SDF.h Reader.h)
+add_library(formats sdf.cpp sdf.h reader.h)

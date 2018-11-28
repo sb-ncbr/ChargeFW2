@@ -1,1 +1,1 @@
-add_library(structures Atom.cpp Atom.h Molecule.cpp Molecule.h MoleculeSet.cpp MoleculeSet.h Bond.h Bond.cpp)
+add_library(structures atom.cpp atom.h molecule.cpp molecule.h molecule_set.cpp molecule_set.h bond.h bond.cpp)

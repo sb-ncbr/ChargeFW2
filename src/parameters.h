@@ -14,7 +14,7 @@
 #include <tuple>
 #include <string>
 
-#include "structures/Atom.h"
+#include "structures/atom.h"
 
 class CommonParameters {
     friend class Parameters;

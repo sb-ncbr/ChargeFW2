@@ -10,11 +10,11 @@
 #include <memory>
 #include <boost/algorithm/string.hpp>
 
-#include "../structures/Atom.h"
-#include "../structures/Bond.h"
-#include "../structures/Molecule.h"
-#include "../PeriodicTable.h"
-#include "SDF.h"
+#include "../structures/atom.h"
+#include "../structures/bond.h"
+#include "../structures/molecule.h"
+#include "../periodic_table.h"
+#include "sdf.h"
 
 
 MoleculeSet SDF::read_file(const std::string &filename) {

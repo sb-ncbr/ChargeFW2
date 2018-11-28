@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-#include "Atom.h"
+#include "atom.h"
 
 class Bond {
     const Atom *first_{};

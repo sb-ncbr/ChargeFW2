@@ -4,9 +4,9 @@
 
 #include <cmath>
 
-#include "PEOE.h"
-#include "../structures/Molecule.h"
-#include "../structures/Bond.h"
+#include "peoe.h"
+#include "../structures/molecule.h"
+#include "../structures/bond.h"
 
 
 std::vector<double> PEOE::calculate_charges(const Molecule &molecule) {

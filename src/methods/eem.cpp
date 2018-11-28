@@ -2,14 +2,14 @@
 // Created by krab1k on 31/10/18.
 //
 
-#include "EEM.h"
+#include "eem.h"
 
 #include <vector>
 #include <cmath>
 #include <mkl_lapacke.h>
 #include <mkl.h>
 
-#include "../Parameters.h"
+#include "../parameters.h"
 
 
 double distance(const Atom &atom1, const Atom &atom2) {

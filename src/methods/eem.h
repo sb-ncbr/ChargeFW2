@@ -7,8 +7,8 @@
 #include <vector>
 #include <boost/config.hpp>
 
-#include "../structures/Molecule.h"
-#include "../Method.h"
+#include "../structures/molecule.h"
+#include "../method.h"
 
 class EEM : public Method {
     enum common{kappa};

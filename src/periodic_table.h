@@ -8,7 +8,7 @@
 #include <vector>
 #include <map>
 
-#include "Element.h"
+#include "element.h"
 
 class PeriodicTable {
     std::vector<Element> elements_;

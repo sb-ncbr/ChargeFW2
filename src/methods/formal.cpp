@@ -2,7 +2,7 @@
 // Created by krab1k on 12/11/18.
 //
 
-#include "Formal.h"
+#include "formal.h"
 
 std::vector<double> Formal::calculate_charges(const Molecule &molecule) {
     std::vector<double> res;

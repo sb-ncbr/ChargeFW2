@@ -4,9 +4,9 @@
 
 #include<iostream>
 
-#include "Method.h"
-#include "Parameters.h"
-#include "utility/Utility.h"
+#include "method.h"
+#include "parameters.h"
+#include "utility/utility.h"
 
 
 void Method::set_parameters(const Parameters *parameters) {

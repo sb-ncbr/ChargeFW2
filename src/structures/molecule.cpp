@@ -2,9 +2,9 @@
 // Created by krab1k on 23/10/18.
 //
 
-#include "Atom.h"
-#include "Bond.h"
-#include "Molecule.h"
+#include "atom.h"
+#include "bond.h"
+#include "molecule.h"
 #include <utility>
 #include <tuple>
 #include <map>

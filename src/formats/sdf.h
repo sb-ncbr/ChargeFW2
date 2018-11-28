@@ -6,9 +6,9 @@
 
 #include <string>
 
-#include "Reader.h"
+#include "reader.h"
 
-class SDF: public Reader {
+class SDF: public reader {
 
 public:
     MoleculeSet read_file(const std::string &filename) override;

@@ -3,9 +3,9 @@
 //
 
 #include <utility>
-#include "Atom.h"
-#include "../Element.h"
-#include "../PeriodicTable.h"
+#include "atom.h"
+#include "../element.h"
+#include "../periodic_table.h"
 
 #include <iostream>
 

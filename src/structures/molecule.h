@@ -12,8 +12,8 @@
 #include <map>
 #include <memory>
 
-#include "Atom.h"
-#include "Bond.h"
+#include "atom.h"
+#include "bond.h"
 
 class Molecule {
     std::string name_;
