@@ -15,13 +15,14 @@
 #include "../structures/molecule.h"
 #include "../periodic_table.h"
 #include "sdf.h"
+#include "config.h"
 
 
 MoleculeSet SDF::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
         std::cerr << "Cannot open file: " << filename << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_FILE_ERROR);
     }
 
     std::string line;
@@ -87,7 +88,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
     }
     catch (const std::invalid_argument &e) {
         std::cerr << "Invalid SDF file" << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_FILE_ERROR);
     }
     return MoleculeSet(std::move(molecules));
 }

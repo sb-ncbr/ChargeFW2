@@ -13,6 +13,7 @@
 #include "../classifier.h"
 #include "../periodic_table.h"
 #include "../parameters.h"
+#include "config.h"
 
 
 MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : molecules_{std::move(molecules)} {
@@ -83,13 +84,13 @@ void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
                     }
                 } else {
                     std::cerr << "Classifier " << cls << " not found" << std::endl;
-                    exit(EXIT_FAILURE);
+                    exit(EXIT_INTERNAL_ERROR);
                 }
             }
             if (!found) {
                 std::cerr << "No parameters for atom " << atom.element().symbol() << " in molecule "
                           << molecule.name() << std::endl;
-                exit(EXIT_FAILURE);
+                exit(EXIT_GENERAL_ERROR);
             }
         }
     }

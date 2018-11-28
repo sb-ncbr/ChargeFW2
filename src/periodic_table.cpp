@@ -17,7 +17,7 @@ PeriodicTable::PeriodicTable() {
     std::ifstream file(filename);
     if (!file) {
         std::cerr << "Unable to open periodic table data file: " << filename << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_INTERNAL_ERROR);
     }
 
     std::string line;
@@ -31,7 +31,7 @@ PeriodicTable::PeriodicTable() {
 
         while(std::getline(line_stream, cell, ',')) {
             cols.emplace_back(cell);
-        };x\
+        };
 
         int index = std::stoi(cols[0]);
         std::string name = cols[1];
@@ -51,7 +51,7 @@ const PeriodicTable &PeriodicTable::pte() {
 const Element *PeriodicTable::getElement(const std::string &symbol) const {
     if (!symbol_Z_.count(symbol)) {
         std::cerr << "No such element " << symbol << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_INTERNAL_ERROR);
     }
     return getElement(symbol_Z_.at(symbol) - 1);
 }

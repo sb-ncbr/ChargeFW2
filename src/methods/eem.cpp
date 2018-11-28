@@ -2,13 +2,12 @@
 // Created by krab1k on 31/10/18.
 //
 
-#include "eem.h"
-
 #include <vector>
 #include <cmath>
 #include <mkl_lapacke.h>
 #include <mkl.h>
 
+#include "eem.h"
 #include "../parameters.h"
 
 
@@ -50,8 +49,7 @@ std::vector<double> EEM::calculate_charges(const Molecule &molecule) {
 
     MKL_INT info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
     if(info) {
-        std::cerr << "Failure" << std::endl;
-        exit(EXIT_FAILURE);
+        throw std::runtime_error("Cannot solve linear system");
     }
 
     std::vector<double> results;

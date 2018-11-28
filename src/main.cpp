@@ -40,14 +40,14 @@ int main(int argc, char **argv) {
         po::notify(vm);
     } catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_PARAMETER_ERROR);
     }
 
     auto mode = vm["mode"].as<std::string>();
     if (mode == "info") {
         if (!vm.count("sdf-file")) {
             std::cerr << "SDF must be provided" << std::endl;
-            exit(EXIT_FAILURE);
+            exit(EXIT_PARAMETER_ERROR);
         }
 
         auto sdf_name = vm["sdf-file"].as<std::string>();
@@ -61,17 +61,17 @@ int main(int argc, char **argv) {
     } else if (mode == "charges") {
         if (!vm.count("sdf-file")) {
             std::cerr << "SDF must be provided" << std::endl;
-            exit(EXIT_FAILURE);
+            exit(EXIT_PARAMETER_ERROR);
         }
 
         if (!vm.count("chg-file")) {
             std::cerr << "File where to store charges must be provided" << std::endl;
-            exit(EXIT_FAILURE);
+            exit(EXIT_PARAMETER_ERROR);
         }
 
         if (!vm.count("method")) {
             std::cerr << "No method selected" << std::endl;
-            exit(EXIT_FAILURE);
+            exit(EXIT_PARAMETER_ERROR);
         }
 
         auto sdf_name = vm["sdf-file"].as<std::string>();
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
                                                 boost::dll::load_mode::append_decorations);
         } catch (std::exception &e) {
             std::cerr << "Unable to load method " << method_name << std::endl;
-            exit(EXIT_FAILURE);
+            exit(EXIT_PARAMETER_ERROR);
         }
 
         auto p = std::unique_ptr<Parameters>();
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
         if (method->has_parameters()) {
             if (!vm.count("par-file")) {
                 std::cerr << "File with parameters must be provided" << std::endl;
-                exit(EXIT_FAILURE);
+                exit(EXIT_PARAMETER_ERROR);
             }
             auto par_name = vm["par-file"].as<std::string>();
 
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
 
     } else {
         std::cerr << "Unknown mode: " << mode << std::endl;
-        exit(EXIT_FAILURE);
+        exit(EXIT_PARAMETER_ERROR);
     }
 
     return 0;
