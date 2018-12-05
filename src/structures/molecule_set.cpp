@@ -28,6 +28,7 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
 
 
 void MoleculeSet::info() const {
+    std::cout << "Number of molecules: " << molecules_->size() << std::endl;
     std::map<size_t, int> counts;
     for (const Molecule &m: *molecules_) {
         for (auto &a : m.atoms()) {
@@ -62,7 +63,9 @@ void MoleculeSet::classify_atoms(const Classifier &cls) {
 
 
 void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
+    std::vector<int> unclassified;
     atom_types_ = parameters.atom()->keys();
+    int m = 0;
     for (auto &molecule: *molecules_) {
         for (auto &atom: *molecule.atoms_) {
             bool found = false;
@@ -88,11 +91,17 @@ void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
                 }
             }
             if (!found) {
-                std::cerr << "No parameters for atom " << atom.element().symbol() << " in molecule "
-                          << molecule.name() << std::endl;
-                exit(EXIT_GENERAL_ERROR);
+                unclassified.push_back(m);
+                break;
             }
         }
+        m++;
+    }
+
+    std::cerr << "Number of unclassified molecules: " << unclassified.size() << std::endl;
+    // Need to iterate in reverse order to maintain indices correctness
+    for(size_t i = 0; i < unclassified.size(); i++) {
+        molecules_->erase(molecules_->begin() +  unclassified[unclassified.size() - i - 1]);
     }
 }
 
