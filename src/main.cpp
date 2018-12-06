@@ -15,6 +15,8 @@
 #include "method.h"
 #include "config.h"
 
+std::string best_parameters(const MoleculeSet &ms, const boost::shared_ptr<Method> &method);
+
 int main(int argc, char **argv) {
     namespace po = boost::program_options;
 
@@ -45,27 +47,22 @@ int main(int argc, char **argv) {
         exit(EXIT_PARAMETER_ERROR);
     }
 
+    if (!vm.count("sdf-file")) {
+        std::cerr << "SDF must be provided" << std::endl;
+        exit(EXIT_PARAMETER_ERROR);
+    }
+
+    auto sdf_name = vm["sdf-file"].as<std::string>();
+    SDF reader;
+    MoleculeSet m = reader.read_file(sdf_name);
+
     auto mode = vm["mode"].as<std::string>();
     if (mode == "info") {
-        if (!vm.count("sdf-file")) {
-            std::cerr << "SDF must be provided" << std::endl;
-            exit(EXIT_PARAMETER_ERROR);
-        }
-
-        auto sdf_name = vm["sdf-file"].as<std::string>();
-        SDF reader;
-        MoleculeSet m = reader.read_file(sdf_name);
-
         auto hbo = HBOClassifier();
         m.classify_atoms(hbo);
         m.info();
 
     } else if (mode == "charges") {
-        if (!vm.count("sdf-file")) {
-            std::cerr << "SDF must be provided" << std::endl;
-            exit(EXIT_PARAMETER_ERROR);
-        }
-
         if (!vm.count("chg-file")) {
             std::cerr << "File where to store charges must be provided" << std::endl;
             exit(EXIT_PARAMETER_ERROR);
@@ -76,12 +73,8 @@ int main(int argc, char **argv) {
             exit(EXIT_PARAMETER_ERROR);
         }
 
-        auto sdf_name = vm["sdf-file"].as<std::string>();
         auto chg_name = vm["chg-file"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
-
-        SDF reader;
-        MoleculeSet m = reader.read_file(sdf_name);
 
         boost::shared_ptr<Method> method;
 
@@ -96,11 +89,14 @@ int main(int argc, char **argv) {
         auto p = std::unique_ptr<Parameters>();
 
         if (method->has_parameters()) {
+            std::string par_name;
             if (!vm.count("par-file")) {
-                std::cerr << "File with parameters must be provided" << std::endl;
-                exit(EXIT_PARAMETER_ERROR);
+                par_name = best_parameters(m, method);
+                std::cout << "Best parameters found: " <<  par_name << std::endl;
+            } else
+            {
+                par_name = vm["par-file"].as<std::string>();
             }
-            auto par_name = vm["par-file"].as<std::string>();
 
             p = std::make_unique<Parameters>(par_name);
 
@@ -134,17 +130,11 @@ int main(int argc, char **argv) {
         charges.save_to_file(chg_name);
 
     } else if (mode == "best-parameters") {
-        if (!vm.count("sdf-file")) {
-            std::cerr << "SDF must be provided" << std::endl;
-            exit(EXIT_PARAMETER_ERROR);
-        }
-
         if (!vm.count("method")) {
             std::cerr << "No method selected" << std::endl;
             exit(EXIT_PARAMETER_ERROR);
         }
 
-        auto sdf_name = vm["sdf-file"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
 
         boost::shared_ptr<Method> method;
@@ -162,25 +152,7 @@ int main(int argc, char **argv) {
             exit(EXIT_PARAMETER_ERROR);
         }
 
-        SDF reader;
-        MoleculeSet m = reader.read_file(sdf_name);
-
-        std::map<std::string, int> missing;
-
-        for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
-            auto p = std::make_unique<Parameters>(set.path());
-
-            if (method->name() != p->method_name())
-                continue;
-
-            int unclassified = m.get_unclassified_molecules_count(*p);
-            missing[p->name()] = unclassified;
-        }
-
-        auto x = std::min_element(missing.begin(), missing.end(), [](const auto &p1, const auto &p2) {
-                                      return p1.second < p2.second; });
-
-        std::cout << "Best parameters are: " << x->first << std::endl;
+        std::cout << "Best parameters are: " << best_parameters(m, method) << std::endl;
 
     } else {
         std::cerr << "Unknown mode: " << mode << std::endl;
@@ -188,4 +160,23 @@ int main(int argc, char **argv) {
     }
 
     return 0;
+}
+
+std::string best_parameters(const MoleculeSet &ms, const boost::shared_ptr<Method> &method) {
+    std::map<std::string, int> missing;
+
+    for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
+        auto p = std::make_unique<Parameters>(set.path());
+
+        if (method->name() != p->method_name())
+            continue;
+
+        int unclassified = ms.get_unclassified_molecules_count(*p);
+        missing[set.path()] = unclassified;
+    }
+
+    auto x = std::min_element(missing.begin(), missing.end(), [](const auto &p1, const auto &p2) {
+        return p1.second < p2.second; });
+
+    return x->first;
 }

@@ -106,14 +106,13 @@ void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
 }
 
 
-int MoleculeSet::get_unclassified_molecules_count(const Parameters &parameters) {
+int MoleculeSet::get_unclassified_molecules_count(const Parameters &parameters) const {
     int unclassified_molecules_count = 0;
-    atom_types_ = parameters.atom()->keys();
     for(const auto &molecule: *molecules_) {
         bool found_all = true;
         for (const auto &atom: *molecule.atoms_) {
             bool found_type = false;
-            for(const auto &[symbol, cls, type]: atom_types_) {
+            for(const auto &[symbol, cls, type]: parameters.atom()->keys()) {
                 if (atom.element().symbol() != symbol)
                     continue;
                 if (cls == "plain") {
@@ -141,8 +140,6 @@ int MoleculeSet::get_unclassified_molecules_count(const Parameters &parameters) 
         if(!found_all) {
             unclassified_molecules_count++;
         }
-
     }
-
     return unclassified_molecules_count;
 }
