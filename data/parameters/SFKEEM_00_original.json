@@ -1,0 +1,38 @@
+{
+  "metadata": {
+    "name": "Original parameters",
+    "method": "SFKEEM",
+    "publication": "10.1021/ci050505e"
+  },
+  "common":
+  {
+    "names": ["sigma"],
+    "values": [0.65]
+  },
+  "atom":
+  {
+    "names" : ["A", "B"],
+    "data": [
+      {
+        "key": ["H", "plain", "*"],
+        "value": [1.00, 17.95]
+      },
+      {
+        "key": ["C", "plain", "*"],
+        "value": [4.92, 6.25]
+      },
+      {
+        "key": ["N", "plain", "*"],
+        "value": [9.10, 8.69]
+      },
+      {
+        "key": ["O", "plain", "*"],
+        "value": [14.37, 15.04]
+      },
+      {
+        "key": ["F", "plain", "1"],
+        "value": [15.25, 21.36]
+      }
+    ]
+  }
+}
