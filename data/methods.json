@@ -18,6 +18,12 @@
         "has_parameters": true
     },
     {
+        "name": "MGC",
+        "full_name": "Molecular Graph Charge",
+        "publication": "10.1002/poc.378",
+        "has_parameters": false
+    },
+    {
         "name": "Formal",
         "full_name": "Formal charges",
         "publication" : null,

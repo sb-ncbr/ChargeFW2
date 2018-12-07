@@ -33,12 +33,30 @@ Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
     }
 }
 
+
 std::ostream &operator<<(std::ostream &str, const Molecule &molecule) {
     return str << "Molecule: " << molecule.name_ << " Atoms: " << molecule.atoms_->size() << " Bonds: "
                << molecule.bonds_->size();
 }
 
+
 bool Molecule::bonded(const Atom &atom1, const Atom &atom2) const {
-    size_t n = atoms_->size();
+    const size_t n = atoms_->size();
     return bond_info_[atom1.index() * n + atom2.index()] > 0;
+}
+
+
+int Molecule::bond_order(const Atom &atom1, const Atom &atom2) const {
+    const size_t n = atoms_->size();
+    return static_cast<int>(bond_info_[atom1.index() * n + atom2.index()]);
+}
+
+
+int Molecule::degree(const Atom &atom) const {
+    const size_t n = atoms_->size();
+    int sum = 0;
+    for(size_t i = 0; i < n; i++) {
+        sum += bond_info_[atom.index() * n + i];
+    }
+    return sum;
 }

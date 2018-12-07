@@ -30,6 +30,10 @@ public:
 
     bool bonded(const Atom &atom1, const Atom &atom2) const;
 
+    int bond_order(const Atom &atom1, const Atom &atom2) const;
+
+    int degree(const Atom &atom) const;
+
     Molecule() = default;
 
     Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds,

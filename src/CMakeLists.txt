@@ -10,7 +10,7 @@ add_subdirectory(formats)
 configure_file(config.h.in config.h)
 
 add_executable(chargefw2 main.cpp element.h periodic_table.cpp periodic_table.h method.h classifier.cpp classifier.h parameters.cpp parameters.h method.cpp charges.cpp charges.h)
-add_dependencies(chargefw2 dummy eem formal peoe sfkeem)
+add_dependencies(chargefw2 dummy eem formal peoe sfkeem mgc)
 
 target_link_libraries(chargefw2 formats structures Boost::program_options Boost::system Boost::filesystem dl stdc++fs)
 
