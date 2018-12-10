@@ -13,8 +13,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -fPIC -march=nat
 # Strip binaries in release
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 
-# For debugging only
-set(CMAKE_INSTALL_PREFIX /home/charge/chargefw2)
-
 add_subdirectory(src)
 add_subdirectory(data)
