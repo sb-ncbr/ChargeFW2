@@ -24,22 +24,29 @@ PeriodicTable::PeriodicTable() {
     // Read header
     std::getline(file, line);
 
-    while (std::getline(file, line)) {
-        std::stringstream line_stream(line);
-        std::string cell;
-        std::vector<std::string> cols;
+    try {
+        while (std::getline(file, line)) {
+            std::stringstream line_stream(line);
+            std::string cell;
+            std::vector<std::string> cols;
 
-        while(std::getline(line_stream, cell, ',')) {
-            cols.emplace_back(cell);
-        };
+            while(std::getline(line_stream, cell, ',')) {
+                cols.emplace_back(cell);
+            };
 
-        int index = std::stoi(cols[0]);
-        std::string name = cols[1];
-        std::string symbol = cols[2];
-        float electronegativity = std::stof(cols[11]);
-        Element element(index, symbol, name, electronegativity);
-        elements_.push_back(element);
-        symbol_Z_[symbol] = index;
+            int index = std::stoi(cols[0]);
+            std::string name = cols[1];
+            std::string symbol = cols[2];
+            float covalent_radius = std::stof(cols[10]);
+            float vdw_radius = std::stof(cols[11]);
+            float electronegativity = std::stof(cols[12]);
+            Element element(index, symbol, name, electronegativity, covalent_radius, vdw_radius);
+            elements_.push_back(element);
+            symbol_Z_[symbol] = index;
+        }
+    } catch (std::invalid_argument &err) {
+        std::cerr << "Unable to read periodic table data file: " << filename << std::endl;
+        exit(EXIT_INTERNAL_ERROR);
     }
 }
 
