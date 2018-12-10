@@ -24,6 +24,12 @@
         "has_parameters": true
     },
     {
+        "name": "GDAC",
+        "full_name": "Geometry-Dependent Net Atomic Charges",
+        "publication" : "10.1021/jp0023213",
+        "has_parameters": true
+    },
+    {
         "name": "MGC",
         "full_name": "Molecular Graph Charge",
         "publication": "10.1002/poc.378",
