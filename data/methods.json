@@ -18,6 +18,12 @@
         "has_parameters": true
     },
     {
+        "name": "MPEOE",
+        "full_name": "Modified Partial Equalization of Atomic Electronegativity",
+        "publication" : "10.1021/j100374a066",
+        "has_parameters": true
+    },
+    {
         "name": "MGC",
         "full_name": "Molecular Graph Charge",
         "publication": "10.1002/poc.378",

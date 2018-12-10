@@ -15,6 +15,8 @@
 #include <string>
 
 #include "structures/atom.h"
+#include "structures/bond.h"
+
 
 class CommonParameters {
     friend class Parameters;
@@ -69,6 +71,8 @@ public:
     const std::vector<std::string> &names() const { return names_; }
 
     const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
+
+    std::function<double(const Bond &)> parameter(int idx) const;
 
 };
 

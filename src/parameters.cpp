@@ -137,3 +137,9 @@ std::function<double(const Atom &)> AtomParameters::parameter(int idx) const {
 
     return [this, idx](const Atom &atom) { return parameters_[atom.atom_type()][idx]; };
 }
+
+
+std::function<double(const Bond &)> BondParameters::parameter(int idx) const {
+
+    return [this, idx](const Bond &bond) { return parameters_[bond.bond_type()][idx]; };
+}

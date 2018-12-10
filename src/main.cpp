@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 
     auto mode = vm["mode"].as<std::string>();
     if (mode == "info") {
-        auto hbo = HBOClassifier();
+        auto hbo = HBOAtomClassifier();
         m.classify_atoms(hbo);
         m.info();
 
@@ -88,6 +88,10 @@ int main(int argc, char **argv) {
 
         auto p = std::unique_ptr<Parameters>();
 
+        m.classify_atoms(PlainAtomClassifier());
+        m.info();
+        std::cout << std::endl;
+
         if (method->has_parameters()) {
             std::string par_name;
             if (!vm.count("par-file")) {
@@ -103,16 +107,13 @@ int main(int argc, char **argv) {
             std::cout << "Parameters:" << std::endl;
             p->print();
 
-            m.classify_atoms_from_parameters(*p);
+            m.classify_set_from_parameters(*p);
 
             method->set_parameters(p.get());
         } else {
-            auto plain = PlainClassifier();
+            auto plain = PlainAtomClassifier();
             m.classify_atoms(plain);
         }
-
-        std::cout << "\nSet info:" << std::endl;
-        m.info();
 
         auto charges = Charges();
 

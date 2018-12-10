@@ -9,14 +9,31 @@
 #include "structures/atom.h"
 #include "structures/molecule_set.h"
 
-class Classifier {
+class AtomClassifier {
 public:
     virtual std::string get_type(const Atom &atom) const = 0;
 
     virtual std::string name() const = 0;
 };
 
-class PlainClassifier : public Classifier {
+
+class BondClassifier {
+public:
+    virtual std::string get_type(const Bond &atom) const = 0;
+
+    virtual std::string name() const = 0;
+};
+
+
+class PlainBondClassifier : public BondClassifier {
+public:
+    std::string name() const override { return std::string("plain"); }
+
+    std::string get_type(const Bond &) const override { return std::string("*"); }
+};
+
+
+class PlainAtomClassifier : public AtomClassifier {
 public:
     std::string name() const override { return std::string("plain"); }
 
@@ -24,7 +41,7 @@ public:
 };
 
 
-class HBOClassifier : public Classifier {
+class HBOAtomClassifier : public AtomClassifier {
 public:
     std::string name() const override { return std::string("hbo"); }
 

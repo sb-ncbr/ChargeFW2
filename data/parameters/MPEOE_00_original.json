@@ -1,0 +1,63 @@
+{
+  "metadata": {
+    "name": "Original parameters (DP1)",
+    "method": "MPEOE",
+    "publication": "10.1021/j100374a066"
+  },
+  "common":
+  {
+    "names": ["Hplus"],
+    "values": [3.435]
+  },
+
+  "atom":
+  {
+    "names": ["A", "B"],
+    "data":
+            [
+              {
+                "key": ["H", "hbo", "1"],
+                "value": [7.674, 28.689]
+              },
+              {
+                "key": ["C", "hbo", "1"],
+                "value": [7.976, 4.625]
+              },
+               {
+                "key": ["C", "hbo", "2"],
+                "value": [8.06, 17.256]
+              },
+               {
+                "key": ["N", "hbo", "1"],
+                "value": [12.555, 11.533]
+              },
+              {
+                "key": ["N", "hbo", "2"],
+                "value": [15.102, 7.478]
+              },
+              {
+                "key": ["O", "hbo", "1"],
+                "value": [12.975, 14.624]
+              },
+              {
+                "key": ["O", "hbo", "2"],
+                "value": [18.060, 7.015]
+              },
+              {
+                "key": ["S", "hbo", "1"],
+                "value": [10.684, 10.040]
+              }
+            ]
+  },
+
+  "bond":
+  {
+    "names": ["f"],
+    "data": [
+      {
+        "key": ["*", "*", "plain", "*"],
+        "value": [0.505]
+      }
+    ]
+  }
+}

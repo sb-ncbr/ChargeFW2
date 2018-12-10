@@ -9,7 +9,7 @@
 
 #include <iostream>
 
-std::string HBOClassifier::get_type(const Atom &atom) const {
+std::string HBOAtomClassifier::get_type(const Atom &atom) const {
     const Molecule *molecule = atom.molecule();
     int max_order = 0;
 
