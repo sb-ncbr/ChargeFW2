@@ -36,6 +36,12 @@
         "has_parameters": false
     },
     {
+        "name": "VEEM",
+        "full_name": "Valence Electrons Equalization Method",
+        "publication" : "10.1088/1674-0068/24/01/31-39",
+        "has_parameters": false
+    },
+    {
         "name": "Formal",
         "full_name": "Formal charges",
         "publication" : null,
