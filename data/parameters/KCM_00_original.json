@@ -1,0 +1,46 @@
+{
+  "metadata": {
+    "name": "Original",
+    "method": "KCM",
+    "publication": "10.1007/BFb0029840"
+  },
+
+  "atom":
+  {
+    "names" : ["electronegativity", "hardness"],
+    "data": [
+      {
+        "key": ["O", "hbo", "1"],
+        "value": [15.25, 9.15]
+      },
+      {
+        "key": ["O", "hbo", "2"],
+        "value": [17.06, 9.595]
+      },
+      {
+        "key": ["H", "hbo", "1"],
+        "value": [7.18, 6.422]
+      },
+      {
+        "key": ["C", "hbo", "1"],
+        "value": [8.06, 6.565]
+      },
+      {
+        "key": ["C", "hbo", "2"],
+        "value": [8.87, 6.766]
+      },
+      {
+        "key": ["C", "hbo", "3"],
+        "value": [10.47, 6.972]
+      },
+      {
+        "key": ["N", "hbo", "1"],
+        "value": [11.49, 7.456]
+      },
+      {
+        "key": ["S", "hbo", "1"],
+        "value": [10.14, 5.361]
+      }
+    ]
+  }
+}

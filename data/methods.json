@@ -36,6 +36,12 @@
         "has_parameters": false
     },
     {
+        "name": "KCM",
+        "full_name": "Kirchhoff Charge Model",
+        "publication": "10.1002/jcc.20892",
+        "has_parameters": true
+    },
+    {
         "name": "VEEM",
         "full_name": "Valence Electrons Equalization Method",
         "publication" : "10.1088/1674-0068/24/01/31-39",
