@@ -90,7 +90,8 @@ void MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters) {
             for (size_t i = 0; i < bond_types_.size(); i++) {
                 auto &[symbol1, symbol2, cls, type] = bond_types_[i];
                 if (symbol1 != "*" or symbol2 != "*") {
-                    if (bond.first().element().symbol() != symbol1 or bond.second().element().symbol() != symbol2) {
+                    if ((bond.first().element().symbol() != symbol1 or bond.second().element().symbol() != symbol2) and
+                        (bond.second().element().symbol() != symbol1 or bond.first().element().symbol() != symbol2)) {
                         continue;
                     }
                 }

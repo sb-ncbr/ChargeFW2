@@ -1,62 +1,68 @@
 [
-    {
-        "name": "EEM",
-        "full_name": "Electronegativity Equalization Method",
-        "publication" : "10.1021/ja00275a013",
-        "has_parameters": true
-    },
-    {
-        "name": "SFKEEM",
-        "full_name":  "Selfconsistent Functional Kernel Equalized Electronegativity Method",
-        "publication": "10.1021/ci050505e",
-        "has_parameters": true
-    },
-    {
-        "name": "PEOE",
-        "full_name": "Partial Equalization of Atomic Electronegativity",
-        "publication" : "10.1016/0040-4020(80)80168-2",
-        "has_parameters": true
-    },
-    {
-        "name": "MPEOE",
-        "full_name": "Modified Partial Equalization of Atomic Electronegativity",
-        "publication" : "10.1021/j100374a066",
-        "has_parameters": true
-    },
-    {
-        "name": "GDAC",
-        "full_name": "Geometry-Dependent Net Atomic Charges",
-        "publication" : "10.1021/jp0023213",
-        "has_parameters": true
-    },
-    {
-        "name": "MGC",
-        "full_name": "Molecular Graph Charge",
-        "publication": "10.1002/poc.378",
-        "has_parameters": false
-    },
-    {
-        "name": "KCM",
-        "full_name": "Kirchhoff Charge Model",
-        "publication": "10.1002/jcc.20892",
-        "has_parameters": true
-    },
-    {
-        "name": "DENR",
-        "full_name": "Dynamical Electronegativity Relaxation",
-        "publication": "10.1080/10629360701844142",
-        "has_parameters": true
-    },
-    {
-        "name": "VEEM",
-        "full_name": "Valence Electrons Equalization Method",
-        "publication" : "10.1088/1674-0068/24/01/31-39",
-        "has_parameters": false
-    },
-    {
-        "name": "Formal",
-        "full_name": "Formal charges",
-        "publication" : null,
-        "has_parameters" : false
-    }
+  {
+    "name": "EEM",
+    "full_name": "Electronegativity Equalization Method",
+    "publication" : "10.1021/ja00275a013",
+    "has_parameters": true
+  },
+  {
+    "name": "SFKEEM",
+    "full_name":  "Selfconsistent Functional Kernel Equalized Electronegativity Method",
+    "publication": "10.1021/ci050505e",
+    "has_parameters": true
+  },
+  {
+    "name": "DelRe",
+    "full_name": "Method of Del Re",
+    "publication" : "10.1039/JR9580004031",
+    "has_parameters": true
+  },
+  {
+    "name": "PEOE",
+    "full_name": "Partial Equalization of Atomic Electronegativity",
+    "publication" : "10.1016/0040-4020(80)80168-2",
+    "has_parameters": true
+  },
+  {
+    "name": "MPEOE",
+    "full_name": "Modified Partial Equalization of Atomic Electronegativity",
+    "publication" : "10.1021/j100374a066",
+    "has_parameters": true
+  },
+  {
+    "name": "GDAC",
+    "full_name": "Geometry-Dependent Net Atomic Charges",
+    "publication" : "10.1021/jp0023213",
+    "has_parameters": true
+  },
+  {
+    "name": "MGC",
+    "full_name": "Molecular Graph Charge",
+    "publication": "10.1002/poc.378",
+    "has_parameters": false
+  },
+  {
+    "name": "KCM",
+    "full_name": "Kirchhoff Charge Model",
+    "publication": "10.1002/jcc.20892",
+    "has_parameters": true
+  },
+  {
+    "name": "DENR",
+    "full_name": "Dynamical Electronegativity Relaxation",
+    "publication": "10.1080/10629360701844142",
+    "has_parameters": true
+  },
+  {
+    "name": "VEEM",
+    "full_name": "Valence Electrons Equalization Method",
+    "publication" : "10.1088/1674-0068/24/01/31-39",
+    "has_parameters": false
+  },
+  {
+    "name": "Formal",
+    "full_name": "Formal charges",
+    "publication" : null,
+    "has_parameters" : false
+  }
 ]

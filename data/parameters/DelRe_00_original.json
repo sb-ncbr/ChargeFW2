@@ -1,0 +1,77 @@
+{
+  "metadata": {
+    "name": "Original parameters",
+    "method": "DelRe",
+    "publication": "10.1039/JR9580004031"
+  },
+  "atom":
+  {
+    "names": ["delta"],
+    "data":
+            [
+              {
+                "key": ["H", "plain", "*"],
+                "value": [0.00]
+              },
+              {
+                "key": ["C", "plain", "*"],
+                "value": [0.07]
+              },
+              {
+                "key": ["N", "plain", "*"],
+                "value": [0.24]
+              },
+              {
+                "key": ["O", "plain", "*"],
+                "value": [0.40]
+              },
+              {
+                "key": ["F", "plain", "*"],
+                "value": [0.57]
+              },
+              {
+                "key": ["Cl", "plain", "*"],
+                "value": [0.35]
+              }
+            ]
+  },
+
+  "bond":
+  {
+    "names": ["eps", "gammaA", "gammaB"],
+    "data": [
+      {
+        "key": ["C", "H", "plain", "*"],
+        "value": [1.00, 0.3, 0.4]
+      },
+      {
+        "key": ["C", "C", "plain", "*"],
+        "value": [1.00, 0.1, 0.1]
+      },
+      {
+        "key": ["C", "N", "plain", "*"],
+        "value": [1.00, 0.1, 0.1]
+      },
+      {
+        "key": ["C", "O", "plain", "*"],
+        "value": [0.95, 0.1, 0.1]
+      },
+      {
+        "key": ["C", "F", "plain", "*"],
+        "value": [0.85, 0.1, 0.1]
+      },
+      {
+        "key": ["N", "H", "plain", "*"],
+        "value": [0.45, 0.3, 0.4]
+      },
+      {
+        "key": ["O", "H", "plain", "*"],
+        "value": [0.45, 0.3, 0.4]
+      },
+      {
+        "key": ["C", "Cl", "plain", "*"],
+        "value": [0.65, 0.2, 0.4]
+      }
+    ]
+  }
+}
