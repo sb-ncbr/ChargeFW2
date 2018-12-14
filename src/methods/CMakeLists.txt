@@ -9,6 +9,7 @@ add_library(mgc SHARED mgc.cpp mgc.h ../method.h ../method.cpp ../structures/mol
 add_library(kcm SHARED kcm.cpp kcm.h ../method.h ../method.cpp ../structures/molecule.cpp ../parameters.cpp ../parameters.h)
 add_library(denr SHARED denr.cpp denr.h ../method.h ../method.cpp ../structures/molecule.cpp ../parameters.cpp ../parameters.h)
 add_library(delre SHARED delre.cpp delre.h ../method.h ../method.cpp ../structures/molecule.cpp ../parameters.cpp ../parameters.h)
+add_library(tsef SHARED tsef.cpp tsef.h ../method.h ../method.cpp ../structures/molecule.cpp ../parameters.cpp ../parameters.h)
 add_library(veem SHARED veem.cpp veem.h ../method.h ../method.cpp ../structures/molecule.cpp ../element.cpp)
 
 set_target_properties(eem PROPERTIES COMPILE_FLAGS ${MKL_CXX_FLAGS})
@@ -29,4 +30,7 @@ target_link_libraries(denr ${MKL_LINKER_FLAGS})
 set_target_properties(delre PROPERTIES COMPILE_FLAGS ${MKL_CXX_FLAGS})
 target_link_libraries(delre ${MKL_LINKER_FLAGS})
 
-install(TARGETS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre LIBRARY DESTINATION lib)
+set_target_properties(tsef PROPERTIES COMPILE_FLAGS ${MKL_CXX_FLAGS})
+target_link_libraries(tsef ${MKL_LINKER_FLAGS})
+
+install(TARGETS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre tsef LIBRARY DESTINATION lib)

@@ -5,6 +5,8 @@
 #include "atom.h"
 #include "bond.h"
 #include "molecule.h"
+
+#include <queue>
 #include <utility>
 #include <tuple>
 #include <map>
@@ -31,6 +33,10 @@ Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
         bond_info_[i * n + j] = order;
         bond_info_[j * n + i] = order;
     }
+
+    bond_distances_.resize(n * n);
+    std::fill(bond_distances_.begin(), bond_distances_.end(), -1);
+    init_atom_distances();
 }
 
 
@@ -59,4 +65,53 @@ int Molecule::degree(const Atom &atom) const {
         sum += bond_info_[atom.index() * n + i];
     }
     return sum;
+}
+
+
+std::vector<int> Molecule::get_bonded(int atom_idx) const {
+    const size_t n = atoms_->size();
+    std::vector<int> res;
+
+    for(size_t j = 0; j < n; j++) {
+        if(bond_info_[atom_idx * n + j]) {
+            res.push_back(static_cast<int>(j));
+        }
+    }
+    return res;
+}
+
+
+void Molecule::init_atom_distances() {
+    const size_t n = atoms_->size();
+    for(size_t i = 0; i < n; i++) {
+        auto q = std::queue<int>();
+        q.push(static_cast<int>(i));
+        bond_distances_[i * n + i] = 0;
+        while(!q.empty()) {
+            int p = q.front();
+            q.pop();
+            for(int neighbor: get_bonded(p)) {
+                if(bond_distances_[i * n + neighbor] == -1) {
+                    q.push(neighbor);
+                    bond_distances_[i * n + neighbor] = 1 + bond_distances_[i * n + p];
+                }
+            }
+        }
+    }
+}
+
+int Molecule::bond_distance(const Atom &atom1, const Atom &atom2) const {
+    const size_t n = atoms_->size();
+    return bond_distances_[atom1.index() * n + atom2.index()];
+}
+
+std::vector<Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
+    const size_t n = atoms_->size();
+    std::vector<Atom*> res;
+    for(size_t i = 0; i < n; i++) {
+        if (bond_distances_[atom.index() * n + i] == k) {
+            res.push_back(&atoms_->operator[](k));
+        }
+    }
+    return res;
 }

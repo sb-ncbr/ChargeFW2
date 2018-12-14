@@ -54,6 +54,12 @@
     "has_parameters": true
   },
   {
+    "name": "TSEF",
+    "full_name": "Topologically Symmetrical Energy Function",
+    "publication": "10.1080/10629360701844142",
+    "has_parameters": true
+  },
+  {
     "name": "VEEM",
     "full_name": "Valence Electrons Equalization Method",
     "publication" : "10.1088/1674-0068/24/01/31-39",

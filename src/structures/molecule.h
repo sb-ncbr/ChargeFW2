@@ -20,6 +20,10 @@ class Molecule {
     std::unique_ptr<std::vector<Atom> > atoms_;
     std::unique_ptr<std::vector<Bond> > bonds_;
     std::vector<char> bond_info_{};
+    std::vector<int> bond_distances_{};
+
+    std::vector<int> get_bonded(int atom_idx) const;
+    void init_atom_distances();
 
 public:
     const std::vector<Atom> &atoms() const { return *atoms_; }
@@ -40,6 +44,10 @@ public:
              const std::map<int, int> &charges);
 
     friend std::ostream &operator<<(std::ostream &str, const Molecule &molecule);
+
+    int bond_distance(const Atom &atom1, const Atom &atom2) const;
+
+    std::vector<Atom*> k_bond_distance(const Atom &atom, int k) const;
 
     friend class MoleculeSet;
 };
