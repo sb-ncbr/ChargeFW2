@@ -1,7 +1,7 @@
 set(DEPS ../method.h ../method.cpp ../parameters.cpp ../parameters.h ../element.h ../element.cpp
         ../structures/molecule.h ../structures/molecule.cpp)
 
-SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre tsef)
+SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre tsef charge2)
 SET(METHODS ${METHODS} PARENT_SCOPE)
 
 foreach(method ${METHODS})

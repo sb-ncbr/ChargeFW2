@@ -38,12 +38,13 @@ PeriodicTable::PeriodicTable() {
             std::string name = cols[1];
             std::string symbol = cols[2];
 
-            // Change units from pm to A
+            int period = std::stoi(cols[4]);
             int group = std::stoi(cols[5]);
+            // Change units from pm to A
             float covalent_radius = std::stof(cols[10]) / 100.0f;
             float vdw_radius = std::stof(cols[11]) / 100.0f;
             float electronegativity = std::stof(cols[12]);
-            Element element(index, symbol, name, electronegativity, covalent_radius, vdw_radius, group);
+            Element element(index, symbol, name, electronegativity, covalent_radius, vdw_radius, period, group);
             elements_.push_back(element);
             symbol_Z_[symbol] = index;
         }

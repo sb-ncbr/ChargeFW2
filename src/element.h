@@ -14,14 +14,16 @@ class Element {
     float electronegativity_{};
     float covalent_radius_{};
     float vdw_radius_{};
+    int period_{};
     int group_{};
+
 public:
     Element() = default;
 
-    Element(int Z, std::string symbol, std::string name, float electronegativity, float covalent_radius_,
-            float vdw_radius_, int group_)
+    Element(int Z, std::string symbol, std::string name, float electronegativity, float covalent_radius,
+            float vdw_radius, int period, int group)
             : Z_(Z), symbol_(std::move(symbol)), name_(std::move(name)), electronegativity_(electronegativity),
-              covalent_radius_(covalent_radius_), vdw_radius_(vdw_radius_), group_(group_) {}
+              covalent_radius_(covalent_radius), vdw_radius_(vdw_radius), period_(period), group_(group) {}
 
     const std::string &symbol() const { return symbol_; }
 
@@ -34,6 +36,8 @@ public:
     int group() const { return group_; }
 
     int valence_electron_count() const;
+
+    int period() const { return period_; }
 
     int Z() const { return Z_; }
 };

@@ -60,6 +60,12 @@
     "has_parameters": true
   },
   {
+    "name": "Charge2",
+    "full_name": "Charge2",
+    "publication" : "10.1002/jcc.540030316",
+    "has_parameters": true
+  },
+  {
     "name": "VEEM",
     "full_name": "Valence Electrons Equalization Method",
     "publication" : "10.1088/1674-0068/24/01/31-39",
