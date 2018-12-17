@@ -14,7 +14,7 @@ class EEM : public Method {
     enum common{kappa};
     enum atom{A, B};
 public:
-    explicit EEM() : Method("EEM", {"kappa"}, {"A", "B"}, {}) {}
+    explicit EEM() : Method("EEM", {"kappa"}, {"A", "B"}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

@@ -24,7 +24,7 @@ std::vector<double> GDAC::calculate_charges(const Molecule &molecule) {
     std::vector<double> q(n, 0);
     std::vector<double> chi(n, 0);
 
-    for (int alpha = 1; alpha < 7; alpha++) {
+    for (int alpha = 1; alpha < get_option_value<int>("iters"); alpha++) {
         for (int i = 0; i < n; i++) {
             const auto &atom = molecule.atoms()[i];
             chi[i] = parameters_->atom()->parameter(atom::B)(atom) * q[i] +

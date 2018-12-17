@@ -14,7 +14,7 @@ class SFKEEM : public Method {
     enum common{sigma};
     enum atom{A, B};
 public:
-    explicit SFKEEM() : Method("SFKEEM", {"sigma"}, {"A", "B"}, {}) {}
+    explicit SFKEEM() : Method("SFKEEM", {"sigma"}, {"A", "B"}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

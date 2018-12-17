@@ -36,3 +36,21 @@ void Method::set_parameters(const Parameters *parameters) {
     }
     parameters_ = parameters;
 }
+
+
+template<>
+std::string Method::get_option_value<std::string>(const std::string &name) const {
+    return option_values_.at(name);
+}
+
+
+template<>
+double Method::get_option_value<double>(const std::string &name) const {
+    return std::stod(option_values_.at(name));
+}
+
+
+template<>
+int Method::get_option_value<int>(const std::string &name) const {
+    return std::stoi(option_values_.at(name));
+}

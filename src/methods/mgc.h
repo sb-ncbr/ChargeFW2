@@ -12,7 +12,7 @@
 
 class MGC : public Method {
 public:
-    explicit MGC() : Method("MGC", {}, {}, {}) {}
+    explicit MGC() : Method("MGC", {}, {}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

@@ -13,7 +13,7 @@
 class TSEF : public Method {
     enum atom{electronegativity, hardness};
 public:
-    explicit TSEF() : Method("TSEF", {}, {"electronegativity", "hardness"}, {}) {}
+    explicit TSEF() : Method("TSEF", {}, {"electronegativity", "hardness"}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

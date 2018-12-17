@@ -10,7 +10,7 @@
 
 class Dummy : public Method {
 public:
-    explicit Dummy() : Method("Dummy", {}, {}, {}) {};
+    explicit Dummy() : Method("Dummy", {}, {}, {}, {}) {};
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

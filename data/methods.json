@@ -21,19 +21,46 @@
     "name": "PEOE",
     "full_name": "Partial Equalization of Atomic Electronegativity",
     "publication" : "10.1016/0040-4020(80)80168-2",
-    "has_parameters": true
+    "has_parameters": true,
+    "options" : [
+      {
+        "name": "iters",
+        "description": "Number of iterations",
+        "type": "int",
+        "default": "7",
+        "choices": []
+      }
+    ]
   },
   {
     "name": "MPEOE",
     "full_name": "Modified Partial Equalization of Atomic Electronegativity",
     "publication" : "10.1021/j100374a066",
-    "has_parameters": true
+    "has_parameters": true,
+    "options" : [
+      {
+        "name": "iters",
+        "description": "Number of iterations",
+        "type": "int",
+        "default": "7",
+        "choices": []
+      }
+    ]
   },
   {
     "name": "GDAC",
     "full_name": "Geometry-Dependent Net Atomic Charges",
     "publication" : "10.1021/jp0023213",
-    "has_parameters": true
+    "has_parameters": true,
+    "options" : [
+      {
+        "name": "iters",
+        "description": "Number of iterations",
+        "type": "int",
+        "default": "7",
+        "choices": []
+      }
+    ]
   },
   {
     "name": "MGC",

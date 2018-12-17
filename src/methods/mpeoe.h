@@ -16,7 +16,11 @@ class MPEOE : public Method {
     enum atom{A, B};
     enum bond{f};
 public:
-    explicit MPEOE() : Method("MPEOE", {"Hplus"}, {"A", "B"}, {"f"}) {}
+    explicit MPEOE() : Method("MPEOE", {"Hplus"}, {"A", "B"}, {"f"},
+            {
+                {"iters", {"iters", "Number of iterations", "int", "7", {}}}
+            }
+    ) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

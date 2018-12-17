@@ -4,14 +4,13 @@
 
 #pragma once
 
-
 #include <boost/config.hpp>
 
 #include "../method.h"
 
 class Formal : public Method {
 public:
-    explicit Formal() : Method("Formal", {}, {}, {}) {};
+    explicit Formal() : Method("Formal", {}, {}, {}, {}) {};
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

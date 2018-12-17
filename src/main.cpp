@@ -29,11 +29,15 @@ int main(int argc, char **argv) {
             ("chg-file", po::value<std::string>(), "File to output charges to")
             ("method", po::value<std::string>(), "Method");
 
-
     po::variables_map vm;
+    po::parsed_options parsed = po::command_line_parser(argc, argv)
+            .options(desc)
+            .style(po::command_line_style::unix_style ^ po::command_line_style::allow_guessing)
+            .allow_unregistered()
+            .run();
     try {
-        po::store(po::command_line_parser(argc, argv).options(desc).style(
-                po::command_line_style::unix_style ^ po::command_line_style::allow_guessing).run(), vm);
+
+        po::store(parsed, vm);
 
         if (vm.count("help")) {
             std::cout << "ChargeFW2 (version " << VERSION << ")" << std::endl;
@@ -86,6 +90,38 @@ int main(int argc, char **argv) {
             exit(EXIT_PARAMETER_ERROR);
         }
 
+        po::options_description method_options("Method options");
+        for (const auto &[opt, info]: method->get_options()) {
+            if(!info.choices.empty()) {
+                if (std::find(info.choices.begin(), info.choices.end(), info.default_value) == info.choices.end()) {
+                    std::cerr << "Default value: " << info.default_value << " not in possible choices" << std::endl;
+                    exit(EXIT_INTERNAL_ERROR);
+                }
+            }
+            method_options.add_options()(std::string("method-" + opt).c_str(), po::value<std::string>(),
+                                         info.description.c_str());
+        }
+
+        std::vector<std::string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
+        po::store(po::command_line_parser(opts).options(method_options).run(), vm);
+
+        for (const auto &[opt, info]: method->get_options()) {
+            std::string opt_name = std::string("method-" + opt);
+            if (vm.count(opt_name)){
+                std::string val = vm[opt_name].as<std::string>();
+                if(!info.choices.empty()) {
+                    if (std::find(info.choices.begin(), info.choices.end(), val) == info.choices.end()) {
+                        std::cerr << "Provided value: " << val << " not in possible choices" << std::endl;
+                        exit(EXIT_INTERNAL_ERROR);
+                    }
+                }
+                method->set_option_value(opt, val);
+            }
+            else {
+                method->set_option_value(opt, info.default_value);
+            }
+        }
+
         auto p = std::unique_ptr<Parameters>();
 
         m.classify_atoms(PlainAtomClassifier());
@@ -96,9 +132,8 @@ int main(int argc, char **argv) {
             std::string par_name;
             if (!vm.count("par-file")) {
                 par_name = best_parameters(m, method);
-                std::cout << "Best parameters found: " <<  par_name << std::endl;
-            } else
-            {
+                std::cout << "Best parameters found: " << par_name << std::endl;
+            } else {
                 par_name = vm["par-file"].as<std::string>();
             }
 
@@ -177,7 +212,8 @@ std::string best_parameters(const MoleculeSet &ms, const boost::shared_ptr<Metho
     }
 
     auto x = std::min_element(missing.begin(), missing.end(), [](const auto &p1, const auto &p2) {
-        return p1.second < p2.second; });
+        return p1.second < p2.second;
+    });
 
     return x->first;
 }

@@ -4,7 +4,6 @@
 
 #pragma once
 
-
 #include <vector>
 #include <boost/config.hpp>
 
@@ -14,7 +13,10 @@
 class GDAC : public Method {
     enum atom{A, B};
 public:
-    explicit GDAC() : Method("GDAC", {}, {"A", "B"}, {}) {}
+    explicit GDAC() : Method("GDAC", {}, {"A", "B"}, {},
+            {
+                {"iters", {"iters", "Number of iterations", "int", "7", {}}}
+            }) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

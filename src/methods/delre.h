@@ -4,7 +4,6 @@
 
 #pragma once
 
-
 #include <vector>
 #include <boost/config.hpp>
 
@@ -15,7 +14,7 @@ class DelRe : public Method {
     enum atom{delta};
     enum bond{eps, gammaA, gammaB};
 public:
-    explicit DelRe() : Method("DelRe", {}, {"delta"}, {"eps", "gammaA", "gammaB"}) {}
+    explicit DelRe() : Method("DelRe", {}, {"delta"}, {"eps", "gammaA", "gammaB"}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };

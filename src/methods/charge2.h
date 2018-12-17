@@ -15,7 +15,7 @@ class Charge2 : public Method {
     enum common{a1, a2, a3, b, c, alpha};
     enum atom{chi, P0, q0};
 public:
-    explicit Charge2() : Method("Charge2", {"a1", "a2", "a3", "b", "c", "alpha"}, {"chi", "P0", "q0"}, {}) {}
+    explicit Charge2() : Method("Charge2", {"a1", "a2", "a3", "b", "c", "alpha"}, {"chi", "P0", "q0"}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };
