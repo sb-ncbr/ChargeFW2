@@ -32,6 +32,12 @@
     ]
   },
   {
+    "name": "SMP/QEq",
+    "full_name": "Self-Consistent Charge Equilibration Method",
+    "publication" : "10.1021/jp8063273",
+    "has_parameters": true
+  },
+  {
     "name": "DelRe",
     "full_name": "Method of Del Re",
     "publication" : "10.1039/JR9580004031",

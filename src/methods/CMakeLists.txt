@@ -1,6 +1,6 @@
 set(DEPS method parameters element geometry structures)
 
-SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre tsef charge2 qeq)
+SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre tsef charge2 qeq smpqeq)
 SET(METHODS ${METHODS} PARENT_SCOPE)
 
 foreach(method ${METHODS})
