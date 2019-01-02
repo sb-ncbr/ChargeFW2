@@ -10,6 +10,9 @@ set(MKL_LINKER_FLAGS "-L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_rt -lpth
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -fPIC -march=native")
 
+# Remove executable permission on shared libraries
+set(CMAKE_INSTALL_SO_NO_EXE 1)
+
 # Strip binaries in release
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 

@@ -1,11 +1,11 @@
-set(DEPS ../method.h ../method.cpp ../parameters.cpp ../parameters.h ../element.h ../element.cpp ../geometry.cpp
-        ../geometry.h ../structures/molecule.h ../structures/molecule.cpp)
+set(DEPS method parameters element geometry structures)
 
 SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre tsef charge2 qeq)
 SET(METHODS ${METHODS} PARENT_SCOPE)
 
 foreach(method ${METHODS})
-    add_library(${method} SHARED ${method}.cpp ${method}.h ${DEPS})
+    add_library(${method} SHARED ${method}.cpp ${method}.h)
+    target_link_libraries(${method} ${DEPS})
 endforeach(method)
 
 set(NEED_MKL eem sfkeem mgc kcm denr delre tsef qeq)
