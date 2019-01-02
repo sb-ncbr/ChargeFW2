@@ -2,12 +2,11 @@ find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
 
 include_directories(${PROJECT_BINARY_DIR}/src)
 
+configure_file(config.h.in config.h)
 
 add_subdirectory(structures)
 add_subdirectory(methods)
 add_subdirectory(formats)
-
-configure_file(config.h.in config.h)
 
 add_executable(chargefw2 main.cpp element.h periodic_table.cpp periodic_table.h method.h classifier.cpp classifier.h
                parameters.cpp parameters.h method.cpp charges.cpp charges.h element.cpp)

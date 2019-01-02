@@ -1,0 +1,78 @@
+{
+  "metadata": {
+    "name": "Original",
+    "method": "QEq",
+    "publication": "10.1021/j100161a070"
+  },
+  "atom":
+  {
+    "names" : ["electronegativity", "hardness"],
+    "data": [
+      {
+        "key": ["Li", "plain", "*"],
+        "value": [3.006, 4.772]
+      },
+      {
+        "key": ["C", "plain", "*"],
+        "value": [5.343, 10.126]
+      },
+      {
+        "key": ["N", "plain", "*"],
+        "value": [6.899, 11.760]
+      },
+      {
+        "key": ["O", "plain", "*"],
+        "value": [8.741, 13.364]
+      },
+      {
+        "key": ["F", "plain", "*"],
+        "value": [10.874, 14.948]
+      },
+      {
+        "key": ["Na", "plain", "*"],
+        "value": [2.843, 4.592]
+      },
+      {
+        "key": ["Si", "plain", "*"],
+        "value": [4.168, 6.974]
+      },
+      {
+        "key": ["P ", "plain", "*"],
+        "value": [5.463, 8.000]
+      },
+      {
+        "key": ["S ", "plain", "*"],
+        "value": [6.928, 8.972]
+      },
+      {
+        "key": ["CI", "plain", "*"],
+        "value": [8.564, 9.892]
+      },
+      {
+        "key": ["K ", "plain", "*"],
+        "value": [2.421, 3.84]
+      },
+      {
+        "key": ["Br", "plain", "*"],
+        "value": [7.790, 8.850]
+      },
+      {
+        "key": ["Rb", "plain", "*"],
+        "value": [2.331, 3.692]
+      },
+      {
+        "key": ["I ", "plain", "*"],
+        "value": [6.822, 7.524]
+      },
+      {
+        "key": ["Cs", "plain", "*"],
+        "value": [ 2.183, 3.422]
+      },
+      {
+        "key": ["H", "plain", "*"],
+        "value": [4.5280, 13.8904]
+      }
+
+    ]
+  }
+}

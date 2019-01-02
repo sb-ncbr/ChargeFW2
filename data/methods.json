@@ -12,6 +12,26 @@
     "has_parameters": true
   },
   {
+    "name": "QEq",
+    "full_name": "Charge Equilibration",
+    "publication" : "10.1021/j100161a070",
+    "has_parameters": true,
+    "options" : [
+      {
+        "name": "overlap_term",
+        "description": "Overlap term",
+        "type": "str",
+        "default": "Louwen-Vogt",
+        "choices": ["Nishimoto-Mataga",
+                    "Nishimoto-Mataga-Weiss",
+                    "Ohno",
+                    "Ohno-Klopman",
+                    "DasGupta-Huzinaga",
+                    "Louwen-Vogt"]
+      }
+    ]
+  },
+  {
     "name": "DelRe",
     "full_name": "Method of Del Re",
     "publication" : "10.1039/JR9580004031",

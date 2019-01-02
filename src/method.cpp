@@ -2,7 +2,7 @@
 // Created by krab1k on 6.11.18.
 //
 
-#include<iostream>
+#include <iostream>
 
 #include "method.h"
 #include "parameters.h"
