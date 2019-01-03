@@ -3,18 +3,21 @@
     "name": "EEM",
     "full_name": "Electronegativity Equalization Method",
     "publication" : "10.1021/ja00275a013",
+    "type": "3D",
     "has_parameters": true
   },
   {
     "name": "SFKEEM",
     "full_name":  "Selfconsistent Functional Kernel Equalized Electronegativity Method",
     "publication": "10.1021/ci050505e",
+    "type": "3D",
     "has_parameters": true
   },
   {
     "name": "QEq",
     "full_name": "Charge Equilibration",
     "publication" : "10.1021/j100161a070",
+    "type": "3D",
     "has_parameters": true,
     "options" : [
       {
@@ -35,30 +38,35 @@
     "name": "SMP/QEq",
     "full_name": "Self-Consistent Charge Equilibration Method",
     "publication" : "10.1021/jp8063273",
+    "type": "3D",
     "has_parameters": true
   },
   {
     "name": "EQeq",
     "full_name": "Extended Charge Equilibration Method",
     "publication" : "10.1021/jz3008485",
+    "type": "3D",
     "has_parameters": false
   },
   {
     "name": "EQeq+C",
     "full_name": "Bond-Order-Corrected Extended Charge Equilibration Method",
     "publication" : "10.1021/acs.jctc.5b00037",
+    "type": "3D",
     "has_parameters": true
   },
   {
     "name": "DelRe",
     "full_name": "Method of Del Re",
     "publication" : "10.1039/JR9580004031",
+    "type": "2D",
     "has_parameters": true
   },
   {
     "name": "PEOE",
     "full_name": "Partial Equalization of Atomic Electronegativity",
     "publication" : "10.1016/0040-4020(80)80168-2",
+    "type": "2D",
     "has_parameters": true,
     "options" : [
       {
@@ -74,6 +82,7 @@
     "name": "MPEOE",
     "full_name": "Modified Partial Equalization of Atomic Electronegativity",
     "publication" : "10.1021/j100374a066",
+    "type": "2D",
     "has_parameters": true,
     "options" : [
       {
@@ -89,6 +98,7 @@
     "name": "GDAC",
     "full_name": "Geometry-Dependent Net Atomic Charges",
     "publication" : "10.1021/jp0023213",
+    "type": "3D",
     "has_parameters": true,
     "options" : [
       {
@@ -104,41 +114,48 @@
     "name": "MGC",
     "full_name": "Molecular Graph Charge",
     "publication": "10.1002/poc.378",
+    "type": "2D",
     "has_parameters": false
   },
   {
     "name": "KCM",
     "full_name": "Kirchhoff Charge Model",
     "publication": "10.1002/jcc.20892",
+    "type": "2D",
     "has_parameters": true
   },
   {
     "name": "DENR",
     "full_name": "Dynamical Electronegativity Relaxation",
     "publication": "10.1080/10629360701844142",
+    "type": "2D",
     "has_parameters": true
   },
   {
     "name": "TSEF",
     "full_name": "Topologically Symmetrical Energy Function",
     "publication": "10.1080/10629360701844142",
+    "type": "2D",
     "has_parameters": true
   },
   {
     "name": "Charge2",
     "full_name": "Charge2",
     "publication" : "10.1002/jcc.540030316",
+    "type": "2D",
     "has_parameters": true
   },
   {
     "name": "VEEM",
     "full_name": "Valence Electrons Equalization Method",
     "publication" : "10.1088/1674-0068/24/01/31-39",
+    "type": "2D",
     "has_parameters": false
   },
   {
     "name": "Formal",
     "full_name": "Formal charges",
+    "type": "other",
     "publication" : null,
     "has_parameters" : false
   }
