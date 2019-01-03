@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "name": "Original (ATMO)",
+    "method": "EQeq+C",
+    "publication": "10.1021/acs.jctc.5b00037"
+  },
+  "common": {
+    "names": ["alpha"],
+    "values" : [2.1]
+  },
+  "atom":
+  {
+    "names" : ["Dz"],
+    "data": [
+      {
+        "key": ["H", "plain", "*"],
+        "value": [0.071]
+      },
+      {
+        "key": ["C", "plain", "*"],
+        "value": [0.000]
+      },
+      {
+        "key": ["N", "plain", "*"],
+        "value": [-0.032]
+      },
+      {
+        "key": ["O", "plain", "*"],
+        "value": [-0.101]
+      },
+      {
+        "key": ["V", "plain", "*"],
+        "value": [-0.143]
+      },
+      {
+        "key": ["Se", "plain", "*"],
+        "value": [-0.331]
+      },
+      {
+        "key": ["Te", "plain", "*"],
+        "value": [-0.294]
+      }
+    ]
+  }
+}

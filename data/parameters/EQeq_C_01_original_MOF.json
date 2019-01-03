@@ -1,0 +1,61 @@
+{
+  "metadata": {
+    "name": "Original (MOF/REPEAT)",
+    "method": "EQeq+C",
+    "publication": "10.1021/acs.jctc.5b00037"
+  },
+  "common": {
+    "names": ["alpha"],
+    "values" : [2.69]
+  },
+  "atom":
+  {
+    "names" : ["Dz"],
+    "data": [
+      {
+        "key": ["H", "plain", "*"],
+        "value": [0.064]
+      },
+      {
+        "key": ["C", "plain", "*"],
+        "value": [0.000]
+      },
+      {
+        "key": ["N", "plain", "*"],
+        "value": [-0.092]
+      },
+      {
+        "key": ["O", "plain", "*"],
+        "value": [-0.110]
+      },
+      {
+        "key": ["Mg", "plain", "*"],
+        "value": [-0.086]
+      },
+      {
+        "key": ["V", "plain", "*"],
+        "value": [-0.133]
+      },
+      {
+        "key": ["Co", "plain", "*"],
+        "value": [-0.135]
+      },
+      {
+        "key": ["Ni", "plain", "*"],
+        "value": [-0.111]
+      },
+      {
+        "key": ["Cu", "plain", "*"],
+        "value": [-0.108]
+      },
+      {
+        "key": ["Zn", "plain", "*"],
+        "value": [-0.090]
+      },
+      {
+        "key": ["Pd", "plain", "*"],
+        "value": [-0.131]
+      }
+    ]
+  }
+}

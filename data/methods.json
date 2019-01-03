@@ -44,6 +44,12 @@
     "has_parameters": false
   },
   {
+    "name": "EQeq+C",
+    "full_name": "Bond-Order-Corrected Extended Charge Equilibration Method",
+    "publication" : "10.1021/acs.jctc.5b00037",
+    "has_parameters": true
+  },
+  {
     "name": "DelRe",
     "full_name": "Method of Del Re",
     "publication" : "10.1039/JR9580004031",
