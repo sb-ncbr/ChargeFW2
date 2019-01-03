@@ -45,7 +45,7 @@ std::vector<double> SMP_QEq::calculate_charges(const Molecule &molecule) {
         }
 
         A[IDX(n, n)] = 0;
-        b[n] = 0;
+        b[n] = molecule.total_charge();
 
         MKL_INT info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
         if (info) {

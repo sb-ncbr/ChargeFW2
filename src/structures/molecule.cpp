@@ -115,3 +115,11 @@ std::vector<Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
     }
     return res;
 }
+
+int Molecule::total_charge() const {
+    int sum = 0;
+    for(const auto &atom: *atoms_) {
+        sum += atom.formal_charge();
+    }
+    return sum;
+}

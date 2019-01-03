@@ -23,6 +23,7 @@ class Molecule {
     std::vector<int> bond_distances_{};
 
     std::vector<int> get_bonded(int atom_idx) const;
+
     void init_atom_distances();
 
 public:
@@ -47,7 +48,9 @@ public:
 
     int bond_distance(const Atom &atom1, const Atom &atom2) const;
 
-    std::vector<Atom*> k_bond_distance(const Atom &atom, int k) const;
+    std::vector<Atom *> k_bond_distance(const Atom &atom, int k) const;
+
+    int total_charge() const;
 
     friend class MoleculeSet;
 };
