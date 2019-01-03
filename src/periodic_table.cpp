@@ -30,7 +30,7 @@ PeriodicTable::PeriodicTable() {
             std::string cell;
             std::vector<std::string> cols;
 
-            while(std::getline(line_stream, cell, ',')) {
+            while (std::getline(line_stream, cell, ',')) {
                 cols.emplace_back(cell);
             };
 
@@ -41,10 +41,13 @@ PeriodicTable::PeriodicTable() {
             int period = std::stoi(cols[4]);
             int group = std::stoi(cols[5]);
             // Change units from pm to A
-            float covalent_radius = std::stof(cols[10]) / 100.0f;
-            float vdw_radius = std::stof(cols[11]) / 100.0f;
-            float electronegativity = std::stof(cols[12]);
-            Element element(index, symbol, name, electronegativity, covalent_radius, vdw_radius, period, group);
+            double covalent_radius = std::stod(cols[10]) / 100.0f;
+            double vdw_radius = std::stod(cols[11]) / 100.0f;
+            double electronegativity = std::stod(cols[12]);
+            double electron_affinity = std::stod(cols[14]);
+            double ionization_potential = std::stod(cols[13]);
+            Element element(index, symbol, name, electronegativity, covalent_radius, vdw_radius, period, group,
+                            electron_affinity, ionization_potential);
             elements_.push_back(element);
             symbol_Z_[symbol] = index;
         }

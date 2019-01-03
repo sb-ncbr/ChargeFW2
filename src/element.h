@@ -11,27 +11,34 @@ class Element {
     int Z_{};
     std::string symbol_;
     std::string name_;
-    float electronegativity_{};
-    float covalent_radius_{};
-    float vdw_radius_{};
+    double electronegativity_{};
+    double covalent_radius_{};
+    double vdw_radius_{};
     int period_{};
     int group_{};
+    double electron_affinity_{};
+    double ionization_potential_{};
 
 public:
     Element() = default;
 
-    Element(int Z, std::string symbol, std::string name, float electronegativity, float covalent_radius,
-            float vdw_radius, int period, int group)
+    Element(int Z, std::string symbol, std::string name, double electronegativity, double covalent_radius,
+            double vdw_radius, int period, int group, double electron_affinity, double ionization_potential)
             : Z_(Z), symbol_(std::move(symbol)), name_(std::move(name)), electronegativity_(electronegativity),
-              covalent_radius_(covalent_radius), vdw_radius_(vdw_radius), period_(period), group_(group) {}
+              covalent_radius_(covalent_radius), vdw_radius_(vdw_radius), period_(period), group_(group),
+              electron_affinity_{electron_affinity}, ionization_potential_{ionization_potential} {}
 
     const std::string &symbol() const { return symbol_; }
 
-    float electronegativity() const { return electronegativity_; }
+    double electronegativity() const { return electronegativity_; }
 
-    float covalent_radius() const { return covalent_radius_; }
+    double covalent_radius() const { return covalent_radius_; }
 
-    float vdw_radius() const { return vdw_radius_; }
+    double vdw_radius() const { return vdw_radius_; }
+
+    double electron_affinity() const { return electron_affinity_; }
+
+    double ionization_potential() const { return ionization_potential_; }
 
     int group() const { return group_; }
 
@@ -41,5 +48,3 @@ public:
 
     int Z() const { return Z_; }
 };
-
-
