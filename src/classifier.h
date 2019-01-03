@@ -25,14 +25,6 @@ public:
 };
 
 
-class PlainBondClassifier : public BondClassifier {
-public:
-    std::string name() const override { return std::string("plain"); }
-
-    std::string get_type(const Bond &) const override { return std::string("*"); }
-};
-
-
 class PlainAtomClassifier : public AtomClassifier {
 public:
     std::string name() const override { return std::string("plain"); }
@@ -46,4 +38,20 @@ public:
     std::string name() const override { return std::string("hbo"); }
 
     std::string get_type(const Atom &atom) const override;
+};
+
+
+class PlainBondClassifier : public BondClassifier {
+public:
+    std::string name() const override { return std::string("plain"); }
+
+    std::string get_type(const Bond &) const override { return std::string("*"); }
+};
+
+
+class BOBondClassifier : public BondClassifier {
+public:
+    std::string name() const override { return std::string("bo"); }
+
+    std::string get_type(const Bond &bond) const override { return std::to_string(bond.order()); }
 };

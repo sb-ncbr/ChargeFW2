@@ -99,7 +99,16 @@ void MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters) {
                     bond.bond_type_ = i;
                     found = true;
                     break;
-                } else {
+                } else if (cls == "bo") {
+                    auto bo = BOBondClassifier();
+                    auto current_type = bo.get_type(bond);
+                    if (current_type == type) {
+                        bond.bond_type_= i;
+                        found = true;
+                        break;
+                    }
+                }
+                else {
                     std::cerr << "BondClassifier " << cls << " not found" << std::endl;
                     exit(EXIT_INTERNAL_ERROR);
                 }

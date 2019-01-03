@@ -7,6 +7,13 @@
     "has_parameters": true
   },
   {
+    "name": "ABEEM",
+    "full_name": "Atom-Bond Electronegativity Equalization Method",
+    "publication" : "10.1021/jp9711048",
+    "type": "3D",
+    "has_parameters": true
+  },
+  {
     "name": "SFKEEM",
     "full_name":  "Selfconsistent Functional Kernel Equalized Electronegativity Method",
     "publication": "10.1021/ci050505e",

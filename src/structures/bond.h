@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <array>
 #include <iostream>
 
 #include "atom.h"
@@ -26,6 +27,8 @@ public:
     int order() const { return order_; }
 
     size_t bond_type() const { return bond_type_; }
+
+    std::array<double, 3> get_center(bool weighted=false) const;
 
     friend std::ostream &operator<<(std::ostream &str, const Bond &bond);
 
