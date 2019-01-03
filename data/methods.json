@@ -38,6 +38,12 @@
     "has_parameters": true
   },
   {
+    "name": "EQeq",
+    "full_name": "Extended Charge Equilibration Method",
+    "publication" : "10.1021/jz3008485",
+    "has_parameters": false
+  },
+  {
     "name": "DelRe",
     "full_name": "Method of Del Re",
     "publication" : "10.1039/JR9580004031",
