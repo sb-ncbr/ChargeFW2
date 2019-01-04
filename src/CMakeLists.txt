@@ -14,7 +14,7 @@ add_subdirectory(methods)
 add_subdirectory(formats)
 
 add_executable(chargefw2 main.cpp periodic_table.cpp periodic_table.h classifier.cpp classifier.h
-               charges.cpp charges.h)
+               charges.cpp charges.h statistics.cpp statistics.h)
 
 add_dependencies(chargefw2 ${METHODS})
 
