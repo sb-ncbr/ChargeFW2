@@ -93,6 +93,9 @@ public:
 
     const std::string &method_name() const { return method_name_; }
 
+    std::vector<double> get_vector() const;
+
+    void set_from_vector(std::vector<double> &parameters);
 
     const CommonParameters *common() const { return common_.get(); }
 

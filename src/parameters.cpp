@@ -143,3 +143,52 @@ std::function<double(const Bond &)> BondParameters::parameter(int idx) const {
 
     return [this, idx](const Bond &bond) { return parameters_[bond.bond_type()][idx]; };
 }
+
+
+std::vector<double> Parameters::get_vector() const {
+    std::vector<double> parameters;
+    if (common_) {
+        for (const auto &v: common_->parameters_) {
+            parameters.push_back(v);
+        }
+    }
+    if (atoms_) {
+        for (const auto &key: atoms_->parameters_) {
+            for (const auto &v: key) {
+                parameters.push_back(v);
+            }
+        }
+    }
+    if (bonds_) {
+        for (const auto &key: bonds_->parameters_) {
+            for (const auto &v: key) {
+                parameters.push_back(v);
+            }
+        }
+    }
+    return parameters;
+}
+
+
+void Parameters::set_from_vector(std::vector<double> &parameters) {
+    int idx = 0;
+    if (common_) {
+        for (auto &v: common_->parameters_) {
+            v = parameters[idx++];
+        }
+    }
+    if (atoms_) {
+        for (auto &key: atoms_->parameters_) {
+            for (auto &v: key) {
+                v = parameters[idx++];
+            }
+        }
+    }
+    if (bonds_) {
+        for (auto &key: bonds_->parameters_) {
+            for (auto &v: key) {
+                v = parameters[idx++];
+            }
+        }
+    }
+}
