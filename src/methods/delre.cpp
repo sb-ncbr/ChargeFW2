@@ -9,6 +9,7 @@
 #include "delre.h"
 #include "../structures/molecule.h"
 #include "../structures/bond.h"
+#include "../parameters.h"
 
 
 std::vector<double> DelRe::calculate_charges(const Molecule &molecule) {

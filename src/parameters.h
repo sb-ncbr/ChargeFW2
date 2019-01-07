@@ -13,9 +13,14 @@
 #include <functional>
 #include <tuple>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 #include "structures/atom.h"
 #include "structures/bond.h"
+#include "method.h"
+
+
+class MoleculeSet;
 
 
 class CommonParameters {
@@ -87,6 +92,8 @@ class Parameters {
 public:
     explicit Parameters(const std::string &filename);
 
+    explicit Parameters(const MoleculeSet &ms, boost::shared_ptr<Method> method);
+
     void print() const;
 
     const std::string &name() const { return name_; }
@@ -95,7 +102,7 @@ public:
 
     std::vector<double> get_vector() const;
 
-    void set_from_vector(std::vector<double> &parameters);
+    void set_from_vector(const std::vector<double> &parameters);
 
     const CommonParameters *common() const { return common_.get(); }
 
@@ -103,9 +110,3 @@ public:
 
     const BondParameters *bond() const { return bonds_.get(); }
 };
-
-
-
-
-
-

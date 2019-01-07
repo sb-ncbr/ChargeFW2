@@ -9,6 +9,7 @@
 #include "../structures/bond.h"
 #include "../utility/utility.h"
 #include "../geometry.h"
+#include "../parameters.h"
 
 
 std::vector<double> GDAC::calculate_charges(const Molecule &molecule) {

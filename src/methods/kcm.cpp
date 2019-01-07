@@ -9,6 +9,7 @@
 
 #include "kcm.h"
 #include "../structures/molecule.h"
+#include "../parameters.h"
 
 
 std::vector<double> KCM::calculate_charges(const Molecule &molecule) {

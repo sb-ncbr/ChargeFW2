@@ -6,11 +6,14 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
 #include "parameters.h"
+#include "structures/molecule_set.h"
 #include "config.h"
+#include "method.h"
 
 
 Parameters::Parameters(const std::string &filename) {
@@ -170,7 +173,7 @@ std::vector<double> Parameters::get_vector() const {
 }
 
 
-void Parameters::set_from_vector(std::vector<double> &parameters) {
+void Parameters::set_from_vector(const std::vector<double> &parameters) {
     int idx = 0;
     if (common_) {
         for (auto &v: common_->parameters_) {
@@ -190,5 +193,28 @@ void Parameters::set_from_vector(std::vector<double> &parameters) {
                 v = parameters[idx++];
             }
         }
+    }
+}
+
+
+Parameters::Parameters(const MoleculeSet &ms, boost::shared_ptr<Method> method) {
+    auto common_names = method->common_parameters();
+    if (!common_names.empty()) {
+        std::vector<double> common_values(common_names.size(), 0.0);
+        common_ = std::make_unique<CommonParameters>(common_names, common_values);
+    }
+
+    auto atom_names = method->atom_parameters();
+    if (!atom_names.empty()) {
+        auto at = ms.atom_types();
+        std::vector<std::vector<double>> atom_values(at.size(), std::vector<double>(atom_names.size()));
+        atoms_ = std::make_unique<AtomParameters>(atom_names, atom_values, at);
+    }
+
+    auto bond_names = method->bond_parameters();
+    if (!bond_names.empty()) {
+        auto bt = ms.bond_types();
+        std::vector<std::vector<double>> bond_values(bt.size(), std::vector<double>(bond_names.size()));
+        bonds_ = std::make_unique<BondParameters>(bond_names, bond_values, bt);
     }
 }

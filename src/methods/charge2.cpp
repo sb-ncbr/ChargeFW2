@@ -7,6 +7,7 @@
 #include "charge2.h"
 #include "../structures/molecule.h"
 #include "../structures/bond.h"
+#include "../parameters.h"
 
 const int n_iters = 10;
 

@@ -11,6 +11,7 @@
 #include "qeq.h"
 #include "config.h"
 #include "../geometry.h"
+#include "../parameters.h"
 
 #define IDX(i, j) (i * m + j)
 

@@ -7,6 +7,7 @@
 #include "mpeoe.h"
 #include "../structures/molecule.h"
 #include "../structures/bond.h"
+#include "../parameters.h"
 
 
 std::vector<double> MPEOE::calculate_charges(const Molecule &molecule) {

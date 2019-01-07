@@ -8,7 +8,9 @@
 #include <vector>
 
 #include "structures/molecule.h"
-#include "parameters.h"
+
+
+class Parameters;
 
 struct MethodOption {
     std::string name;
@@ -28,7 +30,7 @@ protected:
 
     std::map<std::string, std::string> option_values_{};
 
-    const Parameters *parameters_{nullptr};
+    Parameters *parameters_{nullptr};
 
 public:
     Method(std::string name, std::vector<std::string> common, std::vector<std::string> atom,
@@ -39,7 +41,15 @@ public:
             bond_parameters_{std::move(bond)},
             options_{std::move(options)} {}
 
-    void set_parameters(const Parameters *parameters);
+    std::vector<std::string> common_parameters() { return common_parameters_; }
+
+    std::vector<std::string> atom_parameters() { return atom_parameters_; }
+
+    std::vector<std::string> bond_parameters() { return bond_parameters_; }
+
+    Parameters *parameters() { return parameters_; }
+
+    void set_parameters(Parameters *parameters);
 
     bool has_parameters() {
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;

@@ -9,6 +9,7 @@
 
 #include "denr.h"
 #include "../structures/molecule.h"
+#include "../parameters.h"
 
 
 std::vector<double> DENR::calculate_charges(const Molecule &molecule) {

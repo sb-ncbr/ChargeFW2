@@ -14,8 +14,11 @@
 #include "charges.h"
 #include "method.h"
 #include "config.h"
+#include "parameterization.h"
+
 
 std::string best_parameters(const MoleculeSet &ms, const boost::shared_ptr<Method> &method);
+
 
 int main(int argc, char **argv) {
     namespace po = boost::program_options;
@@ -92,7 +95,7 @@ int main(int argc, char **argv) {
 
         po::options_description method_options("Method options");
         for (const auto &[opt, info]: method->get_options()) {
-            if(!info.choices.empty()) {
+            if (!info.choices.empty()) {
                 if (std::find(info.choices.begin(), info.choices.end(), info.default_value) == info.choices.end()) {
                     std::cerr << "Default value: " << info.default_value << " not in possible choices" << std::endl;
                     exit(EXIT_INTERNAL_ERROR);
@@ -107,17 +110,16 @@ int main(int argc, char **argv) {
 
         for (const auto &[opt, info]: method->get_options()) {
             std::string opt_name = std::string("method-" + opt);
-            if (vm.count(opt_name)){
+            if (vm.count(opt_name)) {
                 std::string val = vm[opt_name].as<std::string>();
-                if(!info.choices.empty()) {
+                if (!info.choices.empty()) {
                     if (std::find(info.choices.begin(), info.choices.end(), val) == info.choices.end()) {
                         std::cerr << "Provided value: " << val << " not in possible choices" << std::endl;
                         exit(EXIT_INTERNAL_ERROR);
                     }
                 }
                 method->set_option_value(opt, val);
-            }
-            else {
+            } else {
                 method->set_option_value(opt, info.default_value);
             }
         }
@@ -189,6 +191,47 @@ int main(int argc, char **argv) {
         }
 
         std::cout << "Best parameters are: " << best_parameters(m, method) << std::endl;
+
+    } else if (mode == "parameters") {
+        if (!vm.count("sdf-file")) {
+            std::cerr << "SDF must be provided" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        if (!vm.count("chg-file")) {
+            std::cerr << "File where to store charges must be provided" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        if (!vm.count("method")) {
+            std::cerr << "No method selected" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        auto sdf_name = vm["sdf-file"].as<std::string>();
+        auto chg_name = vm["chg-file"].as<std::string>();
+        auto method_name = vm["method"].as<std::string>();
+
+        SDF reader;
+        MoleculeSet ms = reader.read_file(sdf_name);
+
+        auto hbo = PlainAtomClassifier();
+        ms.classify_atoms(hbo);
+
+        boost::shared_ptr<Method> method;
+
+        try {
+            method = boost::dll::import<Method>("../lib/" + method_name, "method",
+                                                boost::dll::load_mode::append_decorations);
+        } catch (std::exception &e) {
+            std::cerr << "Unable to load method " << method_name << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        Charges reference_charges(chg_name);
+
+        auto p = Parameterization(ms, method, reference_charges);
+        p.parametrize();
 
     } else {
         std::cerr << "Unknown mode: " << mode << std::endl;

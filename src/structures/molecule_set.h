@@ -26,6 +26,7 @@ class MoleculeSet {
     void classify_atoms_from_parameters(const Parameters &parameters);
 
     void classify_bonds_from_parameters(const Parameters &parameters);
+
 public:
     explicit MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules);
 
@@ -40,4 +41,9 @@ public:
     void classify_set_from_parameters(const Parameters &parameters);
 
     int get_unclassified_molecules_count(const Parameters &parameters) const;
+
+    std::vector<std::tuple<std::string, std::string, std::string>> atom_types() const { return atom_types_; }
+
+    std::vector<std::tuple<std::string, std::string, std::string, std::string>>
+    bond_types() const { return bond_types_; }
 };

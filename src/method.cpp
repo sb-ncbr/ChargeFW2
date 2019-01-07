@@ -10,7 +10,7 @@
 #include "config.h"
 
 
-void Method::set_parameters(const Parameters *parameters) {
+void Method::set_parameters(Parameters *parameters) {
     if (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size() == 0 and parameters == nullptr) {
         return;
     }
