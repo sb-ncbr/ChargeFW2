@@ -7,6 +7,7 @@
 #pragma once
 
 #include <boost/shared_ptr.hpp>
+#include <string>
 
 #include "structures/molecule_set.h"
 #include "method.h"
@@ -19,10 +20,12 @@ class Parameterization {
     boost::shared_ptr<Method> method_;
     const Charges &reference_charges_;
     std::unique_ptr<Parameters> parameters_;
+    std::string charge_output_file_;
 
 
 public:
-    Parameterization(const MoleculeSet &ms, boost::shared_ptr<Method> method, const Charges &reference_charges);
+    Parameterization(const MoleculeSet &ms, boost::shared_ptr<Method> method, const Charges &reference_charges,
+                     const std::string &charge_output_file);
 
     void parametrize();
 

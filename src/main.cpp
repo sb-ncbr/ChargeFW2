@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
             ("mode", po::value<std::string>()->required(), "Mode")
             ("sdf-file", po::value<std::string>(), "Input SDF file")
             ("par-file", po::value<std::string>(), "File with parameters (json)")
+            ("ref-chg-file", po::value<std::string>(), "File with reference charges")
             ("chg-file", po::value<std::string>(), "File to output charges to")
             ("method", po::value<std::string>(), "Method");
 
@@ -198,6 +199,11 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
+        if (!vm.count("ref-chg-file")) {
+            std::cerr << "File with reference charges must be provided" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
         if (!vm.count("chg-file")) {
             std::cerr << "File where to store charges must be provided" << std::endl;
             exit(EXIT_FAILURE);
@@ -208,15 +214,12 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
-        auto sdf_name = vm["sdf-file"].as<std::string>();
-        auto chg_name = vm["chg-file"].as<std::string>();
+        auto out_charge_name = vm["chg-file"].as<std::string>();
+        auto ref_charge_name = vm["ref-chg-file"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
 
-        SDF reader;
-        MoleculeSet ms = reader.read_file(sdf_name);
-
         auto hbo = PlainAtomClassifier();
-        ms.classify_atoms(hbo);
+        m.classify_atoms(hbo);
 
         boost::shared_ptr<Method> method;
 
@@ -228,9 +231,9 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
-        Charges reference_charges(chg_name);
+        Charges reference_charges(ref_charge_name);
 
-        auto p = Parameterization(ms, method, reference_charges);
+        auto p = Parameterization(m, method, reference_charges, out_charge_name);
         p.parametrize();
 
     } else {
