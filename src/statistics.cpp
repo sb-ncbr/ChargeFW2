@@ -3,7 +3,7 @@
 //
 
 #include <cmath>
-#include <iostream>
+#include <fmt/format.h>
 
 #include "charges.h"
 #include "statistics.h"
@@ -12,7 +12,7 @@
 
 double RMSD(const Charges &charges1, const Charges &charges2) {
     if (charges1.names() != charges2.names()) {
-        std::cerr << "We should compare two charge sets for the same molecules." << std::endl;
+        fmt::print(stderr, "We should compare two charge sets for the same molecules.\n");
         exit(EXIT_INTERNAL_ERROR);
     }
 

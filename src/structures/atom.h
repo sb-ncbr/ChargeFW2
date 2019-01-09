@@ -6,8 +6,8 @@
 
 #include <array>
 #include <string>
-#include <iostream>
 #include <tuple>
+#include <fmt/format.h>
 
 #include "../element.h"
 
@@ -41,9 +41,21 @@ public:
 
     size_t atom_type() const { return atom_type_; }
 
-    friend std::ostream &operator<<(std::ostream &str, const Atom &atom);
-
     bool inline operator==(const Atom &other) const {
         return this->index_ == other.index_ and this->molecule_ == other.molecule_;
     };
 };
+
+
+namespace fmt {
+    template<>
+    struct formatter<Atom> {
+        template<typename ParseContext>
+        constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+        template<typename FormatContext>
+        auto format(const Atom &a, FormatContext &ctx) {
+            return format_to(ctx.begin(), "Atom {} Idx: {}\n", a.element().symbol(), a.index());
+        }
+    };
+}

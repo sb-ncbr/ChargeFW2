@@ -7,7 +7,6 @@
 #include "structures/molecule.h"
 #include "structures/molecule_set.h"
 
-#include <iostream>
 
 std::string HBOAtomClassifier::get_type(const Atom &atom) const {
     const Molecule *molecule = atom.molecule();

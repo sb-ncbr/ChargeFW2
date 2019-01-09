@@ -32,12 +32,9 @@ double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, std::string typ
     } else if (type == "DasGupta-Huzinaga") {
         const double k = 0.4;
         return 1 / (Rij + 1 / (Ji / 2 * exp(k * Rij) + Jj / 2 * exp(k * Rij)));
-    } else if (type == "Louwen-Vogt") {
+    } else /* (type == "Louwen-Vogt") */ {
         const double gamma = (Ji + Jj) / 2;
         return 1 / std::cbrt(1 / std::pow(gamma, 3) + std::pow(Rij, 3));
-    } else {
-        std::cerr << "Unknown overlap term type: " << type << std::endl;
-        exit(EXIT_PARAMETER_ERROR);
     }
 }
 

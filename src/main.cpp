@@ -1,10 +1,10 @@
-#include <iostream>
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 #include <boost/program_options.hpp>
 #include <boost/dll/import.hpp>
 #include <memory>
 #include <ctime>
 #include <algorithm>
-#include <iomanip>
 #include <filesystem>
 
 #include "formats/sdf.h"
@@ -44,19 +44,19 @@ int main(int argc, char **argv) {
         po::store(parsed, vm);
 
         if (vm.count("help")) {
-            std::cout << "ChargeFW2 (version " << VERSION << ")" << std::endl;
-            std::cout << "by Tomáš Raček (2018)\n" << std::endl;
-            std::cout << desc << std::endl;
+            fmt::print("ChargeFW2 (version {})\n", VERSION);
+            fmt::print("by Tomáš Raček (2018, 2019)\n");
+            fmt::print("{}\n", desc);
             exit(EXIT_SUCCESS);
         }
         po::notify(vm);
     } catch (const std::exception &e) {
-        std::cerr << e.what() << std::endl;
+        fmt::print(stderr, "{}\n", e.what());
         exit(EXIT_PARAMETER_ERROR);
     }
 
     if (!vm.count("sdf-file")) {
-        std::cerr << "SDF must be provided" << std::endl;
+        fmt::print(stderr, "SDF must be provided\n");
         exit(EXIT_PARAMETER_ERROR);
     }
 
@@ -72,12 +72,12 @@ int main(int argc, char **argv) {
 
     } else if (mode == "charges") {
         if (!vm.count("chg-file")) {
-            std::cerr << "File where to store charges must be provided" << std::endl;
+            fmt::print(stderr, "File where to store charges must be provided\n");
             exit(EXIT_PARAMETER_ERROR);
         }
 
         if (!vm.count("method")) {
-            std::cerr << "No method selected" << std::endl;
+            fmt::print(stderr, "No method selected.\n");
             exit(EXIT_PARAMETER_ERROR);
         }
 
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
             method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
                                                 boost::dll::load_mode::append_decorations);
         } catch (std::exception &e) {
-            std::cerr << "Unable to load method " << method_name << std::endl;
+            fmt::print(stderr, "Unable to load method {}\n", method_name);
             exit(EXIT_PARAMETER_ERROR);
         }
 
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
         for (const auto &[opt, info]: method->get_options()) {
             if (!info.choices.empty()) {
                 if (std::find(info.choices.begin(), info.choices.end(), info.default_value) == info.choices.end()) {
-                    std::cerr << "Default value: " << info.default_value << " not in possible choices" << std::endl;
+                    fmt::print(stderr, "Default value: {} not in possible choices\n", info.default_value);
                     exit(EXIT_INTERNAL_ERROR);
                 }
             }
@@ -115,7 +115,7 @@ int main(int argc, char **argv) {
                 std::string val = vm[opt_name].as<std::string>();
                 if (!info.choices.empty()) {
                     if (std::find(info.choices.begin(), info.choices.end(), val) == info.choices.end()) {
-                        std::cerr << "Provided value: " << val << " not in possible choices" << std::endl;
+                        fmt::print(stderr, "Provided value: {} not in possible choices\n", val);
                         exit(EXIT_INTERNAL_ERROR);
                     }
                 }
@@ -129,24 +129,24 @@ int main(int argc, char **argv) {
 
         m.classify_atoms(PlainAtomClassifier());
         m.info();
-        std::cout << std::endl;
+        fmt::print("\n");
 
         if (method->has_parameters()) {
             std::string par_name;
             if (!vm.count("par-file")) {
                 par_name = best_parameters(m, method);
-                std::cout << "Best parameters found: " << par_name << std::endl;
+                fmt::print("Best parameters found: {}\n", par_name);
             } else {
                 par_name = vm["par-file"].as<std::string>();
             }
 
             p = std::make_unique<Parameters>(par_name);
 
-            std::cout << "Parameters:" << std::endl;
+            fmt::print("Parameters:\n");
             p->print();
 
             size_t unclassified = m.classify_set_from_parameters(*p);
-            std::cout << "Number of unclassified molecules: " << unclassified << std::endl;
+            fmt::print("Number of unclassified molecules: {}\n", unclassified);
 
             method->set_parameters(p.get());
         } else {
@@ -164,14 +164,13 @@ int main(int argc, char **argv) {
 
         clock_t end = clock();
 
-        std::cout << "Computation took " << std::setprecision(2) << double(end - begin) / CLOCKS_PER_SEC << " seconds"
-                  << std::endl;
+        fmt::print("Computation took {:.2f} seconds\n", double(end - begin) / CLOCKS_PER_SEC);
 
         charges.save_to_file(chg_name);
 
     } else if (mode == "best-parameters") {
         if (!vm.count("method")) {
-            std::cerr << "No method selected" << std::endl;
+            fmt::print(stderr, "No method selected\n");
             exit(EXIT_PARAMETER_ERROR);
         }
 
@@ -183,40 +182,40 @@ int main(int argc, char **argv) {
             method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
                                                 boost::dll::load_mode::append_decorations);
         } catch (std::exception &e) {
-            std::cerr << "Unable to load method " << method_name << std::endl;
+            fmt::print(stderr, "Unable to load method {}\n", method_name);
             exit(EXIT_PARAMETER_ERROR);
         }
 
         if (!method->has_parameters()) {
-            std::cerr << "Method uses no parameters" << std::endl;
+            fmt::print(stderr, "Method uses no parameters\n");
             exit(EXIT_PARAMETER_ERROR);
         }
 
-        std::cout << "Best parameters are: " << best_parameters(m, method) << std::endl;
+        fmt::print("Best parameters are: {}\n", best_parameters(m, method));
 
     } else if (mode == "parameters") {
         if (!vm.count("sdf-file")) {
-            std::cerr << "SDF must be provided" << std::endl;
+            fmt::print(stderr, "SDF must be provided");
             exit(EXIT_FAILURE);
         }
 
         if (!vm.count("ref-chg-file")) {
-            std::cerr << "File with reference charges must be provided" << std::endl;
+            fmt::print(stderr, "File with reference charges must be provided");
             exit(EXIT_FAILURE);
         }
 
         if (!vm.count("chg-file")) {
-            std::cerr << "File where to store charges must be provided" << std::endl;
+            fmt::print(stderr, "File where to store charges must be provided");
             exit(EXIT_FAILURE);
         }
 
         if (!vm.count("par-file")) {
-            std::cerr << "File where to store parameters must be provided" << std::endl;
+            fmt::print(stderr, "File where to store parameters must be provided");
             exit(EXIT_FAILURE);
         }
 
         if (!vm.count("method")) {
-            std::cerr << "No method selected" << std::endl;
+            fmt::print(stderr, "No method selected");
             exit(EXIT_FAILURE);
         }
 
@@ -234,7 +233,7 @@ int main(int argc, char **argv) {
             method = boost::dll::import<Method>("../lib/" + method_name, "method",
                                                 boost::dll::load_mode::append_decorations);
         } catch (std::exception &e) {
-            std::cerr << "Unable to load method " << method_name << std::endl;
+            fmt::print(stderr, "Unable to load method {}\n", method_name);
             exit(EXIT_FAILURE);
         }
 
@@ -244,12 +243,13 @@ int main(int argc, char **argv) {
         p.parametrize();
 
     } else {
-        std::cerr << "Unknown mode: " << mode << std::endl;
+        fmt::print(stderr, "Unknown mode {}\n", mode);
         exit(EXIT_PARAMETER_ERROR);
     }
 
     return 0;
 }
+
 
 std::string best_parameters(MoleculeSet &ms, const boost::shared_ptr<Method> &method) {
     std::map<std::string, size_t> missing;

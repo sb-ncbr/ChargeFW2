@@ -2,15 +2,9 @@
 // Created by krab1k on 29/10/18.
 //
 
-#include <iostream>
-
 #include "../element.h"
 #include "bond.h"
 
-
-std::ostream &operator<<(std::ostream &str, const Bond &bond) {
-    return str << "Bond: (" << *bond.first_ << ", " << *bond.second_ << "): " << bond.order_;
-}
 
 std::array<double, 3> Bond::get_center(bool weighted) const {
     auto &p1 = first_->pos();

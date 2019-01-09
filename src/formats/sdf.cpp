@@ -4,11 +4,11 @@
 
 #include <string>
 #include <fstream>
-#include <iostream>
 #include <sstream>
 #include <tuple>
 #include <vector>
 #include <memory>
+#include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
 #include "../structures/atom.h"
@@ -22,7 +22,7 @@
 MoleculeSet SDF::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        std::cerr << "Cannot open file: " << filename << std::endl;
+        fmt::print("Cannot open file: {}\n", filename);
         exit(EXIT_FILE_ERROR);
     }
 
@@ -178,13 +178,13 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
             }
             else {
-                std::cerr << "Invalid MOL version " << version << " inside SDF file" << std::endl;
+                fmt::print(stderr, "Invalid MOL version {} inside SDF file\n", version);
                 exit(EXIT_FILE_ERROR);
             }
         }
     }
     catch (const std::exception &e) {
-        std::cerr << "Invalid SDF file" << std::endl;
+        fmt::print(stderr, "Invalid SDF file\n");
         exit(EXIT_FILE_ERROR);
     }
     return MoleculeSet(std::move(molecules));

@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <iostream>
+#include <fmt/format.h>
 #include <utility>
 #include <string>
 #include <vector>
@@ -14,6 +14,7 @@
 
 #include "atom.h"
 #include "bond.h"
+
 
 class Molecule {
     std::string name_;
@@ -44,8 +45,6 @@ public:
     Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds,
              const std::map<int, int> &charges);
 
-    friend std::ostream &operator<<(std::ostream &str, const Molecule &molecule);
-
     int bond_distance(const Atom &atom1, const Atom &atom2) const;
 
     std::vector<Atom *> k_bond_distance(const Atom &atom, int k) const;
@@ -54,3 +53,18 @@ public:
 
     friend class MoleculeSet;
 };
+
+
+namespace fmt {
+    template<>
+    struct formatter<Molecule> {
+        template<typename ParseContext>
+        constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+        template<typename FormatContext>
+        auto format(const Molecule &m, FormatContext &ctx) {
+            return format_to(ctx.begin(), "Molecule {} Atoms: {} Bonds {}\n", m.name(), m.atoms().size(),
+                             m.bonds().size());
+        }
+    };
+}

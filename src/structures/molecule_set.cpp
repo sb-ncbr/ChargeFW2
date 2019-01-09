@@ -4,10 +4,10 @@
 
 #include <map>
 #include <algorithm>
-#include <iostream>
 #include <memory>
 #include <tuple>
 #include <string>
+#include <fmt/format.h>
 
 #include "molecule_set.h"
 #include "../classifier.h"
@@ -28,7 +28,7 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
 
 
 void MoleculeSet::info() const {
-    std::cout << "Number of molecules: " << molecules_->size() << std::endl;
+    fmt::print("Number of molecules: {}\n", molecules_->size());
     std::map<size_t, int> counts;
     for (const Molecule &m: *molecules_) {
         for (auto &a : m.atoms()) {
@@ -38,9 +38,7 @@ void MoleculeSet::info() const {
 
     for (auto &[key, val]: counts) {
         auto[symbol, cls, type] = atom_types_[key];
-        std::cout << symbol << " " << cls << " " << type << ": "
-                  << val << std::endl;
-
+        fmt::print("{:2s} {} {}: {}\n", symbol, cls, type, val);
     }
 }
 
@@ -109,7 +107,7 @@ size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters,
                     }
                 }
                 else {
-                    std::cerr << "BondClassifier " << cls << " not found" << std::endl;
+                    fmt::print(stderr, "BondClassifier {} not found\n", cls);
                     exit(EXIT_INTERNAL_ERROR);
                 }
             }
@@ -155,7 +153,7 @@ size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters,
                         break;
                     }
                 } else {
-                    std::cerr << "AtomClassifier " << cls << " not found" << std::endl;
+                    fmt::print(stderr, "AtomClassifier {} not found\n", cls);
                     exit(EXIT_INTERNAL_ERROR);
                 }
             }

@@ -5,7 +5,6 @@
 #pragma once
 
 #include <array>
-#include <iostream>
 
 #include "atom.h"
 
@@ -30,7 +29,19 @@ public:
 
     std::array<double, 3> get_center(bool weighted=false) const;
 
-    friend std::ostream &operator<<(std::ostream &str, const Bond &bond);
-
     friend class MoleculeSet;
 };
+
+
+namespace fmt {
+    template<>
+    struct formatter<Bond> {
+        template<typename ParseContext>
+        constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+        template<typename FormatContext>
+        auto format(const Bond &b, FormatContext &ctx) {
+            return format_to(ctx.begin(), "Bond ({}, {}): {}\n", b.first(), b.second(), b.order());
+        }
+    };
+}

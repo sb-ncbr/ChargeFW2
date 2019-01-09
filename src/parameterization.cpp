@@ -3,16 +3,14 @@
 //
 
 #include <vector>
-#include <iostream>
-#include <iomanip>
 #include <set>
+#include <fmt/format.h>
 #include <nlopt.hpp>
 
 #include "parameterization.h"
 #include "parameters.h"
 #include "charges.h"
 #include "statistics.h"
-#include "utility/utility.h"
 #include "external/lhs/latin_random.hpp"
 
 
@@ -70,10 +68,10 @@ void Parameterization::parametrize() {
     double minf;
     try {
         opt.optimize(x, minf);
-        std::cout << std::setprecision(3) << "Best RMSD = " << minf << std::endl;
+        fmt::print("Best RMSD = {:.3f}\n", minf);
     }
     catch (std::exception &e) {
-        std::cout << "nlopt failed: " << e.what() << std::endl;
+        fmt::print("nlopt failed: {}\n", e.what());
     }
 
     parameters_->print();

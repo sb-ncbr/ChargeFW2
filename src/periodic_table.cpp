@@ -4,9 +4,9 @@
 
 
 #include <fstream>
-#include <iostream>
 #include <string>
 #include <sstream>
+#include <fmt/format.h>
 
 #include "element.h"
 #include "periodic_table.h"
@@ -16,7 +16,7 @@ PeriodicTable::PeriodicTable() {
     std::string filename(std::string(INSTALL_DIR) + "/share/pte.csv");
     std::ifstream file(filename);
     if (!file) {
-        std::cerr << "Unable to open periodic table data file: " << filename << std::endl;
+        fmt::print(stderr, "Unable to open periodic table data file: {}\n", filename);
         exit(EXIT_INTERNAL_ERROR);
     }
 
@@ -52,7 +52,7 @@ PeriodicTable::PeriodicTable() {
             symbol_Z_[symbol] = index;
         }
     } catch (std::invalid_argument &err) {
-        std::cerr << "Unable to read periodic table data file: " << filename << std::endl;
+        fmt::print(stderr, "Unable to read periodic table data file: {}\n", filename);
         exit(EXIT_INTERNAL_ERROR);
     }
 }
@@ -64,7 +64,7 @@ const PeriodicTable &PeriodicTable::pte() {
 
 const Element *PeriodicTable::getElement(const std::string &symbol) const {
     if (!symbol_Z_.count(symbol)) {
-        std::cerr << "No such element " << symbol << std::endl;
+        fmt::print(stderr, "No such element: {}\n", symbol);
         exit(EXIT_INTERNAL_ERROR);
     }
     return getElement(symbol_Z_.at(symbol) - 1);

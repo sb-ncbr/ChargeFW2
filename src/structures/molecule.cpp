@@ -12,7 +12,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
 
 Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
@@ -37,12 +36,6 @@ Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
     bond_distances_.resize(n * n);
     std::fill(bond_distances_.begin(), bond_distances_.end(), -1);
     init_atom_distances();
-}
-
-
-std::ostream &operator<<(std::ostream &str, const Molecule &molecule) {
-    return str << "Molecule: " << molecule.name_ << " Atoms: " << molecule.atoms_->size() << " Bonds: "
-               << molecule.bonds_->size();
 }
 
 
@@ -100,10 +93,12 @@ void Molecule::init_atom_distances() {
     }
 }
 
+
 int Molecule::bond_distance(const Atom &atom1, const Atom &atom2) const {
     const size_t n = atoms_->size();
     return bond_distances_[atom1.index() * n + atom2.index()];
 }
+
 
 std::vector<Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
     const size_t n = atoms_->size();
@@ -115,6 +110,7 @@ std::vector<Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
     }
     return res;
 }
+
 
 int Molecule::total_charge() const {
     int sum = 0;

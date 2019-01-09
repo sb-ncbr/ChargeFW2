@@ -7,7 +7,6 @@
 #include "gdac.h"
 #include "../structures/molecule.h"
 #include "../structures/bond.h"
-#include "../utility/utility.h"
 #include "../geometry.h"
 #include "../parameters.h"
 

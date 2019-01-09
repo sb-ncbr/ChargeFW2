@@ -2,13 +2,13 @@
 // Created by krab1k on 05/11/18.
 //
 
-#include <iostream>
 #include <fstream>
 #include <string>
 #include <map>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include <nlohmann/json.hpp>
+#include <fmt/format.h>
 
 #include "parameters.h"
 #include "structures/molecule_set.h"
@@ -21,7 +21,7 @@ Parameters::Parameters(const std::string &filename) {
     json j;
     std::ifstream f(filename);
     if (!f) {
-        std::cerr << "Cannot open file: " << filename << std::endl;
+        fmt::print(stderr, "Cannot open file: {}\n", filename);
         exit(EXIT_FILE_ERROR);
     }
 
@@ -66,7 +66,7 @@ Parameters::Parameters(const std::string &filename) {
         }
     }
     catch (std::exception &) {
-        std::cerr << "Incorrect file with parameters";
+        fmt::print(stderr, "Incorrect file with parameters\n");
         exit(EXIT_FILE_ERROR);
     }
 }
@@ -110,35 +110,33 @@ void Parameters::save_to_file(const std::string &filename) const {
     f.close();
 }
 
-
 void Parameters::print() const {
     if (common_) {
-        std::cout << "Common parameters" << std::endl;
+        fmt::print("Common parameters\n");
         for (size_t i = 0; i < common_->names().size(); i++) {
-            std::cout << common_->names()[i] << ": " << common_->parameters_[i] << std::endl;
+            fmt::print("{}: {:.3f}\n", common_->names()[i], common_->parameters_[i]);
         }
     }
     if (atoms_) {
-        std::cout << "Atom parameters" << std::endl;
+        fmt::print("Atom parameters\n");
         for (size_t i = 0; i < atoms_->parameters_.size(); i++) {
             auto &[symbol, cls, type] = atoms_->keys()[i];
-            std::cout << symbol << " " << cls << " " << type << ": ";
+            fmt::print("{:2s} {} {}: ", symbol, cls, type);
             for (double val: atoms_->parameters_[i]) {
-                std::cout << val << " ";
+                fmt::print("{:>-6.3f} ", val);
             }
-            std::cout << std::endl;
+            fmt::print("\n");
         }
     }
     if (bonds_) {
-        std::cout << "Bond parameters" << std::endl;
+        fmt::print("Bond parameters\n");
         for (size_t i = 0; i < bonds_->parameters_.size(); i++) {
             auto &[symbol1, symbol2, cls, type] = bonds_->keys()[i];
-            std::cout << symbol1 << " " << symbol2 << " " << cls << " " << type << ": ";
-
+            fmt::print("{:2s} {:2s} {} {}: ", symbol1, symbol2, cls, type);
             for (double val: bonds_->parameters_[i]) {
-                std::cout << val << " ";
+                fmt::print("{:>-6.3f} ", val);
             }
-            std::cout << std::endl;
+            fmt::print("\n");
         }
     }
 }
