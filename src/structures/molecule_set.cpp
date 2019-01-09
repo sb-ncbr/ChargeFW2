@@ -80,7 +80,7 @@ void MoleculeSet::classify_bonds(const BondClassifier &cls) {
 }
 
 
-size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters) {
+size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified) {
     std::vector<int> unclassified;
     bond_types_ = parameters.bond()->keys();
     int m = 0;
@@ -121,16 +121,17 @@ size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters)
         m++;
     }
 
-    // Need to iterate in reverse order to maintain indices correctness
-    for (size_t i = 0; i < unclassified.size(); i++) {
-        molecules_->erase(molecules_->begin() + unclassified[unclassified.size() - i - 1]);
+    if (remove_unclassified) {
+        // Need to iterate in reverse order to maintain indices correctness
+        for (size_t i = 0; i < unclassified.size(); i++) {
+            molecules_->erase(molecules_->begin() + unclassified[unclassified.size() - i - 1]);
+        }
     }
-
     return unclassified.size();
 }
 
 
-size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
+size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters, bool remove_unclassified) {
     std::vector<int> unclassified;
     atom_types_ = parameters.atom()->keys();
     int m = 0;
@@ -166,61 +167,23 @@ size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters)
         m++;
     }
 
-    // Need to iterate in reverse order to maintain indices correctness
-    for (size_t i = 0; i < unclassified.size(); i++) {
-        molecules_->erase(molecules_->begin() + unclassified[unclassified.size() - i - 1]);
+    if (remove_unclassified) {
+        // Need to iterate in reverse order to maintain indices correctness
+        for (size_t i = 0; i < unclassified.size(); i++) {
+            molecules_->erase(molecules_->begin() + unclassified[unclassified.size() - i - 1]);
+        }
     }
-
     return unclassified.size();
 }
 
 
-int MoleculeSet::get_unclassified_molecules_count(const Parameters &parameters) const {
-    int unclassified_molecules_count = 0;
-    for (const auto &molecule: *molecules_) {
-        bool found_all = true;
-        for (const auto &atom: *molecule.atoms_) {
-            bool found_type = false;
-            for (const auto &[symbol, cls, type]: parameters.atom()->keys()) {
-                if (atom.element().symbol() != symbol)
-                    continue;
-                if (cls == "plain") {
-                    found_type = true;
-                    break;
-                } else if (cls == "hbo") {
-                    auto hbo = HBOAtomClassifier();
-                    auto current_type = hbo.get_type(atom);
-                    if (current_type == type) {
-                        found_type = true;
-                        break;
-                    }
-                } else {
-                    std::cerr << "AtomClassifier " << cls << " not found" << std::endl;
-                    exit(EXIT_INTERNAL_ERROR);
-                }
-
-            }
-            if (!found_type) {
-                found_all = false;
-                break;
-            }
-
-        }
-        if (!found_all) {
-            unclassified_molecules_count++;
-        }
-    }
-    return unclassified_molecules_count;
-}
-
-
-void MoleculeSet::classify_set_from_parameters(const Parameters &parameters) {
+size_t MoleculeSet::classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified) {
     size_t unclassified = 0;
     if (parameters.atom() != nullptr)
-        unclassified += classify_atoms_from_parameters(parameters);
+        unclassified += classify_atoms_from_parameters(parameters, remove_unclassified);
 
     if (parameters.bond() != nullptr)
-        unclassified += classify_bonds_from_parameters(parameters);
+        unclassified += classify_bonds_from_parameters(parameters, remove_unclassified);
 
-    std::cerr << "Number of unclassified molecules: " << unclassified << std::endl;
+    return unclassified;
 }

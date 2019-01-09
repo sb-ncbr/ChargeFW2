@@ -17,7 +17,7 @@
 #include "parameterization.h"
 
 
-std::string best_parameters(const MoleculeSet &ms, const boost::shared_ptr<Method> &method);
+std::string best_parameters(MoleculeSet &ms, const boost::shared_ptr<Method> &method);
 
 
 int main(int argc, char **argv) {
@@ -145,7 +145,8 @@ int main(int argc, char **argv) {
             std::cout << "Parameters:" << std::endl;
             p->print();
 
-            m.classify_set_from_parameters(*p);
+            size_t unclassified = m.classify_set_from_parameters(*p);
+            std::cout << "Number of unclassified molecules: " << unclassified << std::endl;
 
             method->set_parameters(p.get());
         } else {
@@ -250,8 +251,8 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-std::string best_parameters(const MoleculeSet &ms, const boost::shared_ptr<Method> &method) {
-    std::map<std::string, int> missing;
+std::string best_parameters(MoleculeSet &ms, const boost::shared_ptr<Method> &method) {
+    std::map<std::string, size_t> missing;
 
     for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
         auto p = std::make_unique<Parameters>(set.path());
@@ -259,7 +260,7 @@ std::string best_parameters(const MoleculeSet &ms, const boost::shared_ptr<Metho
         if (method->name() != p->method_name())
             continue;
 
-        int unclassified = ms.get_unclassified_molecules_count(*p);
+        size_t unclassified = ms.classify_set_from_parameters(*p, false);
         missing[set.path()] = unclassified;
     }
 
