@@ -77,6 +77,7 @@ void Parameterization::parametrize() {
     }
 
     parameters_->print();
+    parameters_->save_to_file(parameters_output_file_);
 
     auto charges = Charges();
     for (const auto &molecule: set_.molecules()) {
@@ -87,9 +88,10 @@ void Parameterization::parametrize() {
 
 
 Parameterization::Parameterization(const MoleculeSet &ms, boost::shared_ptr<Method> method,
-                                   const Charges &reference_charges, const std::string &charge_output_file) :
+                                   const Charges &reference_charges, const std::string &charge_output_file,
+                                   const std::string &parameters_output_file) :
         set_{ms}, method_{method}, reference_charges_{reference_charges},
-        charge_output_file_{charge_output_file} {
+        charge_output_file_{charge_output_file}, parameters_output_file_{parameters_output_file} {
 
     parameters_ = std::unique_ptr<Parameters>();
     parameters_ = std::make_unique<Parameters>(ms, method);

@@ -3,12 +3,12 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
+#include <nlohmann/json.hpp>
 
 #include "parameters.h"
 #include "structures/molecule_set.h"
@@ -17,96 +17,104 @@
 
 
 Parameters::Parameters(const std::string &filename) {
-    namespace pt = boost::property_tree;
+    using json = nlohmann::json;
+    json j;
+    std::ifstream f(filename);
+    if (!f) {
+        std::cerr << "Cannot open file: " << filename << std::endl;
+        exit(EXIT_FILE_ERROR);
+    }
 
-    pt::ptree iroot;
+    f >> j;
+    f.close();
+
     try {
-        pt::read_json(filename, iroot);
+        name_ = j["metadata"]["name"];
+        method_name_ = j["metadata"]["method"];
+
+        if (j.count("common")) {
+            auto names = j["common"]["names"].get<std::vector<std::string>>();
+            auto values = j["common"]["values"].get<std::vector<double>>();
+            common_ = std::make_unique<CommonParameters>(names, values);
+        }
+
+        if (j.count("atom")) {
+            auto names = j["atom"]["names"].get<std::vector<std::string>>();
+            std::vector<std::tuple<std::string, std::string, std::string>> keys;
+            std::vector<std::vector<double>> parameters;
+            for (const auto &obj: j["atom"]["data"]) {
+                auto key = obj["key"];
+                keys.emplace_back(
+                        std::make_tuple(key[0].get<std::string>(), key[1].get<std::string>(), key[2].get<std::string>()));
+                parameters.emplace_back(obj["value"].get<std::vector<double>>());
+            }
+            atoms_ = std::make_unique<AtomParameters>(names, parameters, keys);
+        }
+
+        if (j.count("bond")) {
+            auto names = j["bond"]["names"].get<std::vector<std::string>>();
+            std::vector<std::tuple<std::string, std::string, std::string, std::string>> keys;
+            std::vector<std::vector<double>> parameters;
+            for (const auto &obj: j["bond"]["data"]) {
+                auto key = obj["key"];
+                keys.emplace_back(
+                        std::make_tuple(key[0].get<std::string>(), key[1].get<std::string>(), key[2].get<std::string>(),
+                                        key[3].get<std::string>()));
+                parameters.emplace_back(obj["value"].get<std::vector<double>>());
+            }
+            bonds_ = std::make_unique<BondParameters>(names, parameters, keys);
+        }
     }
-    catch (const boost::exception &e) {
-        std::cerr << "Cannot open file with parameters " << filename << std::endl;
+    catch (std::exception &) {
+        std::cerr << "Incorrect file with parameters";
         exit(EXIT_FILE_ERROR);
-    }
-
-    auto it = iroot.find("metadata");
-    if (it == iroot.not_found()) {
-        std::cerr << "Invalid parameter file " << filename << std::endl;
-        exit(EXIT_FILE_ERROR);
-    }
-
-    name_ = iroot.get<std::string>("metadata.name");
-    method_name_ = iroot.get<std::string>("metadata.method");
-
-    it = iroot.find("common");
-    if (it != iroot.not_found()){
-        std::vector<std::string> names;
-        std::vector<double> values;
-        for(const auto &name: iroot.get_child("common.names")) {
-            names.push_back(name.second.data());
-        }
-        for(const auto &value: iroot.get_child("common.values")) {
-            values.push_back(value.second.get_value<double>());
-        }
-        common_ = std::make_unique<CommonParameters>(names, values);
-    }
-
-    it = iroot.find("atom");
-    if (it != iroot.not_found()) {
-        std::vector<std::string> names;
-        std::vector<std::tuple<std::string, std::string, std::string>> keys;
-        std::vector<std::vector<double>> parameters;
-
-        for(const auto &name: iroot.get_child("atom.names")) {
-            names.push_back(name.second.data());
-        }
-
-        for(const auto &pair: iroot.get_child("atom.data")) {
-            std::vector<std::string> tmp_types;
-            std::vector<double> values;
-            for(const auto &t: pair.second.get_child("key")) {
-                tmp_types.push_back(t.second.data());
-            }
-            keys.emplace_back(std::make_tuple(tmp_types[0], tmp_types[1], tmp_types[2]));
-            tmp_types.clear();
-            for(const auto &v: pair.second.get_child("value")) {
-                values.push_back(v.second.get_value<double>());
-            }
-            parameters.push_back(values);
-        }
-        atoms_ = std::make_unique<AtomParameters>(names, parameters, keys);
-    }
-
-    it = iroot.find("bond");
-    if (it != iroot.not_found()) {
-        std::vector<std::string> names;
-        std::vector<std::tuple<std::string, std::string, std::string, std::string>> keys;
-        std::vector<std::vector<double>> parameters;
-
-        for(const auto &name: iroot.get_child("bond.names")) {
-            names.push_back(name.second.data());
-        }
-
-        for(const auto &pair: iroot.get_child("bond.data")) {
-            std::vector<std::string> tmp_types;
-            std::vector<double> values;
-            for(const auto &t: pair.second.get_child("key")) {
-                tmp_types.push_back(t.second.data());
-            }
-            keys.emplace_back(std::make_tuple(tmp_types[0], tmp_types[1], tmp_types[2], tmp_types[3]));
-            tmp_types.clear();
-            for(const auto &v: pair.second.get_child("value")) {
-                values.push_back(v.second.get_value<double>());
-            }
-            parameters.push_back(values);
-        }
-        bonds_ = std::make_unique<BondParameters>(names, parameters, keys);
     }
 }
+
+
+void Parameters::save_to_file(const std::string &filename) const {
+    using json = nlohmann::json;
+
+    json j;
+    j["metadata"]["name"] = name_;
+    j["metadata"]["method"] = method_name_;
+    j["metadata"]["publication"] = nullptr;
+
+    if (common_) {
+        j["common"]["names"] = common_->names_;
+        j["common"]["values"] = common_->parameters_;
+    }
+
+    if (atoms_) {
+        j["atom"]["names"] = atoms_->names_;
+        for (size_t i = 0; i < atoms_->keys_.size(); i++) {
+            auto obj = json::object();
+            obj["key"] = atoms_->keys_[i];
+            obj["value"] = atoms_->parameters_[i];
+            j["atom"]["data"].push_back(obj);
+        }
+    }
+
+    if (bonds_) {
+        j["bond"]["names"] = bonds_->names_;
+        for (size_t i = 0; i < bonds_->keys_.size(); i++) {
+            auto obj = json::object();
+            obj["key"] = bonds_->keys_[i];
+            obj["value"] = bonds_->parameters_[i];
+            j["atom"]["data"].push_back(obj);
+        }
+    }
+
+    std::ofstream f(filename);
+    f << j.dump(4) << std::endl;
+    f.close();
+}
+
 
 void Parameters::print() const {
     if (common_) {
         std::cout << "Common parameters" << std::endl;
-        for(size_t i = 0; i < common_->names().size(); i++) {
+        for (size_t i = 0; i < common_->names().size(); i++) {
             std::cout << common_->names()[i] << ": " << common_->parameters_[i] << std::endl;
         }
     }
@@ -198,6 +206,10 @@ void Parameters::set_from_vector(const std::vector<double> &parameters) {
 
 
 Parameters::Parameters(const MoleculeSet &ms, boost::shared_ptr<Method> method) {
+
+    method_name_ = method->name();
+    name_ = "New parameters";
+
     auto common_names = method->common_parameters();
     if (!common_names.empty()) {
         std::vector<double> common_values(common_names.size(), 0.0);

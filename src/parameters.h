@@ -35,7 +35,6 @@ public:
     const std::vector<std::string> &names() const { return names_; }
 
     double parameter(int idx) const { return parameters_[idx]; }
-
 };
 
 class AtomParameters {
@@ -56,8 +55,6 @@ public:
     const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
 
     std::function<double(const Atom &)> parameter(int idx) const;
-
-
 };
 
 class BondParameters {
@@ -78,7 +75,6 @@ public:
     const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
 
     std::function<double(const Bond &)> parameter(int idx) const;
-
 };
 
 class Parameters {
@@ -95,6 +91,8 @@ public:
     explicit Parameters(const MoleculeSet &ms, boost::shared_ptr<Method> method);
 
     void print() const;
+
+    void save_to_file(const std::string &filename) const;
 
     const std::string &name() const { return name_; }
 

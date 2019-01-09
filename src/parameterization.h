@@ -21,11 +21,11 @@ class Parameterization {
     const Charges &reference_charges_;
     std::unique_ptr<Parameters> parameters_;
     std::string charge_output_file_;
-
+    std::string parameters_output_file_;
 
 public:
     Parameterization(const MoleculeSet &ms, boost::shared_ptr<Method> method, const Charges &reference_charges,
-                     const std::string &charge_output_file);
+                     const std::string &charge_output_file, const std::string &parameters_output_file);
 
     void parametrize();
 

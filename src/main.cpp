@@ -209,12 +209,18 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
+        if (!vm.count("par-file")) {
+            std::cerr << "File where to store parameters must be provided" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
         if (!vm.count("method")) {
             std::cerr << "No method selected" << std::endl;
             exit(EXIT_FAILURE);
         }
 
         auto out_charge_name = vm["chg-file"].as<std::string>();
+        auto par_name = vm["par-file"].as<std::string>();
         auto ref_charge_name = vm["ref-chg-file"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
 
@@ -233,7 +239,7 @@ int main(int argc, char **argv) {
 
         Charges reference_charges(ref_charge_name);
 
-        auto p = Parameterization(m, method, reference_charges, out_charge_name);
+        auto p = Parameterization(m, method, reference_charges, out_charge_name, par_name);
         p.parametrize();
 
     } else {
