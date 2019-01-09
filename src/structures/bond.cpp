@@ -16,7 +16,7 @@ std::array<double, 3> Bond::get_center(bool weighted) const {
     auto &p1 = first_->pos();
     auto &p2 = second_->pos();
 
-    std::array<double, 3> pos;
+    std::array<double, 3> pos{};
 
     if (weighted) {
         double c1 = first_->element().covalent_radius();

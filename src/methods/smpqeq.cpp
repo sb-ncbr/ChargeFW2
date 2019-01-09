@@ -12,7 +12,7 @@
 #include "../geometry.h"
 
 
-#define IDX(i, j) (i * m + j)
+#define IDX(i, j) ((i) * m + (j))
 
 
 std::vector<double> SMP_QEq::calculate_charges(const Molecule &molecule) {

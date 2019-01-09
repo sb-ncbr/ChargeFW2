@@ -13,7 +13,7 @@
 #include "../geometry.h"
 #include "../parameters.h"
 
-#define IDX(i, j) (i * m + j)
+#define IDX(i, j) ((i) * m + (j))
 
 
 double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type) {

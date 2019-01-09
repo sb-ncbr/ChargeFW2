@@ -21,7 +21,7 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) {
 
     double product = 1;
     for (size_t i = 0; i < n; i++) {
-        #define IDX(i, j) (i * n + j)
+        #define IDX(i, j) ((i) * n + (j))
         auto &atom_i = molecule.atoms()[i];
         S[IDX(i, i)] = 1 + molecule.degree(atom_i);
         for(size_t j = i + 1; j < n; j++) {

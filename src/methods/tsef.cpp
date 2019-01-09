@@ -11,7 +11,7 @@
 #include "../parameters.h"
 
 
-#define IDX(i, j) (i * m + j)
+#define IDX(i, j) ((i) * m + (j))
 
 
 double K(int i) {
