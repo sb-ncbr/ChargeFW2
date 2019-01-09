@@ -80,7 +80,7 @@ void MoleculeSet::classify_bonds(const BondClassifier &cls) {
 }
 
 
-void MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters) {
+size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters) {
     std::vector<int> unclassified;
     bond_types_ = parameters.bond()->keys();
     int m = 0;
@@ -121,15 +121,16 @@ void MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters) {
         m++;
     }
 
-    std::cerr << "Number of unclassified molecules: " << unclassified.size() << std::endl;
     // Need to iterate in reverse order to maintain indices correctness
     for (size_t i = 0; i < unclassified.size(); i++) {
         molecules_->erase(molecules_->begin() + unclassified[unclassified.size() - i - 1]);
     }
+
+    return unclassified.size();
 }
 
 
-void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
+size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
     std::vector<int> unclassified;
     atom_types_ = parameters.atom()->keys();
     int m = 0;
@@ -165,11 +166,12 @@ void MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters) {
         m++;
     }
 
-    std::cerr << "Number of unclassified molecules: " << unclassified.size() << std::endl;
     // Need to iterate in reverse order to maintain indices correctness
     for (size_t i = 0; i < unclassified.size(); i++) {
         molecules_->erase(molecules_->begin() + unclassified[unclassified.size() - i - 1]);
     }
+
+    return unclassified.size();
 }
 
 
@@ -213,9 +215,12 @@ int MoleculeSet::get_unclassified_molecules_count(const Parameters &parameters) 
 
 
 void MoleculeSet::classify_set_from_parameters(const Parameters &parameters) {
+    size_t unclassified = 0;
     if (parameters.atom() != nullptr)
-        classify_atoms_from_parameters(parameters);
+        unclassified += classify_atoms_from_parameters(parameters);
 
     if (parameters.bond() != nullptr)
-        classify_bonds_from_parameters(parameters);
+        unclassified += classify_bonds_from_parameters(parameters);
+
+    std::cerr << "Number of unclassified molecules: " << unclassified << std::endl;
 }
