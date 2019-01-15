@@ -252,7 +252,8 @@ int main(int argc, char **argv) {
 
 
 std::string best_parameters(MoleculeSet &ms, const boost::shared_ptr<Method> &method) {
-    std::map<std::string, size_t> missing;
+    std::string best_name;
+    size_t best_unclassified = ms.molecules().size();
 
     for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
         auto p = std::make_unique<Parameters>(set.path());
@@ -261,12 +262,17 @@ std::string best_parameters(MoleculeSet &ms, const boost::shared_ptr<Method> &me
             continue;
 
         size_t unclassified = ms.classify_set_from_parameters(*p, false);
-        missing[set.path()] = unclassified;
+
+        // If all molecules are covered by the parameters, we found our best
+        if (!unclassified) {
+            return set.path();
+        }
+
+        if (unclassified < best_unclassified) {
+            best_unclassified = unclassified;
+            best_name = set.path();
+        }
     }
 
-    auto x = std::min_element(missing.begin(), missing.end(), [](const auto &p1, const auto &p2) {
-        return p1.second < p2.second;
-    });
-
-    return x->first;
+    return best_name;
 }
