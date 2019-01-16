@@ -125,6 +125,10 @@ int Molecule::total_charge() const {
 std::vector<const Atom *> Molecule::get_close_atoms(const Atom &atom, double cutoff) const {
     std::vector<const Atom *> atoms;
     for (const auto &other_atom: *atoms_) {
+        if (other_atom == atom) {
+            atoms.insert(atoms.begin(), &atom);
+            continue;
+        }
         if (distance(atom, other_atom) < cutoff) {
             atoms.push_back(&other_atom);
         }

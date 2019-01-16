@@ -11,10 +11,16 @@
 #include "../method.h"
 
 class EEM : public Method {
-    enum common{kappa};
-    enum atom{A, B};
+    enum common {kappa};
+    enum atom {A, B};
+
+    std::vector<double> solve_EEM_system(const std::vector<const Atom *> atoms, double total_charge) const;
 public:
-    explicit EEM() : Method("EEM", {"kappa"}, {"A", "B"}, {}, {}) {}
+    explicit EEM() : Method("EEM", {"kappa"}, {"A", "B"}, {},
+            {
+                    {"type", {"type", "Type of a solver", "str", "full", {"full", "cutoff"}}},
+                    {"radius", {"radius", "Radius for cutoff", "double", "8", {}}}
+            }) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) override;
 };
