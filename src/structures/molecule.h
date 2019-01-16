@@ -40,6 +40,8 @@ public:
 
     int degree(const Atom &atom) const;
 
+    std::vector<const Atom *> get_close_atoms(const Atom &atom, double cutoff) const;
+
     Molecule() = default;
 
     Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds,
@@ -47,7 +49,7 @@ public:
 
     int bond_distance(const Atom &atom1, const Atom &atom2) const;
 
-    std::vector<Atom *> k_bond_distance(const Atom &atom, int k) const;
+    std::vector<const Atom *> k_bond_distance(const Atom &atom, int k) const;
 
     int total_charge() const;
 

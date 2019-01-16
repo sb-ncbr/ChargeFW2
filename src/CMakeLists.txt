@@ -8,7 +8,7 @@ configure_file(config.h.in config.h)
 SET(COMMON_LIBS parameters geometry element method)
 foreach(lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
-    target_link_libraries(${lib} fmt::fmt-header-only)
+    target_link_libraries(${lib} structures fmt::fmt-header-only)
 endforeach()
 
 add_subdirectory(structures)
@@ -22,7 +22,7 @@ add_executable(chargefw2 main.cpp periodic_table.cpp periodic_table.h classifier
 
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 parameters geometry element method formats structures utility lhs
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs
         Boost::program_options Boost::system Boost::filesystem dl stdc++fs nlopt_cxx fmt::fmt-header-only)
 
 install(TARGETS chargefw2 DESTINATION bin)

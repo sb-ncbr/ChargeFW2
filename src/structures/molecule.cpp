@@ -5,6 +5,7 @@
 #include "atom.h"
 #include "bond.h"
 #include "molecule.h"
+#include "../geometry.h"
 
 #include <queue>
 #include <utility>
@@ -25,7 +26,7 @@ Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
 
     size_t n = atoms_->size();
     bond_info_.resize(n * n);
-    for(const auto &bond: *bonds_) {
+    for (const auto &bond: *bonds_) {
         int i = bond.first().index();
         int j = bond.second().index();
         char order = static_cast<char>(bond.order());
@@ -54,7 +55,7 @@ int Molecule::bond_order(const Atom &atom1, const Atom &atom2) const {
 int Molecule::degree(const Atom &atom) const {
     const size_t n = atoms_->size();
     int sum = 0;
-    for(size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         sum += bond_info_[atom.index() * n + i];
     }
     return sum;
@@ -65,8 +66,8 @@ std::vector<int> Molecule::get_bonded(int atom_idx) const {
     const size_t n = atoms_->size();
     std::vector<int> res;
 
-    for(size_t j = 0; j < n; j++) {
-        if(bond_info_[atom_idx * n + j]) {
+    for (size_t j = 0; j < n; j++) {
+        if (bond_info_[atom_idx * n + j]) {
             res.push_back(static_cast<int>(j));
         }
     }
@@ -76,15 +77,15 @@ std::vector<int> Molecule::get_bonded(int atom_idx) const {
 
 void Molecule::init_atom_distances() {
     const size_t n = atoms_->size();
-    for(size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         auto q = std::queue<int>();
         q.push(static_cast<int>(i));
         bond_distances_[i * n + i] = 0;
-        while(!q.empty()) {
+        while (!q.empty()) {
             int p = q.front();
             q.pop();
-            for(int neighbor: get_bonded(p)) {
-                if(bond_distances_[i * n + neighbor] == -1) {
+            for (int neighbor: get_bonded(p)) {
+                if (bond_distances_[i * n + neighbor] == -1) {
                     q.push(neighbor);
                     bond_distances_[i * n + neighbor] = 1 + bond_distances_[i * n + p];
                 }
@@ -100,10 +101,10 @@ int Molecule::bond_distance(const Atom &atom1, const Atom &atom2) const {
 }
 
 
-std::vector<Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
+std::vector<const Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
     const size_t n = atoms_->size();
-    std::vector<Atom*> res;
-    for(size_t i = 0; i < n; i++) {
+    std::vector<const Atom *> res;
+    for (size_t i = 0; i < n; i++) {
         if (bond_distances_[atom.index() * n + i] == k) {
             res.push_back(&atoms_->operator[](k));
         }
@@ -114,8 +115,19 @@ std::vector<Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
 
 int Molecule::total_charge() const {
     int sum = 0;
-    for(const auto &atom: *atoms_) {
+    for (const auto &atom: *atoms_) {
         sum += atom.formal_charge();
     }
     return sum;
+}
+
+
+std::vector<const Atom *> Molecule::get_close_atoms(const Atom &atom, double cutoff) const {
+    std::vector<const Atom *> atoms;
+    for (const auto &other_atom: *atoms_) {
+        if (distance(atom, other_atom) < cutoff) {
+            atoms.push_back(&other_atom);
+        }
+    }
+    return atoms;
 }

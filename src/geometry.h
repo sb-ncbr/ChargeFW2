@@ -5,6 +5,8 @@
 #pragma once
 
 #include "structures/atom.h"
+#include "structures/bond.h"
+
 
 double distance(const Atom &atom1, const Atom &atom2);
 
