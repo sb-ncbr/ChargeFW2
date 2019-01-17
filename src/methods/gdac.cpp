@@ -11,7 +11,7 @@
 #include "../parameters.h"
 
 
-std::vector<double> GDAC::calculate_charges(const Molecule &molecule) {
+std::vector<double> GDAC::calculate_charges(const Molecule &molecule) const {
 
     const int n = molecule.atoms().size();
     std::vector<double> q(n, 0);

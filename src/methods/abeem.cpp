@@ -14,7 +14,7 @@
 
 #define IDX(i, j) ((i) * mn + (j))
 
-std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) {
+std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
     size_t m = molecule.bonds().size();

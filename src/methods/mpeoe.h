@@ -22,7 +22,7 @@ public:
             }
     ) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) override;
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT MPEOE method;

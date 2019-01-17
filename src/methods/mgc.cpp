@@ -11,7 +11,7 @@
 #include "../structures/molecule.h"
 
 
-std::vector<double> MGC::calculate_charges(const Molecule &molecule) {
+std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
 

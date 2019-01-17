@@ -16,7 +16,7 @@ class SFKEEM : public Method {
 public:
     explicit SFKEEM() : Method("SFKEEM", {"sigma"}, {"A", "B"}, {}, {}) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) override;
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT SFKEEM method;

@@ -16,7 +16,7 @@ class DelRe : public Method {
 public:
     explicit DelRe() : Method("DelRe", {}, {"delta"}, {"eps", "gammaA", "gammaB"}, {}) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) override;
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT DelRe method;

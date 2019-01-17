@@ -14,7 +14,7 @@
 
 #define IDX(i, j) ((i) * m + (j))
 
-std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) {
+std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
     size_t m = n + 1;

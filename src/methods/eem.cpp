@@ -15,7 +15,7 @@
 #define IDX(i, j) ((i) * m + (j))
 
 
-std::vector<double> EEM::solve_EEM_system(const std::vector<const Atom *> atoms, double total_charge) const {
+std::vector<double> EEM::solve_EEM_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
     size_t m = n + 1;
@@ -57,7 +57,7 @@ std::vector<double> EEM::solve_EEM_system(const std::vector<const Atom *> atoms,
 }
 
 
-std::vector<double> EEM::calculate_charges(const Molecule &molecule) {
+std::vector<double> EEM::calculate_charges(const Molecule &molecule) const {
 
     auto method = get_option_value<std::string>("type");
     std::vector<const Atom *> fragment_atoms;

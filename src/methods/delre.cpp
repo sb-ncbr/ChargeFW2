@@ -12,7 +12,7 @@
 #include "../parameters.h"
 
 
-std::vector<double> DelRe::calculate_charges(const Molecule &molecule) {
+std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {
 
     const size_t n = molecule.atoms().size();
     const size_t m = molecule.bonds().size();

@@ -55,7 +55,7 @@ public:
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;
     }
 
-    virtual std::vector<double> calculate_charges(const Molecule &molecule) = 0;
+    virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
 
     std::string name() { return name_; }
 

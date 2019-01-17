@@ -12,7 +12,7 @@
 const int n_iters = 10;
 
 
-std::vector<double> Charge2::calculate_charges(const Molecule &molecule) {
+std::vector<double> Charge2::calculate_charges(const Molecule &molecule) const {
 
     const size_t n = molecule.atoms().size();
     std::vector<double> q(n, 0);

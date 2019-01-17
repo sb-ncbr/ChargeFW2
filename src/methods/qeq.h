@@ -15,7 +15,7 @@
 
 class QEq : public Method {
     enum atom{electronegativity, hardness};
-    double overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type);
+    double overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type) const;
 public:
     explicit QEq() : Method("QEq", {}, {"electronegativity", "hardness"}, {},
             {
@@ -28,7 +28,7 @@ public:
                                               "Louwen-Vogt"}}}
             }) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) override;
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT QEq method;

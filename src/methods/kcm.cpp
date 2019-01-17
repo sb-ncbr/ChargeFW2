@@ -12,7 +12,7 @@
 #include "../parameters.h"
 
 
-std::vector<double> KCM::calculate_charges(const Molecule &molecule) {
+std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
     size_t m = molecule.bonds().size();

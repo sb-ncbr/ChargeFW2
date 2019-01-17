@@ -12,7 +12,7 @@ class Dummy : public Method {
 public:
     explicit Dummy() : Method("Dummy", {}, {}, {}, {}) {};
 
-    std::vector<double> calculate_charges(const Molecule &molecule) override;
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT Dummy method;

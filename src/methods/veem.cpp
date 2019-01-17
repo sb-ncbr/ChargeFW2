@@ -4,7 +4,7 @@
 
 #include "veem.h"
 
-std::vector<double> VEEM::calculate_charges(const Molecule &molecule) {
+std::vector<double> VEEM::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();
     std::vector<double> q(n, 0);
 

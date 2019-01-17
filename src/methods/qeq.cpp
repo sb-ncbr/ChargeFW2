@@ -16,7 +16,7 @@
 #define IDX(i, j) ((i) * m + (j))
 
 
-double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type) {
+double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type) const {
     auto Ji = parameters_->atom()->parameter(atom::hardness)(atom_i);
     auto Jj = parameters_->atom()->parameter(atom::hardness)(atom_j);
     auto Rij = distance(atom_i, atom_j);
@@ -39,7 +39,7 @@ double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, std::string typ
 }
 
 
-std::vector<double> QEq::calculate_charges(const Molecule &molecule) {
+std::vector<double> QEq::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
     size_t m = n + 1;

@@ -23,7 +23,7 @@ double K(int i) {
 }
 
 
-std::vector<double> TSEF::calculate_charges(const Molecule &molecule) {
+std::vector<double> TSEF::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
     size_t m = n + 1;

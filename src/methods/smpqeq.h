@@ -15,7 +15,7 @@ class SMP_QEq : public Method {
 public:
     explicit SMP_QEq() : Method("SMP/QEq", {}, {"first", "second", "third", "fourth"}, {}, {}) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) override;
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT SMP_QEq method;

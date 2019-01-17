@@ -14,7 +14,7 @@ class EQeq : public Method {
 public:
     explicit EQeq() : Method("EQeq", {}, {}, {}, {}) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) override;
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT EQeq method;

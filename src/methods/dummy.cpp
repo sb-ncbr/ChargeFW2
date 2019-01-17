@@ -4,6 +4,6 @@
 
 #include "dummy.h"
 
-std::vector<double> Dummy::calculate_charges(const Molecule &molecule) {
+std::vector<double> Dummy::calculate_charges(const Molecule &molecule) const {
     return std::vector<double>(molecule.atoms().size(), 0);
 }
