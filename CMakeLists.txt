@@ -16,5 +16,9 @@ set(CMAKE_INSTALL_SO_NO_EXE 1)
 # Strip binaries in release
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 
+
+# Make debug builds much faster
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og")
+
 add_subdirectory(src)
 add_subdirectory(data)
