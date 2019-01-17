@@ -25,7 +25,8 @@ class Molecule {
 
     std::vector<int> get_bonded(int atom_idx) const;
 
-    void init_atom_distances();
+    void init_bond_info();
+    void init_bond_distances();
 
 public:
     const std::vector<Atom> &atoms() const { return *atoms_; }

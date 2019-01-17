@@ -23,6 +23,14 @@ public:
             }) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
+    std::vector<RequiredFeatures> get_requirements() const override {
+        if (get_option_value<std::string>("type") == "cutoff") {
+            return {RequiredFeatures::DISTANCE_TREE};
+        } else {
+            return std::vector<RequiredFeatures>();
+        }
+    }
 };
 
 extern "C" BOOST_SYMBOL_EXPORT EEM method;

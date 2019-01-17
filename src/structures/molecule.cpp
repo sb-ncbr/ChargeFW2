@@ -23,20 +23,6 @@ Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
     for (auto &[atom_no, charge]: charges) {
         (*atoms_)[atom_no].formal_charge_ = charge;
     }
-
-    size_t n = atoms_->size();
-    bond_info_.resize(n * n);
-    for (const auto &bond: *bonds_) {
-        int i = bond.first().index();
-        int j = bond.second().index();
-        char order = static_cast<char>(bond.order());
-        bond_info_[i * n + j] = order;
-        bond_info_[j * n + i] = order;
-    }
-
-    bond_distances_.resize(n * n);
-    std::fill(bond_distances_.begin(), bond_distances_.end(), -1);
-    init_atom_distances();
 }
 
 
@@ -75,8 +61,25 @@ std::vector<int> Molecule::get_bonded(int atom_idx) const {
 }
 
 
-void Molecule::init_atom_distances() {
+void Molecule::init_bond_info() {
     const size_t n = atoms_->size();
+    bond_info_.resize(n * n);
+
+    for (const auto &bond: *bonds_) {
+        int i = bond.first().index();
+        int j = bond.second().index();
+        char order = static_cast<char>(bond.order());
+        bond_info_[i * n + j] = order;
+        bond_info_[j * n + i] = order;
+    }
+}
+
+
+void Molecule::init_bond_distances() {
+    const size_t n = atoms_->size();
+    bond_distances_.resize(n * n);
+    std::fill(bond_distances_.begin(), bond_distances_.end(), -1);
+
     for (size_t i = 0; i < n; i++) {
         auto q = std::queue<int>();
         q.push(static_cast<int>(i));

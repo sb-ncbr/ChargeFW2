@@ -9,6 +9,12 @@
 
 #include "structures/molecule.h"
 
+enum class RequiredFeatures {
+    BOND_INFO,
+    BOND_DISTANCES,
+    DISTANCE_TREE
+};
+
 
 class Parameters;
 
@@ -53,6 +59,10 @@ public:
 
     bool has_parameters() {
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;
+    }
+
+    virtual std::vector<RequiredFeatures> get_requirements() const {
+        return std::vector<RequiredFeatures>();
     }
 
     virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;

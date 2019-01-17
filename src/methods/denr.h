@@ -17,6 +17,10 @@ public:
     explicit DENR() : Method("DENR", {"step", "iterations"}, {"electronegativity", "hardness"}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
+    std::vector<RequiredFeatures> get_requirements() const override {
+        return {RequiredFeatures::BOND_INFO};
+    }
 };
 
 extern "C" BOOST_SYMBOL_EXPORT DENR method;

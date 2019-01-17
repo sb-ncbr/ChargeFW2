@@ -18,6 +18,10 @@ public:
     explicit Charge2() : Method("Charge2", {"a1", "a2", "a3", "b", "c", "alpha"}, {"chi", "P0", "q0"}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
+    std::vector<RequiredFeatures> get_requirements() const override {
+        return {RequiredFeatures::BOND_DISTANCES};
+    }
 };
 
 extern "C" BOOST_SYMBOL_EXPORT Charge2 method;

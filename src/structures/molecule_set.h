@@ -11,6 +11,7 @@
 #include <string>
 
 #include "molecule.h"
+#include "../method.h"
 #include "../classifier.h"
 #include "../parameters.h"
 
@@ -44,4 +45,6 @@ public:
 
     std::vector<std::tuple<std::string, std::string, std::string, std::string>>
     bond_types() const { return bond_types_; }
+
+    void fulfill_requirements(const std::vector<RequiredFeatures> &features);
 };

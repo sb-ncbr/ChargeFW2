@@ -154,6 +154,8 @@ int main(int argc, char **argv) {
             m.classify_atoms(plain);
         }
 
+        m.fulfill_requirements(method->get_requirements());
+
         auto charges = Charges();
 
         clock_t begin = clock();

@@ -15,6 +15,10 @@ public:
     explicit MGC() : Method("MGC", {}, {}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
+    std::vector<RequiredFeatures> get_requirements() const override {
+        return {RequiredFeatures::BOND_INFO};
+    }
 };
 
 extern "C" BOOST_SYMBOL_EXPORT MGC method;

@@ -13,6 +13,7 @@
 #include "../classifier.h"
 #include "../periodic_table.h"
 #include "../parameters.h"
+#include "../method.h"
 #include "config.h"
 
 
@@ -184,4 +185,30 @@ size_t MoleculeSet::classify_set_from_parameters(const Parameters &parameters, b
         unclassified += classify_bonds_from_parameters(parameters, remove_unclassified);
 
     return unclassified;
+}
+
+
+void MoleculeSet::fulfill_requirements(const std::vector<RequiredFeatures> &features) {
+    for (const auto req: features) {
+        switch (req) {
+            case RequiredFeatures::BOND_DISTANCES: {
+                for(auto &molecule: *molecules_) {
+                    molecule.init_bond_info();
+                    molecule.init_bond_distances();
+                }
+                break;
+            };
+
+            case RequiredFeatures::BOND_INFO: {
+                for(auto &molecule: *molecules_) {
+                    molecule.init_bond_info();
+                }
+                break;
+            };
+
+            case RequiredFeatures::DISTANCE_TREE: {
+                break;
+            };
+        }
+    }
 }

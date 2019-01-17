@@ -16,6 +16,10 @@ public:
     explicit TSEF() : Method("TSEF", {}, {"electronegativity", "hardness"}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
+    std::vector<RequiredFeatures> get_requirements() const override {
+        return {RequiredFeatures::BOND_DISTANCES};
+    }
 };
 
 extern "C" BOOST_SYMBOL_EXPORT TSEF method;
