@@ -10,7 +10,6 @@
 #include "formats/sdf.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
-#include "classifier.h"
 #include "charges.h"
 #include "method.h"
 #include "config.h"
@@ -66,8 +65,7 @@ int main(int argc, char **argv) {
 
     auto mode = vm["mode"].as<std::string>();
     if (mode == "info") {
-        auto hbo = HBOAtomClassifier();
-        m.classify_atoms(hbo);
+        m.classify_atoms(AtomClassifier::HBO);
         m.info();
 
     } else if (mode == "charges") {
@@ -127,10 +125,6 @@ int main(int argc, char **argv) {
 
         auto p = std::unique_ptr<Parameters>();
 
-        m.classify_atoms(PlainAtomClassifier());
-        m.info();
-        fmt::print("\n");
-
         if (method->has_parameters()) {
             std::string par_name;
             if (!vm.count("par-file")) {
@@ -146,13 +140,15 @@ int main(int argc, char **argv) {
             p->print();
 
             size_t unclassified = m.classify_set_from_parameters(*p);
-            fmt::print("Number of unclassified molecules: {}\n", unclassified);
+            fmt::print("\nNumber of unclassified molecules: {}\n\n", unclassified);
 
             method->set_parameters(p.get());
         } else {
-            auto plain = PlainAtomClassifier();
-            m.classify_atoms(plain);
+            m.classify_atoms(AtomClassifier::PLAIN);
         }
+
+        m.info();
+        fmt::print("\n");
 
         m.fulfill_requirements(method->get_requirements());
 
@@ -226,8 +222,7 @@ int main(int argc, char **argv) {
         auto ref_charge_name = vm["ref-chg-file"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
 
-        auto hbo = PlainAtomClassifier();
-        m.classify_atoms(hbo);
+        m.classify_atoms(AtomClassifier::PLAIN);
 
         boost::shared_ptr<Method> method;
 

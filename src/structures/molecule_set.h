@@ -12,21 +12,35 @@
 
 #include "molecule.h"
 #include "../method.h"
-#include "../classifier.h"
 #include "../parameters.h"
 
-class AtomClassifier;
 
-class BondClassifier;
+enum class AtomClassifier {
+    PLAIN,
+    HBO
+};
+
+
+enum class BondClassifier {
+    PLAIN,
+    BO
+};
+
 
 class MoleculeSet {
     std::vector<std::tuple<std::string, std::string, std::string>> atom_types_{};
     std::vector<std::tuple<std::string, std::string, std::string, std::string>> bond_types_{};
     std::unique_ptr<std::vector<Molecule> > molecules_{nullptr};
 
-    size_t classify_atoms_from_parameters(const Parameters &parameters, bool remove_unclassified=true);
+    size_t classify_atoms_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
 
-    size_t classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified=true);
+    size_t classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
+
+    std::vector<int> get_max_bond_orders(const Molecule &molecule) const;
+
+    void set_atom_type(Atom &atom, const std::tuple<std::string, std::string, std::string> &tuple);
+
+    void set_bond_type(Bond &bond, const std::tuple<std::string, std::string, std::string, std::string> &tuple);
 
 public:
     explicit MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules);
@@ -35,11 +49,11 @@ public:
 
     const std::vector<Molecule> &molecules() const { return *molecules_; }
 
-    void classify_atoms(const AtomClassifier &cls);
+    void classify_atoms(AtomClassifier cls);
 
-    void classify_bonds(const BondClassifier &cls);
+    void classify_bonds(BondClassifier cls);
 
-    size_t classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified=true);
+    size_t classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
 
     std::vector<std::tuple<std::string, std::string, std::string>> atom_types() const { return atom_types_; }
 

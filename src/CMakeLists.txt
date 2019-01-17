@@ -6,10 +6,10 @@ include_directories(${PROJECT_BINARY_DIR}/src)
 configure_file(config.h.in config.h)
 
 SET(COMMON_LIBS parameters geometry element method)
-foreach(lib ${COMMON_LIBS})
+foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
     target_link_libraries(${lib} structures fmt::fmt-header-only)
-endforeach()
+endforeach ()
 
 add_subdirectory(structures)
 add_subdirectory(methods)
@@ -17,8 +17,10 @@ add_subdirectory(formats)
 add_subdirectory(utility)
 add_subdirectory(external/lhs)
 
-add_executable(chargefw2 main.cpp periodic_table.cpp periodic_table.h classifier.cpp classifier.h
-        charges.cpp charges.h statistics.cpp statistics.h parameterization.h parameterization.cpp utility/utility.cpp)
+SET(SOURCES main.cpp periodic_table.cpp periodic_table.h charges.h charges.cpp statistics.h statistics.cpp
+            parameterization.h parameterization.cpp)
+
+add_executable(chargefw2 ${SOURCES})
 
 add_dependencies(chargefw2 ${METHODS})
 

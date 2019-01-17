@@ -10,7 +10,6 @@
 #include <fmt/format.h>
 
 #include "molecule_set.h"
-#include "../classifier.h"
 #include "../periodic_table.h"
 #include "../parameters.h"
 #include "../method.h"
@@ -44,37 +43,78 @@ void MoleculeSet::info() const {
 }
 
 
-void MoleculeSet::classify_atoms(const AtomClassifier &cls) {
-    for (auto &molecule: *molecules_) {
-        for (auto &atom: *molecule.atoms_) {
-            auto type = cls.get_type(atom);
-            auto tuple = std::make_tuple(atom.element().symbol(), cls.name(), type);
-            auto it = std::find(atom_types_.begin(), atom_types_.end(), tuple);
-            if (it == atom_types_.end()) {
-                atom_types_.push_back(tuple);
-                atom.atom_type_ = atom_types_.size() - 1;
-            } else {
-                atom.atom_type_ = static_cast<size_t>(std::distance(atom_types_.begin(), it));
+void MoleculeSet::classify_atoms(AtomClassifier cls) {
+    switch (cls) {
+        case AtomClassifier::PLAIN: {
+            for (auto &molecule: *molecules_) {
+                for (auto &atom: *molecule.atoms_) {
+                    auto tuple = std::make_tuple(atom.element().symbol(), std::string("plain"), std::string("*"));
+                    set_atom_type(atom, tuple);
+                }
             }
+            break;
+        }
+        case AtomClassifier::HBO: {
+            for (auto &molecule: *molecules_) {
+                std::vector<int> max_bond_orders = get_max_bond_orders(molecule);
+                for (auto &atom: *molecule.atoms_) {
+                    auto tuple = std::make_tuple(atom.element().symbol(), "hbo",
+                                                 std::to_string(max_bond_orders[atom.index_]));
+                    set_atom_type(atom, tuple);
+                }
+            }
+            break;
         }
     }
 }
 
 
-void MoleculeSet::classify_bonds(const BondClassifier &cls) {
-    for (auto &molecule: *molecules_) {
-        for (auto &bond: *molecule.bonds_) {
-            auto type = cls.get_type(bond);
-            auto tuple = std::make_tuple(bond.first().element().symbol(), bond.second().element().symbol(), cls.name(),
-                                         type);
-            auto it = std::find(bond_types_.begin(), bond_types_.end(), tuple);
-            if (it == bond_types_.end()) {
-                bond_types_.push_back(tuple);
-                bond.bond_type_ = bond_types_.size() - 1;
-            } else {
-                bond.bond_type_ = static_cast<size_t>(std::distance(bond_types_.begin(), it));
+void MoleculeSet::classify_bonds(BondClassifier cls) {
+    switch (cls) {
+        case BondClassifier::PLAIN: {
+            for (auto &molecule: *molecules_) {
+                for (auto &bond: *molecule.bonds_) {
+                    auto tuple = std::make_tuple(bond.first().element().symbol(), bond.second().element().symbol(),
+                                                 std::string("plain"), std::string("*"));
+                    set_bond_type(bond, tuple);
+                }
             }
+            break;
         }
+
+        case BondClassifier::BO: {
+            for (auto &molecule: *molecules_) {
+                for (auto &bond: *molecule.bonds_) {
+                    auto tuple = std::make_tuple(bond.first().element().symbol(), bond.second().element().symbol(),
+                                                 std::string("bo"), std::to_string(bond.order_));
+                    set_bond_type(bond, tuple);
+                }
+            }
+            break;
+        }
+    }
+}
+
+
+void MoleculeSet::set_atom_type(Atom &atom, const std::tuple<std::string, std::string, std::string> &tuple) {
+    auto it = find(atom_types_.begin(), atom_types_.end(), tuple);
+    if (it == atom_types_.end()) {
+        atom_types_.push_back(tuple);
+        atom.atom_type_ = atom_types_.size() - 1;
+    } else {
+        atom.atom_type_ = static_cast<size_t>(distance(atom_types_.begin(), it));
+    }
+}
+
+
+void MoleculeSet::set_bond_type(Bond &bond,
+                                const std::tuple<std::string, std::string, std::string, std::string> &tuple) {
+    auto it = find(bond_types_.begin(), bond_types_.end(), tuple);
+    if (it == bond_types_.end()) {
+        bond_types_.push_back(tuple);
+        bond.bond_type_ = bond_types_.size() - 1;
+    } else {
+        bond.bond_type_ = static_cast<size_t>(distance(bond_types_.begin(), it));
     }
 }
 
@@ -99,15 +139,12 @@ size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters,
                     found = true;
                     break;
                 } else if (cls == "bo") {
-                    auto bo = BOBondClassifier();
-                    auto current_type = bo.get_type(bond);
-                    if (current_type == type) {
-                        bond.bond_type_= i;
+                    if (std::to_string(bond.order_) == type) {
+                        bond.bond_type_ = i;
                         found = true;
                         break;
                     }
-                }
-                else {
+                } else {
                     fmt::print(stderr, "BondClassifier {} not found\n", cls);
                     exit(EXIT_INTERNAL_ERROR);
                 }
@@ -135,6 +172,8 @@ size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters,
     atom_types_ = parameters.atom()->keys();
     int m = 0;
     for (auto &molecule: *molecules_) {
+        std::vector<int> max_bond_orders = get_max_bond_orders(molecule);
+
         for (auto &atom: *molecule.atoms_) {
             bool found = false;
             for (size_t i = 0; i < atom_types_.size(); i++) {
@@ -146,8 +185,7 @@ size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters,
                     found = true;
                     break;
                 } else if (cls == "hbo") {
-                    auto hbo = HBOAtomClassifier();
-                    auto current_type = hbo.get_type(atom);
+                    auto current_type = std::to_string(max_bond_orders[atom.index_]);
                     if (current_type == type) {
                         atom.atom_type_ = i;
                         found = true;
@@ -176,6 +214,21 @@ size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters,
 }
 
 
+std::vector<int> MoleculeSet::get_max_bond_orders(const Molecule &molecule) const {
+    const size_t n = molecule.atoms().size();
+    std::vector<int> max_bond_orders(n, 0);
+
+    for (const auto &bond: molecule.bonds()) {
+        int i1 = bond.first_->index_;
+        int i2 = bond.second_->index_;
+        int bo = bond.order_;
+        max_bond_orders[i1] = std::max(max_bond_orders[i1], bo);
+        max_bond_orders[i2] = std::max(max_bond_orders[i2], bo);
+    }
+    return max_bond_orders;
+}
+
+
 size_t MoleculeSet::classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified) {
     size_t unclassified = 0;
     if (parameters.atom() != nullptr)
@@ -192,7 +245,7 @@ void MoleculeSet::fulfill_requirements(const std::vector<RequiredFeatures> &feat
     for (const auto req: features) {
         switch (req) {
             case RequiredFeatures::BOND_DISTANCES: {
-                for(auto &molecule: *molecules_) {
+                for (auto &molecule: *molecules_) {
                     molecule.init_bond_info();
                     molecule.init_bond_distances();
                 }
@@ -200,7 +253,7 @@ void MoleculeSet::fulfill_requirements(const std::vector<RequiredFeatures> &feat
             };
 
             case RequiredFeatures::BOND_INFO: {
-                for(auto &molecule: *molecules_) {
+                for (auto &molecule: *molecules_) {
                     molecule.init_bond_info();
                 }
                 break;
