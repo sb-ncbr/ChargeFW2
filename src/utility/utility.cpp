@@ -6,6 +6,8 @@
 #include <random>
 #include <algorithm>
 
+#include "utility.h"
+
 
 std::vector<double> generate_random_vector(size_t n, double min, double max) {
     std::random_device rd;

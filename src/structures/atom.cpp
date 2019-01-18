@@ -8,7 +8,7 @@
 #include "../periodic_table.h"
 
 
-Atom::Atom(int idx, const Element *element, double x, double y, double z) {
+Atom::Atom(size_t idx, const Element *element, double x, double y, double z) {
     index_ = idx;
     element_ = element;
     pos_[0] = x;

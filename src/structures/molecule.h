@@ -33,7 +33,7 @@ class Molecule {
     std::unique_ptr<kdtree_t> index_{nullptr};
     std::unique_ptr<AtomKDTreeAdaptor> adaptor_{nullptr};
 
-    std::vector<int> get_bonded(int atom_idx) const;
+    std::vector<size_t> get_bonded(size_t atom_idx) const;
 
     void init_bond_info();
 
@@ -59,11 +59,11 @@ public:
     Molecule() = default;
 
     Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds,
-             const std::map<int, int> &charges);
+             const std::map<size_t, int> &charges);
 
     int bond_distance(const Atom &atom1, const Atom &atom2) const;
 
-    std::vector<const Atom *> k_bond_distance(const Atom &atom, int k) const;
+    std::vector<const Atom *> k_bond_distance(const Atom &atom, size_t k) const;
 
     int total_charge() const;
 

@@ -20,9 +20,9 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     size_t m = molecule.bonds().size();
     size_t mn = n + m + 1;
 
-    auto *A = (double *) mkl_malloc(mn * mn * sizeof(double), 64);
-    auto *b = (double *) mkl_malloc(mn * sizeof(double), 64);
-    auto *ipiv = (MKL_INT *) mkl_malloc(mn * sizeof(MKL_INT), 64);
+    auto *A = static_cast<double *>(mkl_malloc(mn * mn * sizeof(double), 64));
+    auto *b = static_cast<double *>(mkl_malloc(mn * sizeof(double), 64));
+    auto *ipiv = static_cast<int *>(mkl_malloc(mn * sizeof(int), 64));
 
     const double k = parameters_->common()->parameter(common::k);
 
@@ -91,7 +91,7 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     A[IDX(n + m, n + m)] = 0;
     b[n + m] = molecule.total_charge();
 
-    MKL_INT info = LAPACKE_dgesv(LAPACK_ROW_MAJOR, mn, 1, A, mn, ipiv, b, 1);
+    int info = LAPACKE_dgesv(LAPACK_ROW_MAJOR, mn, 1, A, mn, ipiv, b, 1);
     if (info) {
         throw std::runtime_error("Cannot solve linear system");
     }

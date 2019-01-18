@@ -15,9 +15,9 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
 
-    auto *S = (double *) mkl_malloc(n * n * sizeof(double), 64);
-    auto *X0 = (double *) mkl_malloc(n * sizeof(double), 64);
-    auto *ipiv = (MKL_INT *) mkl_malloc(n * sizeof(MKL_INT), 64);
+    auto *S = static_cast<double *>(mkl_malloc(n * n * sizeof(double), 64));
+    auto *X0 = static_cast<double *>(mkl_malloc(n * sizeof(double), 64));
+    auto *ipiv = static_cast<int *>(mkl_malloc(n * sizeof(int), 64));
 
     double product = 1;
     for (size_t i = 0; i < n; i++) {
@@ -32,7 +32,7 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
         product *= X0[i];
     }
 
-    MKL_INT info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n, 1, S, n, ipiv, X0, 1);
+    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n, 1, S, n, ipiv, X0, 1);
     if(info) {
         throw std::runtime_error("Cannot solve linear system");
     }

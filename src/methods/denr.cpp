@@ -16,13 +16,13 @@ std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
 
-    auto *L = (double *) mkl_calloc(n * n, sizeof(double), 64);
-    auto *chi = (double *) mkl_calloc(n, sizeof(double), 64);
-    auto *q = (double *) mkl_calloc(n, sizeof(double), 64);
-    auto *ipiv = (lapack_int *) mkl_calloc(n, sizeof(lapack_int), 64);
-    auto *tmp = (double *) mkl_calloc(n, sizeof(double), 64);
-    auto *I = (double *) mkl_calloc(n * n, sizeof(double), 64);
-    auto *eta = (double *) mkl_calloc(n * n, sizeof(double), 64);
+    auto *L = static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
+    auto *chi = static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
+    auto *q = static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
+    auto *ipiv = static_cast<int *>(mkl_calloc(n, sizeof(int), 64));
+    auto *tmp =  static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
+    auto *I = static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
+    auto *eta =  static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
 
     for (size_t i = 0; i < n; i++) {
         auto &atom_i = molecule.atoms()[i];

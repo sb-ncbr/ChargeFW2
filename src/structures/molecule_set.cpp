@@ -219,8 +219,8 @@ std::vector<int> MoleculeSet::get_max_bond_orders(const Molecule &molecule) cons
     std::vector<int> max_bond_orders(n, 0);
 
     for (const auto &bond: molecule.bonds()) {
-        int i1 = bond.first_->index_;
-        int i2 = bond.second_->index_;
+        size_t i1 = bond.first_->index_;
+        size_t i2 = bond.second_->index_;
         int bo = bond.order_;
         max_bond_orders[i1] = std::max(max_bond_orders[i1], bo);
         max_bond_orders[i2] = std::max(max_bond_orders[i2], bo);

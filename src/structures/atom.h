@@ -15,7 +15,7 @@
 class Molecule;
 
 class Atom {
-    int index_{};
+    size_t index_{};
     const Element *element_{};
     std::array<double, 3> pos_{};
     const Molecule *molecule_{};
@@ -27,9 +27,9 @@ class Atom {
     friend class MoleculeSet;
 
 public:
-    Atom(int index, const Element *element, double x, double y, double z);
+    Atom(size_t index, const Element *element, double x, double y, double z);
 
-    int index() const { return index_; }
+    size_t index() const { return index_; }
 
     int formal_charge() const { return formal_charge_; }
 

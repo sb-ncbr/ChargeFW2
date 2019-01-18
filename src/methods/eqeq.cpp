@@ -23,9 +23,9 @@ std::vector<double> EQeq::calculate_charges(const Molecule &molecule) const {
     const double k = 14.4;
     double H_electron_affinity = -2.0; // Exception for hydrogen mentioned in the article
 
-    auto *A = (double *) mkl_malloc(m * m * sizeof(double), 64);
-    auto *b = (double *) mkl_malloc(m * sizeof(double), 64);
-    auto *ipiv = (MKL_INT *) mkl_malloc(m * sizeof(MKL_INT), 64);
+    auto *A = static_cast<double *>(mkl_malloc(m * m * sizeof(double), 64));
+    auto *b = static_cast<double *>(mkl_malloc(m * sizeof(double), 64));
+    auto *ipiv = static_cast<int *>(mkl_malloc(m * sizeof(int), 64));
 
     std::vector<double> X(n, 0);
     std::vector<double> J(n, 0);
@@ -61,7 +61,7 @@ std::vector<double> EQeq::calculate_charges(const Molecule &molecule) const {
     A[IDX(n, n)] = 0;
     b[n] = molecule.total_charge();
 
-    MKL_INT info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
+    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
     if (info) {
         throw std::runtime_error("Cannot solve linear system");
     }

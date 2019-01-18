@@ -34,7 +34,7 @@ public:
 
     const std::vector<std::string> &names() const { return names_; }
 
-    double parameter(int idx) const { return parameters_[idx]; }
+    double parameter(size_t idx) const { return parameters_[idx]; }
 };
 
 class AtomParameters {
@@ -54,7 +54,7 @@ public:
 
     const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    std::function<double(const Atom &)> parameter(int idx) const;
+    std::function<double(const Atom &)> parameter(size_t idx) const;
 };
 
 class BondParameters {
@@ -74,7 +74,7 @@ public:
 
     const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    std::function<double(const Bond &)> parameter(int idx) const;
+    std::function<double(const Bond &)> parameter(size_t idx) const;
 };
 
 class Parameters {

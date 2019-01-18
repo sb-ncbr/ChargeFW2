@@ -14,6 +14,9 @@
 #include "external/lhs/latin_random.hpp"
 
 
+double f(const std::vector<double> &x, std::vector<double> &, void *data);
+
+
 double f(const std::vector<double> &x, std::vector<double> &, void *data) {
     auto parameterization = reinterpret_cast<Parameterization *>(data);
 
@@ -59,7 +62,7 @@ void Parameterization::parametrize() {
         results[i] = f(initial[i], grad, reinterpret_cast<void *>(this));
     }
 
-    auto best_idx = std::min_element(results.begin(), results.end()) - results.begin();
+    auto best_idx = static_cast<size_t>(std::min_element(results.begin(), results.end()) - results.begin());
     auto x = initial[best_idx];
 
     opt.set_min_objective(f, reinterpret_cast<void *>(this));

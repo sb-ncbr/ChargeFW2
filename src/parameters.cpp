@@ -142,13 +142,13 @@ void Parameters::print() const {
 }
 
 
-std::function<double(const Atom &)> AtomParameters::parameter(int idx) const {
+std::function<double(const Atom &)> AtomParameters::parameter(size_t idx) const {
 
     return [this, idx](const Atom &atom) { return parameters_[atom.atom_type()][idx]; };
 }
 
 
-std::function<double(const Bond &)> BondParameters::parameter(int idx) const {
+std::function<double(const Bond &)> BondParameters::parameter(size_t idx) const {
 
     return [this, idx](const Bond &bond) { return parameters_[bond.bond_type()][idx]; };
 }
@@ -180,7 +180,7 @@ std::vector<double> Parameters::get_vector() const {
 
 
 void Parameters::set_from_vector(const std::vector<double> &parameters) {
-    int idx = 0;
+    size_t idx = 0;
     if (common_) {
         for (auto &v: common_->parameters_) {
             v = parameters[idx++];

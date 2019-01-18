@@ -16,7 +16,7 @@
 
 
 Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
-                   std::unique_ptr<std::vector<Bond> > bonds, const std::map<int, int> &charges) {
+                   std::unique_ptr<std::vector<Bond> > bonds, const std::map<size_t, int> &charges) {
     name_ = std::move(name);
     atoms_ = std::move(atoms);
     bonds_ = std::move(bonds);
@@ -48,13 +48,13 @@ int Molecule::degree(const Atom &atom) const {
 }
 
 
-std::vector<int> Molecule::get_bonded(int atom_idx) const {
+std::vector<size_t> Molecule::get_bonded(size_t atom_idx) const {
     const size_t n = atoms_->size();
-    std::vector<int> res;
+    std::vector<size_t> res;
 
     for (size_t j = 0; j < n; j++) {
         if (bond_info_[atom_idx * n + j]) {
-            res.push_back(static_cast<int>(j));
+            res.push_back(static_cast<size_t>(j));
         }
     }
     return res;
@@ -66,9 +66,9 @@ void Molecule::init_bond_info() {
     bond_info_.resize(n * n);
 
     for (const auto &bond: *bonds_) {
-        int i = bond.first().index();
-        int j = bond.second().index();
-        char order = static_cast<char>(bond.order());
+        size_t i = bond.first().index();
+        size_t j = bond.second().index();
+        auto order = static_cast<char>(bond.order());
         bond_info_[i * n + j] = order;
         bond_info_[j * n + i] = order;
     }
@@ -81,13 +81,13 @@ void Molecule::init_bond_distances() {
     std::fill(bond_distances_.begin(), bond_distances_.end(), -1);
 
     for (size_t i = 0; i < n; i++) {
-        auto q = std::queue<int>();
-        q.push(static_cast<int>(i));
+        auto q = std::queue<size_t>();
+        q.push(i);
         bond_distances_[i * n + i] = 0;
         while (!q.empty()) {
-            int p = q.front();
+            size_t p = q.front();
             q.pop();
-            for (int neighbor: get_bonded(p)) {
+            for (size_t neighbor: get_bonded(p)) {
                 if (bond_distances_[i * n + neighbor] == -1) {
                     q.push(neighbor);
                     bond_distances_[i * n + neighbor] = 1 + bond_distances_[i * n + p];
@@ -111,11 +111,11 @@ int Molecule::bond_distance(const Atom &atom1, const Atom &atom2) const {
 }
 
 
-std::vector<const Atom *> Molecule::k_bond_distance(const Atom &atom, int k) const {
+std::vector<const Atom *> Molecule::k_bond_distance(const Atom &atom, size_t k) const {
     const size_t n = atoms_->size();
     std::vector<const Atom *> res;
     for (size_t i = 0; i < n; i++) {
-        if (bond_distances_[atom.index() * n + i] == k) {
+        if (bond_distances_[atom.index() * n + i] == static_cast<int>(k)) {
             res.push_back(&atoms_->operator[](k));
         }
     }
@@ -140,7 +140,7 @@ std::vector<const Atom *> Molecule::get_close_atoms(const Atom &atom, double cut
 
     auto matches_count = index_->radiusSearch(atom.pos().data(), cutoff * cutoff, results, params);
     for (size_t i = 0; i < matches_count; i++) {
-        if (results[i].first == static_cast<unsigned>(atom.index())) {
+        if (results[i].first == atom.index()) {
             close_atoms.insert(close_atoms.begin(), &atom);
             continue;
         }

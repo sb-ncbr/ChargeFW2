@@ -102,12 +102,12 @@ int i4_uniform_ab(int a, int b, int &seed)
         seed = seed + i4_huge;
     }
 
-    r = (float) (seed) * 4.656612875E-10f;
+    r = static_cast<float>(seed) * 4.656612875E-10f;
 //
 //  Scale R to lie between A-0.5 and B+0.5.
 //
-    r = (1.0f - r) * ((float) a - 0.5f)
-        + r * ((float) b + 0.5f);
+    r = (1.0f - r) * (static_cast<float>(a) - 0.5f)
+        + r * (static_cast<float>(b) + 0.5f);
 //
 //  Use rounding to convert R to an integer between A and B.
 //
@@ -180,8 +180,8 @@ double *latin_random_new(int dim_num, int point_num, int &seed)
         perm = perm_uniform_new(point_num, seed);
 
         for (j = 0; j < point_num; j++) {
-            x[i + j * dim_num] = (((double) perm[j]) + x[i + j * dim_num])
-                                 / ((double) point_num);
+            x[i + j * dim_num] = (static_cast<double>(perm[j]) + x[i + j * dim_num])
+                                 / static_cast<double>(point_num);
         }
         delete[] perm;
     }
@@ -328,7 +328,7 @@ double *r8mat_uniform_01_new(int m, int n, int &seed)
             if (seed < 0) {
                 seed = seed + i4_huge;
             }
-            r[i + j * m] = (double) (seed) * 4.656612875E-10;
+            r[i + j * m] = static_cast<double>(seed) * 4.656612875E-10;
         }
     }
 

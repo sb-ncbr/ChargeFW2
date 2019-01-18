@@ -17,12 +17,12 @@ std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();
     size_t m = molecule.bonds().size();
 
-    auto *W = (double *) mkl_calloc(m * m, sizeof(double), 64);
-    auto *B = (double *) mkl_calloc(m * n, sizeof(double), 64);
-    auto *chi0 = (double *) mkl_calloc(n, sizeof(double), 64);
-    auto *tmp = (double *) mkl_calloc(m * n, sizeof(double), 64);
-    auto *res = (double *) mkl_calloc(n * n, sizeof(double), 64);
-    auto *ipiv = (MKL_INT *) mkl_malloc(n * sizeof(MKL_INT), 64);
+    auto *W = static_cast<double *>(mkl_calloc(m * m, sizeof(double), 64));
+    auto *B = static_cast<double *>(mkl_calloc(m * n, sizeof(double), 64));
+    auto *chi0 = static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
+    auto *tmp = static_cast<double *>(mkl_calloc(m * n, sizeof(double), 64));
+    auto *res = static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
+    auto *ipiv = static_cast<int *>(mkl_malloc(n * sizeof(int), 64));
 
     /* Compute
      *  q = (B.T @ W @ B + I)^-1 @ chi0 - chi0
@@ -52,7 +52,7 @@ std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
 
     cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, n, n, m, 1.0, B, n, tmp, n, 1.0, res, n);
 
-    MKL_INT info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n, 1, res, n, ipiv, chi0, 1);
+    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n, 1, res, n, ipiv, chi0, 1);
     if (info) {
         throw std::runtime_error("Cannot solve linear system");
     }

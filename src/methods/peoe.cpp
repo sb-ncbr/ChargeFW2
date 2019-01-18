@@ -12,12 +12,12 @@
 
 std::vector<double> PEOE::calculate_charges(const Molecule &molecule) const {
 
-    const int n = molecule.atoms().size();
+    const size_t n = molecule.atoms().size();
     std::vector<double> q(n, 0);
     std::vector<double> chi(n, 0);
 
     for (int alpha = 1; alpha < get_option_value<int>("iters"); alpha++) {
-        for (int i = 0; i < n; i++) {
+        for (size_t i = 0; i < n; i++) {
             const auto &atom = molecule.atoms()[i];
             chi[i] = parameters_->atom()->parameter(atom::C)(atom) * q[i] * q[i] +
                      parameters_->atom()->parameter(atom::B)(atom) * q[i] +

@@ -34,7 +34,7 @@ PeriodicTable::PeriodicTable() {
                 cols.emplace_back(cell);
             };
 
-            int index = std::stoi(cols[0]);
+            size_t index = std::stoul(cols[0]);
             std::string name = cols[1];
             std::string symbol = cols[2];
 

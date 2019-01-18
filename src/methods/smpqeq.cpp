@@ -20,9 +20,9 @@ std::vector<double> SMP_QEq::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();
     size_t m = n + 1;
 
-    auto *A = (double *) mkl_calloc(m * m, sizeof(double), 64);
-    auto *b = (double *) mkl_calloc(m, sizeof(double), 64);
-    auto *ipiv = (MKL_INT *) mkl_calloc(m, sizeof(MKL_INT), 64);
+    auto *A = static_cast<double *>(mkl_calloc(m * m, sizeof(double), 64));
+    auto *b =  static_cast<double *>(mkl_calloc(m, sizeof(double), 64));
+    auto *ipiv = static_cast<int *>(mkl_calloc(m, sizeof(int), 64));
 
     for (int iter = 0; iter < 5; iter++)
     {
@@ -47,7 +47,7 @@ std::vector<double> SMP_QEq::calculate_charges(const Molecule &molecule) const {
         A[IDX(n, n)] = 0;
         b[n] = molecule.total_charge();
 
-        MKL_INT info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
+        int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
         if (info) {
             throw std::runtime_error("Cannot solve linear system");
         }

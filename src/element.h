@@ -8,7 +8,7 @@
 #include <utility>
 
 class Element {
-    int Z_{};
+    size_t Z_{};
     std::string symbol_;
     std::string name_;
     double electronegativity_{};
@@ -22,7 +22,7 @@ class Element {
 public:
     Element() = default;
 
-    Element(int Z, std::string symbol, std::string name, double electronegativity, double covalent_radius,
+    Element(size_t Z, std::string symbol, std::string name, double electronegativity, double covalent_radius,
             double vdw_radius, int period, int group, double electron_affinity, double ionization_potential)
             : Z_(Z), symbol_(std::move(symbol)), name_(std::move(name)), electronegativity_(electronegativity),
               covalent_radius_(covalent_radius), vdw_radius_(vdw_radius), period_(period), group_(group),
@@ -46,5 +46,5 @@ public:
 
     int period() const { return period_; }
 
-    int Z() const { return Z_; }
+    size_t Z() const { return Z_; }
 };

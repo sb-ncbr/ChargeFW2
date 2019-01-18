@@ -18,9 +18,9 @@ std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {
     const size_t m = molecule.bonds().size();
     std::vector<double> q(n, 0);
 
-    auto *A = (double *) mkl_calloc(n * n, sizeof(double), 64);
-    auto *b = (double *) mkl_calloc(n, sizeof(double), 64);
-    auto *ipiv = (lapack_int *) mkl_calloc(n, sizeof(lapack_int), 64);
+    auto *A = static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
+    auto *b = static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
+    auto *ipiv = static_cast<int *>(mkl_calloc(n, sizeof(int), 64));
 
     for (size_t i = 0; i < n; i++) {
         auto &atom_i = molecule.atoms()[i];
@@ -29,8 +29,8 @@ std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {
     }
 
     for (const auto &bond: molecule.bonds()) {
-        int i = bond.first().index();
-        int j = bond.second().index();
+        size_t i = bond.first().index();
+        size_t j = bond.second().index();
         A[i * n + j] = parameters_->bond()->parameter(bond::gammaA)(bond);
         A[j * n + i] = parameters_->bond()->parameter(bond::gammaB)(bond);
     }
@@ -39,8 +39,8 @@ std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {
 
     for (size_t k = 0; k < m; k++) {
         const auto &bond = molecule.bonds()[k];
-        int i = bond.first().index();
-        int j = bond.second().index();
+        size_t i = bond.first().index();
+        size_t j = bond.second().index();
         double dq = (b[i] - b[j]) / (2 * parameters_->bond()->parameter(bond::eps)(bond));
         q[i] -= dq;
         q[j] += dq;

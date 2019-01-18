@@ -45,7 +45,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                 auto atoms = std::make_unique<std::vector<Atom> >();
                 atoms->reserve(n_atoms);
 
-                for (unsigned i = 0; i < n_atoms; i++) {
+                for (size_t i = 0; i < n_atoms; i++) {
                     std::getline(file, line);
                     double x = std::stod(line.substr(0, 10));
                     double y = std::stod(line.substr(10, 10));
@@ -63,23 +63,23 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                 auto bonds = std::make_unique<std::vector<Bond> >();
                 bonds->reserve(n_bonds);
 
-                for (unsigned i = 0; i < n_bonds; i++) {
+                for (size_t i = 0; i < n_bonds; i++) {
                     std::getline(file, line);
-                    int first = std::stoi(line.substr(0, 3));
-                    int second = std::stoi(line.substr(3, 3));
+                    size_t first = std::stoul(line.substr(0, 3));
+                    size_t second = std::stoul(line.substr(3, 3));
                     int order = std::stoi(line.substr(6, 3));
 
                     bonds->emplace_back(&((*atoms)[first - 1]), &((*atoms)[second - 1]), order);
                 }
 
-                std::map<int, int> charges;
+                std::map<size_t, int> charges;
                 do {
                     std::getline(file, line);
                     if(line.substr(0, 6) == "M  CHG") {
-                        int count = std::stoi(line.substr(6, 3));
-                        const int base = 9;
-                        for(int i = 0; i < count; i++) {
-                            int atom_no = std::stoi(line.substr(base + i * 8, 4));
+                        size_t count = std::stoul(line.substr(6, 3));
+                        const size_t base = 9;
+                        for(size_t i = 0; i < count; i++) {
+                            size_t atom_no = std::stoul(line.substr(base + i * 8, 4));
                             int charge = std::stoi(line.substr(base + i * 8 + 4, 4));
                             charges[atom_no - 1] = charge;
                         }
@@ -102,7 +102,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                 auto atoms = std::make_unique<std::vector<Atom> >();
                 atoms->reserve(static_cast<unsigned long>(n_atoms));
 
-                std::map<int, int> charges;
+                std::map<size_t, int> charges;
 
                 /* Skip 'M  V30 BEGIN ATOM' line */
                 std::getline(file, line);
@@ -115,7 +115,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                     ss.clear();
 
                     std::string element_symbol;
-                    int idx;
+                    size_t idx;
                     double x, y, z;
                     int formal_charge = 0;
                     ss >> idx >> element_symbol >> x >> y >> z;
@@ -162,8 +162,8 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                     std::getline(file, line);
                     ss.str(line.substr(7));
                     ss.clear();
-                    int first, second, order;
-                    int idx;
+                    size_t idx, first, second;
+                    int order;
                     ss >> idx >> order >> first >> second;
 
                     bonds->emplace_back(&((*atoms)[first - 1]), &((*atoms)[second - 1]), order);
