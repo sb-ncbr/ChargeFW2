@@ -54,3 +54,41 @@ template<>
 int Method::get_option_value<int>(const std::string &name) const {
     return std::stoi(option_values_.at(name));
 }
+
+
+std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const {
+
+    auto method = get_option_value<std::string>("type");
+    auto radius = get_option_value<double>("radius");
+    std::vector<const Atom *> fragment_atoms;
+    if (method == "full") {
+        for (const auto &atom: molecule.atoms()) {
+            fragment_atoms.push_back(&atom);
+        }
+
+        return solve_system(fragment_atoms, molecule.total_charge());
+
+    } else /* method == "cutoff" */ {
+        std::vector<double> results;
+        for (const auto &atom: molecule.atoms()) {
+            fragment_atoms = molecule.get_close_atoms(atom, radius);
+            auto res = solve_system(fragment_atoms,
+                                        static_cast<double>(molecule.total_charge()) * fragment_atoms.size() /
+                                        molecule.atoms().size());
+            results.push_back(res[0]);
+        }
+
+        double correction = molecule.total_charge();
+        for (auto val: results) {
+            correction -= val;
+        }
+
+        correction /= molecule.atoms().size();
+
+        for (auto &val: results) {
+            val += correction;
+        }
+
+        return results;
+    }
+}

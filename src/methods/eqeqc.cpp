@@ -14,9 +14,9 @@
 
 #define IDX(i, j) ((i) * m + (j))
 
-std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
+std::vector<double> EQeqC::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
-    size_t n = molecule.atoms().size();
+    size_t n = atoms.size();
     size_t m = n + 1;
 
     const double lambda = 1.2;
@@ -31,7 +31,7 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
     std::vector<double> J(n, 0);
 
     for (size_t i = 0; i < n; i++) {
-        const auto &atom_i = molecule.atoms()[i];
+        const auto &atom_i = *atoms[i];
         if (atom_i.element().symbol() == "H") {
             X[i] = (atom_i.element().ionization_potential() + H_electron_affinity) / 2;
             J[i] = atom_i.element().ionization_potential() - H_electron_affinity;
@@ -42,11 +42,11 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
     }
 
     for (size_t i = 0; i < n; i++) {
-        const auto &atom_i = molecule.atoms()[i];
+        const auto &atom_i = *atoms[i];
         A[IDX(i, i)] = J[i];
         b[i] = -X[i];
         for (size_t j = i + 1; j < n; j++) {
-            const auto &atom_j = molecule.atoms()[j];
+            const auto &atom_j = *atoms[j];
             double a = std::sqrt(J[i] * J[j]) / k;
             double Rij = distance(atom_i, atom_j);
             double overlap = std::exp(-a * a * Rij * Rij) * (2 * a - a * a * Rij - 1 / Rij);
@@ -59,7 +59,7 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
     }
 
     A[IDX(n, n)] = 0;
-    b[n] = molecule.total_charge();
+    b[n] = total_charge;
 
     int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
     if (info) {
@@ -68,12 +68,12 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
 
     // Above is the same as EQeq, now add bond-order-corrections
     for (size_t i = 0; i < n; i++) {
-        const auto &atom_i = molecule.atoms()[i];
+        const auto &atom_i = *atoms[i];
         double correction = 0;
         for (size_t j = 0; j < n; j++) {
             if (i == j)
                 continue;
-            const auto &atom_j = molecule.atoms()[j];
+            const auto &atom_j = *atoms[j];
             double tkk = parameters_->atom()->parameter(atom::Dz)(atom_i) - parameters_->atom()->parameter(atom::Dz)(atom_j);
             double bkk = std::exp(-parameters_->common()->parameter(common::alpha) *
                                   (distance(atom_i, atom_j) - atom_i.element().covalent_radius() +

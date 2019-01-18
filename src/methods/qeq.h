@@ -13,11 +13,12 @@
 #include "../method.h"
 
 
-class QEq : public Method {
+class QEq : public EEMethod {
     enum atom{electronegativity, hardness};
     double overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type) const;
+    std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
-    explicit QEq() : Method("QEq", {}, {"electronegativity", "hardness"}, {},
+    explicit QEq() : EEMethod("QEq", {}, {"electronegativity", "hardness"}, {},
             {
                     {"overlap_term", {"overlap_term", "Overlap term", "str", "Louwen-Vogt",
                                              {"Nishimoto-Mataga",
@@ -28,7 +29,6 @@ public:
                                               "Louwen-Vogt"}}}
             }) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT QEq method;

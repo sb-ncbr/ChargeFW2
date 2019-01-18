@@ -10,12 +10,11 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
-class SMP_QEq : public Method {
+class SMP_QEq : public EEMethod {
     enum atom{first, second, third, fourth};
+    std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
-    explicit SMP_QEq() : Method("SMP/QEq", {}, {"first", "second", "third", "fourth"}, {}, {}) {}
-
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    explicit SMP_QEq() : EEMethod("SMP/QEq", {}, {"first", "second", "third", "fourth"}, {}, {}) {}
 };
 
 extern "C" BOOST_SYMBOL_EXPORT SMP_QEq method;

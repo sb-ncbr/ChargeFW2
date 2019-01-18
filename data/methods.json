@@ -10,7 +10,7 @@
         "name": "type",
         "description": "Type of a solver",
         "type": "str",
-        "default": "str",
+        "default": "full",
         "choices": [
           "full",
           "cutoff"
@@ -37,7 +37,26 @@
     "full_name":  "Selfconsistent Functional Kernel Equalized Electronegativity Method",
     "publication": "10.1021/ci050505e",
     "type": "3D",
-    "has_parameters": true
+    "has_parameters": true,
+    "options" : [
+      {
+        "name": "type",
+        "description": "Type of a solver",
+        "type": "str",
+        "default": "full",
+        "choices": [
+          "full",
+          "cutoff"
+        ]
+      },
+      {
+        "name": "radius",
+        "description": "Radius for cutoff",
+        "type": "int",
+        "default": "8",
+        "choices": []
+      }
+    ]
   },
   {
     "name": "QEq",
@@ -57,6 +76,23 @@
                     "Ohno-Klopman",
                     "DasGupta-Huzinaga",
                     "Louwen-Vogt"]
+      },
+      {
+        "name": "type",
+        "description": "Type of a solver",
+        "type": "str",
+        "default": "full",
+        "choices": [
+          "full",
+          "cutoff"
+        ]
+      },
+      {
+        "name": "radius",
+        "description": "Radius for cutoff",
+        "type": "int",
+        "default": "8",
+        "choices": []
       }
     ]
   },
@@ -65,21 +101,78 @@
     "full_name": "Self-Consistent Charge Equilibration Method",
     "publication" : "10.1021/jp8063273",
     "type": "3D",
-    "has_parameters": true
+    "has_parameters": true,
+    "options" : [
+      {
+        "name": "type",
+        "description": "Type of a solver",
+        "type": "str",
+        "default": "full",
+        "choices": [
+          "full",
+          "cutoff"
+        ]
+      },
+      {
+        "name": "radius",
+        "description": "Radius for cutoff",
+        "type": "int",
+        "default": "12",
+        "choices": []
+      }
+    ]
   },
   {
     "name": "EQeq",
     "full_name": "Extended Charge Equilibration Method",
     "publication" : "10.1021/jz3008485",
     "type": "3D",
-    "has_parameters": false
+    "has_parameters": false,
+    "options" : [
+      {
+        "name": "type",
+        "description": "Type of a solver",
+        "type": "str",
+        "default": "full",
+        "choices": [
+          "full",
+          "cutoff"
+        ]
+      },
+      {
+        "name": "radius",
+        "description": "Radius for cutoff",
+        "type": "int",
+        "default": "12",
+        "choices": []
+      }
+    ]
   },
   {
     "name": "EQeq+C",
     "full_name": "Bond-Order-Corrected Extended Charge Equilibration Method",
     "publication" : "10.1021/acs.jctc.5b00037",
     "type": "3D",
-    "has_parameters": true
+    "has_parameters": true,
+    "options" : [
+      {
+        "name": "type",
+        "description": "Type of a solver",
+        "type": "str",
+        "default": "full",
+        "choices": [
+          "full",
+          "cutoff"
+        ]
+      },
+      {
+        "name": "radius",
+        "description": "Radius for cutoff",
+        "type": "int",
+        "default": "12",
+        "choices": []
+      }
+    ]
   },
   {
     "name": "DelRe",

@@ -10,13 +10,14 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
-class SFKEEM : public Method {
+class SFKEEM : public EEMethod {
     enum common{sigma};
     enum atom{A, B};
+    std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
-    explicit SFKEEM() : Method("SFKEEM", {"sigma"}, {"A", "B"}, {}, {}) {}
+    explicit SFKEEM() : EEMethod("SFKEEM", {"sigma"}, {"A", "B"}, {}, {}) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
 };
 
 extern "C" BOOST_SYMBOL_EXPORT SFKEEM method;

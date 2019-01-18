@@ -39,9 +39,9 @@ double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, std::string typ
 }
 
 
-std::vector<double> QEq::calculate_charges(const Molecule &molecule) const {
+std::vector<double> QEq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
-    size_t n = molecule.atoms().size();
+    size_t n = atoms.size();
     size_t m = n + 1;
 
     auto *A = static_cast<double *>(mkl_malloc(m * m * sizeof(double), 64));
@@ -49,11 +49,11 @@ std::vector<double> QEq::calculate_charges(const Molecule &molecule) const {
     auto *ipiv = static_cast<int *>(mkl_malloc(m * sizeof(int), 64));
 
     for (size_t i = 0; i < n; i++) {
-        const auto &atom_i = molecule.atoms()[i];
+        const auto &atom_i = *atoms[i];
         A[IDX(i, i)] = parameters_->atom()->parameter(atom::hardness)(atom_i);
         b[i] = - parameters_->atom()->parameter(atom::electronegativity)(atom_i);
         for (size_t j = i + 1; j < n; j++) {
-            const auto &atom_j = molecule.atoms()[j];
+            const auto &atom_j = *atoms[j];
             auto type = get_option_value<std::string>("overlap_term");
             A[IDX(i, j)] = overlap_term(atom_i, atom_j, type);
         }
@@ -64,7 +64,7 @@ std::vector<double> QEq::calculate_charges(const Molecule &molecule) const {
     }
 
     A[IDX(n, n)] = 0;
-    b[n] = molecule.total_charge();
+    b[n] = total_charge;
 
     int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
     if(info) {

@@ -10,13 +10,12 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
-class EQeqC : public Method {
+class EQeqC : public EEMethod {
     enum common{alpha};
     enum atom{Dz};
+    std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
-    explicit EQeqC() : Method("EQeq+C", {"alpha"}, {"Dz"}, {}, {}) {}
-
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    explicit EQeqC() : EEMethod("EQeq+C", {"alpha"}, {"Dz"}, {}, {}) {}
 };
 
 extern "C" BOOST_SYMBOL_EXPORT EQeqC method;

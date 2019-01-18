@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "structures/molecule.h"
 
@@ -62,7 +63,7 @@ public:
     }
 
     virtual std::vector<RequiredFeatures> get_requirements() const {
-        return std::vector<RequiredFeatures>();
+        return {};
     }
 
     virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
@@ -79,3 +80,40 @@ public:
     }
 };
 
+
+template<>
+std::string Method::get_option_value<std::string>(const std::string &name) const;
+
+template<>
+double Method::get_option_value<double>(const std::string &name) const;
+
+template<>
+int Method::get_option_value<int>(const std::string &name) const;
+
+
+class EEMethod : public Method {
+    std::map<std::string, MethodOption> augment_options(std::map<std::string, MethodOption> options) const {
+        options["type"] = {"type", "Type of a solver", "str", "full", {"full", "cutoff"}};
+        options["radius"] = {"radius", "Radius for cutoff", "double", "8", {}};
+        return options;
+    }
+
+protected:
+    virtual std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const = 0;
+
+public:
+    EEMethod(std::string name, std::vector<std::string> common, std::vector<std::string> atom,
+             std::vector<std::string> bond, std::map<std::string, MethodOption> options) :
+            Method(std::move(name), std::move(common), std::move(atom), std::move(bond), augment_options(
+                    std::move(options))) {}
+
+    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
+    std::vector<RequiredFeatures> get_requirements() const override {
+        if (get_option_value<std::string>("type") == "cutoff") {
+            return {RequiredFeatures::DISTANCE_TREE};
+        } else {
+            return std::vector<RequiredFeatures>();
+        }
+    }
+};
