@@ -55,7 +55,7 @@ namespace fmt {
 
         template<typename FormatContext>
         auto format(const Atom &a, FormatContext &ctx) {
-            return format_to(ctx.begin(), "Atom {} Idx: {}\n", a.element().symbol(), a.index());
+            return format_to(ctx.begin(), "Atom {} Idx: {}", a.element().symbol(), a.index());
         }
     };
 }

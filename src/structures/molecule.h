@@ -11,9 +11,17 @@
 #include <tuple>
 #include <map>
 #include <memory>
+#include <nanoflann.hpp>
 
 #include "atom.h"
 #include "bond.h"
+
+
+class AtomKDTreeAdaptor;
+
+
+typedef nanoflann::KDTreeSingleIndexAdaptor<
+        nanoflann::L2_Simple_Adaptor<double, AtomKDTreeAdaptor>, AtomKDTreeAdaptor, 3> kdtree_t;
 
 
 class Molecule {
@@ -22,11 +30,16 @@ class Molecule {
     std::unique_ptr<std::vector<Bond> > bonds_;
     std::vector<char> bond_info_{};
     std::vector<int> bond_distances_{};
+    std::unique_ptr<kdtree_t> index_{nullptr};
+    std::unique_ptr<AtomKDTreeAdaptor> adaptor_{nullptr};
 
     std::vector<int> get_bonded(int atom_idx) const;
 
     void init_bond_info();
+
     void init_bond_distances();
+
+    void init_distance_tree();
 
 public:
     const std::vector<Atom> &atoms() const { return *atoms_; }
@@ -71,3 +84,21 @@ namespace fmt {
         }
     };
 }
+
+
+class AtomKDTreeAdaptor {
+    const Molecule *molecule_;
+public:
+    AtomKDTreeAdaptor(const Molecule *molecule) : molecule_{molecule} {};
+
+    inline size_t kdtree_get_point_count() const {
+        return molecule_->atoms().size();
+    }
+
+    inline double kdtree_get_pt(const size_t idx, const size_t dim) const {
+        return molecule_->atoms()[idx].pos()[dim];
+    }
+
+    template<class BBOX>
+    bool kdtree_get_bbox(BBOX &) const { return false; }
+};

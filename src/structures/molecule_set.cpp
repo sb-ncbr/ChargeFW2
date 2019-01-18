@@ -260,6 +260,9 @@ void MoleculeSet::fulfill_requirements(const std::vector<RequiredFeatures> &feat
             };
 
             case RequiredFeatures::DISTANCE_TREE: {
+                for (auto &molecule: *molecules_) {
+                    molecule.init_distance_tree();
+                }
                 break;
             };
         }

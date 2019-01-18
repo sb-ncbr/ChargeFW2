@@ -2,17 +2,17 @@
 // Created by krab1k on 23/10/18.
 //
 
-#include "atom.h"
-#include "bond.h"
-#include "molecule.h"
-#include "../geometry.h"
-
 #include <queue>
 #include <utility>
 #include <tuple>
 #include <map>
 #include <string>
 #include <vector>
+#include <nanoflann.hpp>
+
+#include "atom.h"
+#include "bond.h"
+#include "molecule.h"
 
 
 Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
@@ -98,6 +98,13 @@ void Molecule::init_bond_distances() {
 }
 
 
+void Molecule::init_distance_tree() {
+    adaptor_ = std::make_unique<AtomKDTreeAdaptor>(this);
+    index_ = std::make_unique<kdtree_t>(3, *adaptor_, nanoflann::KDTreeSingleIndexAdaptorParams(10));
+    index_->buildIndex();
+}
+
+
 int Molecule::bond_distance(const Atom &atom1, const Atom &atom2) const {
     const size_t n = atoms_->size();
     return bond_distances_[atom1.index() * n + atom2.index()];
@@ -126,15 +133,18 @@ int Molecule::total_charge() const {
 
 
 std::vector<const Atom *> Molecule::get_close_atoms(const Atom &atom, double cutoff) const {
-    std::vector<const Atom *> atoms;
-    for (const auto &other_atom: *atoms_) {
-        if (other_atom == atom) {
-            atoms.insert(atoms.begin(), &atom);
+    std::vector<const Atom *> close_atoms;
+
+    std::vector<std::pair<size_t, double>> results;
+    nanoflann::SearchParams params;
+
+    auto matches_count = index_->radiusSearch(atom.pos().data(), cutoff * cutoff, results, params);
+    for (size_t i = 0; i < matches_count; i++) {
+        if (results[i].first == static_cast<unsigned>(atom.index())) {
+            close_atoms.insert(close_atoms.begin(), &atom);
             continue;
         }
-        if (distance(atom, other_atom) < cutoff) {
-            atoms.push_back(&other_atom);
-        }
+        close_atoms.push_back(&atoms()[results[i].first]);
     }
-    return atoms;
+    return close_atoms;
 }
