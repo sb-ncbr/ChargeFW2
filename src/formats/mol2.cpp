@@ -63,7 +63,11 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
                 size_t idx;
                 std::string atom_name, atom_type;
                 double x, y, z;
+
+                size_t residue_id = 0;
+                std::string residue = "UNK";
                 as >> idx >> atom_name >> x >> y >> z >> atom_type;
+                as >> residue_id >> residue;
 
                 std::string element_symbol;
                 auto it = atom_type.find('.');
@@ -75,7 +79,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 
                 auto element = PeriodicTable::pte().getElement(element_symbol);
 
-                atoms->emplace_back(i, element, x, y, z);
+                atoms->emplace_back(i, element, x, y, z, atom_name, residue_id, residue);
             }
 
             /* Read @<TRIPOS>BOND */

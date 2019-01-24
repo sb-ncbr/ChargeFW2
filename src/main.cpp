@@ -10,6 +10,7 @@
 #include "formats/reader.h"
 #include "formats/sdf.h"
 #include "formats/mol2.h"
+#include "formats/pdb.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
 #include "charges.h"
@@ -69,6 +70,11 @@ int main(int argc, char **argv) {
         reader = std::make_unique<SDF>();
     } else if (ext == ".mol2") {
         reader = std::make_unique<Mol2>();
+    } else if (ext == ".pdb") {
+        reader = std::make_unique<PDB>();
+    } else {
+        fmt::print(stderr, "Filetype {} not supported\n", ext);
+        exit(EXIT_FILE_ERROR);
     }
 
     MoleculeSet m = reader->read_file(input_name);

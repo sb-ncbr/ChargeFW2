@@ -21,13 +21,17 @@ class Atom {
     const Molecule *molecule_{};
     size_t atom_type_{};
     int formal_charge_{};
+    std::string atom_name_{};
+    size_t residue_id_{};
+    std::string residue_{};
 
     friend class Molecule;
 
     friend class MoleculeSet;
 
 public:
-    Atom(size_t index, const Element *element, double x, double y, double z);
+    Atom(size_t index, const Element *element, double x, double y, double z, std::string atom_name, size_t residue_id,
+         std::string residue);
 
     size_t index() const { return index_; }
 
