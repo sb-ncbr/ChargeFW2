@@ -7,7 +7,8 @@
 #include <string>
 #include "../structures/molecule_set.h"
 
-class reader {
+
+class Reader {
 public:
     virtual MoleculeSet read_file(const std::string &filename) = 0;
 };

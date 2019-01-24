@@ -94,13 +94,13 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
                 /* Read atom & bond counts */
                 std::getline(file, line);
-                int n_atoms;
-                int n_bonds;
+                size_t n_atoms;
+                size_t n_bonds;
                 std::stringstream ss(line.substr(14));
                 ss >> n_atoms >> n_bonds;
 
                 auto atoms = std::make_unique<std::vector<Atom> >();
-                atoms->reserve(static_cast<unsigned long>(n_atoms));
+                atoms->reserve(n_atoms);
 
                 std::map<size_t, int> charges;
 
@@ -108,7 +108,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                 std::getline(file, line);
 
                 /* Read info about the atoms */
-                for (int i = 0; i < n_atoms; i++) {
+                for (size_t i = 0; i < n_atoms; i++) {
                     std::getline(file, line);
 
                     ss.str(line.substr(7));
@@ -156,9 +156,9 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                 std::getline(file, line);
 
                 auto bonds = std::make_unique<std::vector<Bond> >();
-                bonds->reserve(static_cast<unsigned long>(n_bonds));
+                bonds->reserve(n_bonds);
 
-                for(int i = 0; i < n_bonds; i++) {
+                for(size_t i = 0; i < n_bonds; i++) {
                     std::getline(file, line);
                     ss.str(line.substr(7));
                     ss.clear();

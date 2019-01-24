@@ -7,7 +7,9 @@
 #include <algorithm>
 #include <filesystem>
 
+#include "formats/reader.h"
 #include "formats/sdf.h"
+#include "formats/mol2.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
 #include "charges.h"
@@ -26,7 +28,7 @@ int main(int argc, char **argv) {
     desc.add_options()
             ("help", "Prints this help")
             ("mode", po::value<std::string>()->required(), "Mode")
-            ("sdf-file", po::value<std::string>(), "Input SDF file")
+            ("input-file", po::value<std::string>(), "Input file")
             ("par-file", po::value<std::string>(), "File with parameters (json)")
             ("ref-chg-file", po::value<std::string>(), "File with reference charges")
             ("chg-file", po::value<std::string>(), "File to output charges to")
@@ -39,7 +41,6 @@ int main(int argc, char **argv) {
             .allow_unregistered()
             .run();
     try {
-
         po::store(parsed, vm);
 
         if (vm.count("help")) {
@@ -54,14 +55,23 @@ int main(int argc, char **argv) {
         exit(EXIT_PARAMETER_ERROR);
     }
 
-    if (!vm.count("sdf-file")) {
-        fmt::print(stderr, "SDF must be provided\n");
+    if (!vm.count("input-file")) {
+        fmt::print(stderr, "Input file must be provided\n");
         exit(EXIT_PARAMETER_ERROR);
     }
 
-    auto sdf_name = vm["sdf-file"].as<std::string>();
-    SDF reader;
-    MoleculeSet m = reader.read_file(sdf_name);
+    auto input_name = vm["input-file"].as<std::string>();
+
+    auto ext = std::filesystem::path(input_name).extension();
+
+    std::unique_ptr<Reader> reader;
+    if (ext == ".sdf") {
+        reader = std::make_unique<SDF>();
+    } else if (ext == ".mol2") {
+        reader = std::make_unique<Mol2>();
+    }
+
+    MoleculeSet m = reader->read_file(input_name);
 
     auto mode = vm["mode"].as<std::string>();
     if (mode == "info") {
@@ -192,8 +202,8 @@ int main(int argc, char **argv) {
         fmt::print("Best parameters are: {}\n", best_parameters(m, method));
 
     } else if (mode == "parameters") {
-        if (!vm.count("sdf-file")) {
-            fmt::print(stderr, "SDF must be provided");
+        if (!vm.count("input-file")) {
+            fmt::print(stderr, "Input file must be provided");
             exit(EXIT_FAILURE);
         }
 

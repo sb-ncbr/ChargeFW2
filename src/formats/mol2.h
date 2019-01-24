@@ -1,15 +1,13 @@
 //
-// Created by krab1k on 24/10/18.
+// Created by krab1k on 24.1.19.
 //
 
 #pragma once
 
-#include <string>
-
 #include "reader.h"
 
 
-class SDF: public Reader {
+class Mol2: public Reader {
 
 public:
     MoleculeSet read_file(const std::string &filename) override;
