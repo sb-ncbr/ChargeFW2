@@ -139,6 +139,10 @@ int main(int argc, char **argv) {
             std::string par_name;
             if (!vm.count("par-file")) {
                 par_name = best_parameters(m, method);
+                if (par_name.empty()) {
+                    fmt::print(stderr, "No parameters found \n");
+                    exit(EXIT_PARAMETER_ERROR);
+                }
                 fmt::print("Best parameters found: {}\n", par_name);
             } else {
                 par_name = vm["par-file"].as<std::string>();
