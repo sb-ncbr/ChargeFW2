@@ -11,6 +11,7 @@
 #include "formats/sdf.h"
 #include "formats/mol2.h"
 #include "formats/pdb.h"
+#include "formats/mmcif.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
 #include "charges.h"
@@ -72,6 +73,8 @@ int main(int argc, char **argv) {
         reader = std::make_unique<Mol2>();
     } else if (ext == ".pdb") {
         reader = std::make_unique<PDB>();
+    } else if (ext == ".cif") {
+        reader = std::make_unique<mmCIF>();
     } else {
         fmt::print(stderr, "Filetype {} not supported\n", ext);
         exit(EXIT_FILE_ERROR);
