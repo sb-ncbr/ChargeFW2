@@ -45,6 +45,12 @@ public:
 
     size_t atom_type() const { return atom_type_; }
 
+    size_t residue_id() const { return residue_id_; }
+
+    std::string residue() const { return residue_; }
+
+    std::string name() const { return atom_name_; }
+
     bool inline operator==(const Atom &other) const {
         return this->index_ == other.index_ and this->molecule_ == other.molecule_;
     };
@@ -59,7 +65,7 @@ namespace fmt {
 
         template<typename FormatContext>
         auto format(const Atom &a, FormatContext &ctx) {
-            return format_to(ctx.begin(), "Atom {} Idx: {}", a.element().symbol(), a.index());
+            return format_to(ctx.begin(), "Atom {} Idx: {}", a.name(), a.index());
         }
     };
 }

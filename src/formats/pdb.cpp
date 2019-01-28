@@ -7,8 +7,9 @@
 #include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
-#include "config.h"
 #include "pdb.h"
+#include "config.h"
+#include "bonds.h"
 #include "../periodic_table.h"
 
 
@@ -50,7 +51,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
             }
         }
 
-        auto bonds = std::make_unique<std::vector<Bond>>();
+        auto bonds = get_bonds(atoms);
         std::map<size_t, int> charges;
         molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
 

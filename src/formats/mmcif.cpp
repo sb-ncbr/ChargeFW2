@@ -9,6 +9,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "mmcif.h"
+#include "bonds.h"
 #include "config.h"
 #include "../periodic_table.h"
 
@@ -78,9 +79,10 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
 
             idx++;
             std::getline(file, line);
-        } while (boost::starts_with(line, "  ATOM"));
+            boost::trim(line);
+        } while (boost::starts_with(line, "ATOM"));
 
-        auto bonds = std::make_unique<std::vector<Bond>>();
+        auto bonds = get_bonds(atoms);
         std::map<size_t, int> charges;
         molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
 
