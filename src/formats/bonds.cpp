@@ -23,9 +23,6 @@ void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, std::unique_ptr<std
                   std::map<std::string, const Atom *> residue_atoms);
 
 
-static const std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> residues_data = load_residues_info();
-
-
 std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> load_residues_info() {
     std::string filename(std::string(INSTALL_DIR) + "/share/amino_acids.txt");
     std::ifstream file(filename);
@@ -57,6 +54,9 @@ std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> lo
 
 void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, std::unique_ptr<std::vector<Atom>> &atoms,
                   std::map<std::string, const Atom *> residue_atoms) {
+
+    static auto residues_data = load_residues_info();
+
     auto residue = residue_atoms.begin()->second->residue();
     auto it = residues_data.find(residue);
     if (it != residues_data.end()) {
@@ -81,7 +81,8 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
     std::map<std::string, const Atom *> residue_atoms;
 
     auto current_residue_id = (*atoms)[0].residue_id();
-    for (auto &atom: *atoms) {
+
+    for (const auto &atom: *atoms) {
         auto id = atom.residue_id();
         /* Atom lies in the same residue */
         if (current_residue_id == id) {
@@ -97,6 +98,25 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
     }
 
     update_bonds(bonds, atoms, residue_atoms);
+
+    /* Add bonds on the protein backbone */
+    std::map<size_t, const Atom *> N_backbone;
+    std::map<size_t, const Atom *> C_backbone;
+
+    for (const auto &atom: *atoms) {
+        if (atom.name() == "C") {
+            C_backbone[atom.residue_id()] = &atom;
+        } else if (atom.name() == "N") {
+            N_backbone[atom.residue_id()] = &atom;
+        }
+    }
+
+    for (const auto &[residue_id, atom]: C_backbone) {
+        auto it = N_backbone.find(residue_id + 1);
+        if (it != N_backbone.end()) {
+            bonds->emplace_back(atom, it->second, 1);
+        }
+    }
 
     return bonds;
 }
