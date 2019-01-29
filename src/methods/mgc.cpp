@@ -32,7 +32,8 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
         product *= X0[i];
     }
 
-    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n, 1, S, n, ipiv, X0, 1);
+    auto n_int = static_cast<int>(n);
+    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n_int, 1, S, n_int, ipiv, X0, 1);
     if(info) {
         throw std::runtime_error("Cannot solve linear system");
     }

@@ -13,6 +13,8 @@ class VEEM : public Method {
 public:
     explicit VEEM() : Method("VEEM", {}, {}, {}, {}) {}
 
+    virtual ~VEEM() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 

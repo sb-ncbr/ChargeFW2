@@ -39,14 +39,16 @@ std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
     }
 
     double step = parameters_->common()->parameter(common::step);
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, n, n, n, step, L, n, eta, n, 1.0, I, n);
-    LAPACKE_dgetrf(LAPACK_ROW_MAJOR, n, n, I, n, ipiv);
 
-    cblas_dgemv(CblasRowMajor, CblasNoTrans, n, n, step, L, n, chi, 1, 0, tmp, 1);
+    auto n_int = static_cast<int>(n);
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, n_int, n_int, n_int, step, L, n_int, eta, n_int, 1.0, I, n_int);
+    LAPACKE_dgetrf(LAPACK_ROW_MAJOR, n_int, n_int, I, n_int, ipiv);
+
+    cblas_dgemv(CblasRowMajor, CblasNoTrans, n_int, n_int, step, L, n_int, chi, 1, 0, tmp, 1);
 
     for (int i = 0; i < parameters_->common()->parameter(common::iterations); i++) {
-        cblas_daxpby(n, -1.0, tmp, 1, 1.0, q, 1);
-        LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', n, 1, I, n, ipiv, q, 1);
+        cblas_daxpby(n_int, -1.0, tmp, 1, 1.0, q, 1);
+        LAPACKE_dgetrs(LAPACK_ROW_MAJOR, 'N', n_int, 1, I, n_int, ipiv, q, 1);
     }
 
     std::vector<double> res(n, 0);

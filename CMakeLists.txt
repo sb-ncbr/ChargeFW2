@@ -9,12 +9,13 @@ set(MKL_CXX_FLAGS  "-m64 -isystem ${MKLROOT}/include")
 set(MKL_LINKER_FLAGS "-L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_rt -lpthread -lm -ldl")
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    set(WARNING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded")
+    set(WARNING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded\
+        -Wno-exit-time-destructors -Wno-global-constructors -Wno-reserved-id-macro")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     set(WARNING_FLAGS "-pedantic -Wall -Wextra -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization\
-       -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept\
-       -Wold-style-cast -Woverloaded-virtual -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel\
-       -Wstrict-overflow=5 -Wundef -Werror -Wno-unused")
+        -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept\
+        -Wold-style-cast -Woverloaded-virtual -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel\
+        -Wstrict-overflow=5 -Wundef -Werror -Wno-unused")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -fPIC -march=native")

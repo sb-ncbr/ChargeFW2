@@ -91,7 +91,8 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     A[IDX(n + m, n + m)] = 0;
     b[n + m] = molecule.total_charge();
 
-    int info = LAPACKE_dgesv(LAPACK_ROW_MAJOR, mn, 1, A, mn, ipiv, b, 1);
+    auto mn_int = static_cast<int>(mn);
+    int info = LAPACKE_dgesv(LAPACK_ROW_MAJOR, mn_int, 1, A, mn_int, ipiv, b, 1);
     if (info) {
         throw std::runtime_error("Cannot solve linear system");
     }

@@ -21,6 +21,8 @@ public:
                 {"iters", {"iters", "Number of iterations", "int", "7", {}}}
             }) {}
 
+    virtual ~PEOE() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 

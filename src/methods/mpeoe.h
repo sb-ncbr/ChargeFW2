@@ -23,6 +23,8 @@ public:
             }
     ) {}
 
+    virtual ~MPEOE() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 

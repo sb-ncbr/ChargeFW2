@@ -13,6 +13,8 @@ class Dummy : public Method {
 public:
     explicit Dummy() : Method("Dummy", {}, {}, {}, {}) {}
 
+    virtual ~Dummy() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 

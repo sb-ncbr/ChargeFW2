@@ -35,7 +35,8 @@ std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {
         A[j * n + i] = parameters_->bond()->parameter(bond::gammaB)(bond);
     }
 
-    LAPACKE_dgesv(LAPACK_ROW_MAJOR, n, 1, A, n, ipiv, b, 1);
+    auto n_int = static_cast<int>(n);
+    LAPACKE_dgesv(LAPACK_ROW_MAJOR, n_int, 1, A, n_int, ipiv, b, 1);
 
     for (size_t k = 0; k < m; k++) {
         const auto &bond = molecule.bonds()[k];

@@ -16,6 +16,8 @@ class KCM : public Method {
 public:
     explicit KCM() : Method("KCM", {}, {"electronegativity", "hardness"}, {}, {}) {}
 
+    virtual ~KCM() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 

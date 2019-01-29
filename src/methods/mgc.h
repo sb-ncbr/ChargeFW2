@@ -15,6 +15,8 @@ class MGC : public Method {
 public:
     explicit MGC() : Method("MGC", {}, {}, {}, {}) {}
 
+    virtual ~MGC() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     std::vector<RequiredFeatures> get_requirements() const override {

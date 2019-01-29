@@ -36,7 +36,8 @@ void Parameterization::parametrize() {
     auto values = method_->parameters()->get_vector();
     size_t n = values.size();
 
-    nlopt::opt opt(nlopt::LN_NEWUOA, n);
+    auto n_unsigned = static_cast<unsigned >(n);
+    nlopt::opt opt(nlopt::LN_NEWUOA, n_unsigned);
 
     size_t n_points = 100;
 
@@ -45,7 +46,10 @@ void Parameterization::parametrize() {
 
     std::vector<std::vector<double>> initial(n_points, std::vector<double>(n, 0));
     int seed = 1;
-    auto random_sample = latin_random_new(n, n_points, seed);
+
+    auto n_int = static_cast<int>(n);
+    auto n_points_int = static_cast<int>(n_points);
+    auto random_sample = latin_random_new(n_int, n_points_int, seed);
     for (size_t i = 0; i < n_points; i++) {
         initial[i].assign(random_sample + i * n, random_sample + (i + 1) * n);
         for (auto &x: initial[i]) {

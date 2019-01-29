@@ -18,6 +18,8 @@ class EEM : public EEMethod {
 
 public:
     explicit EEM() : EEMethod("EEM", {"kappa"}, {"A", "B"}, {}, {}) {}
+
+    virtual ~EEM() = default;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT EEM method;

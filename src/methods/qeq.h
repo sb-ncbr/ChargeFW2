@@ -29,6 +29,7 @@ public:
                                               "Louwen-Vogt"}}}
             }) {}
 
+    virtual ~QEq() = default;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT QEq method;

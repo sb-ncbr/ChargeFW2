@@ -34,7 +34,7 @@ std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> lo
         exit(EXIT_INTERNAL_ERROR);
     }
 
-    std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> residues_data;
+    std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> residues_info;
 
     std::string line;
     while (std::getline(file, line)) {
@@ -48,10 +48,10 @@ std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> lo
             std::stringstream ss(line);
             ss >> atom1_name >> atom2_name >> bond_order;
 
-            residues_data[residue].emplace_back(atom1_name, atom2_name, bond_order);
+            residues_info[residue].emplace_back(atom1_name, atom2_name, bond_order);
         }
     }
-    return residues_data;
+    return residues_info;
 }
 
 

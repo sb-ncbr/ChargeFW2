@@ -15,6 +15,8 @@ class EQeq : public EEMethod {
     std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
     explicit EQeq() : EEMethod("EQeq", {}, {}, {}, {}) {}
+
+    virtual ~EQeq() = default;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT EQeq method;

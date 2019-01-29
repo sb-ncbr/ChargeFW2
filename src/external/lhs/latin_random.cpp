@@ -231,7 +231,7 @@ int *perm_uniform_new(int n, int &seed)
     int k;
     int *p;
 
-    p = new int[n];
+    p = new int[static_cast<unsigned >(n)];
 
     for (i = 0; i < n; i++) {
         p[i] = i;
@@ -317,7 +317,7 @@ double *r8mat_uniform_01_new(int m, int n, int &seed)
     int k;
     double *r;
 
-    r = new double[m * n];
+    r = new double[static_cast<unsigned>(m * n)];
 
     for (j = 0; j < n; j++) {
         for (i = 0; i < m; i++) {

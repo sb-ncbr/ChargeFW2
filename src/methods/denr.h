@@ -17,6 +17,8 @@ class DENR : public Method {
 public:
     explicit DENR() : Method("DENR", {"step", "iterations"}, {"electronegativity", "hardness"}, {}, {}) {}
 
+    virtual ~DENR() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     std::vector<RequiredFeatures> get_requirements() const override {

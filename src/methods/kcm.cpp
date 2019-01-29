@@ -40,7 +40,9 @@ std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
         B[i * n + second.index()] = -1;
     }
 
-    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m, n, m, 1.0, W, m, B, n, 0.0, tmp, n);
+    auto n_int = static_cast<int>(n);
+    auto m_int = static_cast<int>(m);
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans, m_int, n_int, m_int, 1.0, W, m_int, B, n_int, 0.0, tmp, n_int);
 
     std::vector<double> q(n, 0);
     for(size_t i = 0; i < n; i++) {
@@ -50,9 +52,9 @@ std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
         q[i] = - chi;
     }
 
-    cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, n, n, m, 1.0, B, n, tmp, n, 1.0, res, n);
+    cblas_dgemm(CblasRowMajor, CblasTrans, CblasNoTrans, n_int, n_int, m_int, 1.0, B, n_int, tmp, n_int, 1.0, res, n_int);
 
-    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n, 1, res, n, ipiv, chi0, 1);
+    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', n_int, 1, res, n_int, ipiv, chi0, 1);
     if (info) {
         throw std::runtime_error("Cannot solve linear system");
     }

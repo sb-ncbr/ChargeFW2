@@ -66,7 +66,8 @@ std::vector<double> QEq::solve_system(const std::vector<const Atom *> &atoms, do
     A[IDX(n, n)] = 0;
     b[n] = total_charge;
 
-    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m, 1, A, m, ipiv, b, 1);
+    auto m_int = static_cast<int>(m);
+    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m_int, 1, A, m_int, ipiv, b, 1);
     if(info) {
         throw std::runtime_error("Cannot solve linear system");
     }

@@ -11,9 +11,11 @@
 
 class Formal : public Method {
 public:
-    explicit Formal() : Method("Formal", {}, {}, {}, {}) {};
+    explicit Formal() : Method("Formal", {}, {}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
+
+    virtual ~Formal() = default;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT Formal method;

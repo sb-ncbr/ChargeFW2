@@ -16,6 +16,8 @@ class SMP_QEq : public EEMethod {
     std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
     explicit SMP_QEq() : EEMethod("SMP/QEq", {}, {"first", "second", "third", "fourth"}, {}, {}) {}
+
+    virtual ~SMP_QEq() = default;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT SMP_QEq method;

@@ -18,6 +18,8 @@ class Charge2 : public Method {
 public:
     explicit Charge2() : Method("Charge2", {"a1", "a2", "a3", "b", "c", "alpha"}, {"chi", "P0", "q0"}, {}, {}) {}
 
+    virtual ~Charge2() = default;
+
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     std::vector<RequiredFeatures> get_requirements() const override {

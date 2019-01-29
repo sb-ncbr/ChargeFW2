@@ -42,8 +42,8 @@ PeriodicTable::PeriodicTable() {
             int period = std::stoi(cols[4]);
             int group = std::stoi(cols[5]);
             // Change units from pm to A
-            double covalent_radius = std::stod(cols[10]) / 100.0f;
-            double vdw_radius = std::stod(cols[11]) / 100.0f;
+            double covalent_radius = std::stod(cols[10]) / 100.0;
+            double vdw_radius = std::stod(cols[11]) / 100.0;
             double electronegativity = std::stod(cols[12]);
             double electron_affinity = std::stod(cols[14]);
             double ionization_potential = std::stod(cols[13]);

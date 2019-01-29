@@ -18,7 +18,7 @@ class SFKEEM : public EEMethod {
 public:
     explicit SFKEEM() : EEMethod("SFKEEM", {"sigma"}, {"A", "B"}, {}, {}) {}
 
-
+    virtual ~SFKEEM() = default;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT SFKEEM method;
