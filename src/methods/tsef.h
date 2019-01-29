@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class TSEF : public Method {
     enum atom{electronegativity, hardness};
 public:

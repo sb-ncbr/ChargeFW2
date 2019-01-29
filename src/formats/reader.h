@@ -12,5 +12,3 @@ class Reader {
 public:
     virtual MoleculeSet read_file(const std::string &filename) = 0;
 };
-
-

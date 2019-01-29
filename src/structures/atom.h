@@ -53,7 +53,7 @@ public:
 
     bool inline operator==(const Atom &other) const {
         return this->index_ == other.index_ and this->molecule_ == other.molecule_;
-    };
+    }
 };
 
 

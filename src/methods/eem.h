@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class EEM : public EEMethod {
     enum common {kappa};
     enum atom {A, B};

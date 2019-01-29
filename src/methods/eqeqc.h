@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class EQeqC : public EEMethod {
     enum common{alpha};
     enum atom{Dz};

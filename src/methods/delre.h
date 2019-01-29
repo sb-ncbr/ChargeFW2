@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class DelRe : public Method {
     enum atom{delta};
     enum bond{eps, gammaA, gammaB};

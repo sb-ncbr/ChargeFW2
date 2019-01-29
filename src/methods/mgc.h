@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class MGC : public Method {
 public:
     explicit MGC() : Method("MGC", {}, {}, {}, {}) {}

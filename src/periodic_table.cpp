@@ -12,6 +12,7 @@
 #include "periodic_table.h"
 #include "config.h"
 
+
 PeriodicTable::PeriodicTable() {
     std::string filename(std::string(INSTALL_DIR) + "/share/pte.csv");
     std::ifstream file(filename);
@@ -51,7 +52,7 @@ PeriodicTable::PeriodicTable() {
             elements_.push_back(element);
             symbol_Z_[symbol] = index;
         }
-    } catch (std::invalid_argument &err) {
+    } catch (std::invalid_argument &) {
         fmt::print(stderr, "Unable to read periodic table data file: {}\n", filename);
         exit(EXIT_INTERNAL_ERROR);
     }

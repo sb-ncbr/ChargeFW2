@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class KCM : public Method {
     enum atom{electronegativity, hardness};
 public:

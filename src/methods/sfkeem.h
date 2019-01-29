@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class SFKEEM : public EEMethod {
     enum common{sigma};
     enum atom{A, B};

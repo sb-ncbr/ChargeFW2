@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class DENR : public Method {
     enum common{step, iterations};
     enum atom{electronegativity, hardness};

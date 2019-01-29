@@ -55,4 +55,3 @@ std::vector<double> EEM::solve_system(const std::vector<const Atom *> &atoms, do
 
     return results;
 }
-

@@ -11,6 +11,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class Charge2 : public Method {
     enum common{a1, a2, a3, b, c, alpha};
     enum atom{chi, P0, q0};

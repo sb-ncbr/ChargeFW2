@@ -89,7 +89,7 @@ namespace fmt {
 class AtomKDTreeAdaptor {
     const Molecule *molecule_;
 public:
-    AtomKDTreeAdaptor(const Molecule *molecule) : molecule_{molecule} {};
+    AtomKDTreeAdaptor(const Molecule *molecule) : molecule_{molecule} {}
 
     inline size_t kdtree_get_point_count() const {
         return molecule_->atoms().size();

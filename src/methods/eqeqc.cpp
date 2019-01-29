@@ -14,6 +14,7 @@
 
 #define IDX(i, j) ((i) * m + (j))
 
+
 std::vector<double> EQeqC::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();

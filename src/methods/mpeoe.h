@@ -11,6 +11,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class MPEOE : public Method {
     enum common{Hplus};
     enum atom{A, B};

@@ -183,7 +183,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
             }
         }
     }
-    catch (const std::exception &e) {
+    catch (const std::exception &) {
         fmt::print(stderr, "Invalid SDF file\n");
         exit(EXIT_FILE_ERROR);
     }

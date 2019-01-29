@@ -10,7 +10,6 @@
 #include "tsef.h"
 #include "../parameters.h"
 
-
 #define IDX(i, j) ((i) * m + (j))
 
 

@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class ABEEM : public Method {
     enum common{k};
     enum atom{a, b, c};

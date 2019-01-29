@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
         try {
             method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
                                                 boost::dll::load_mode::append_decorations);
-        } catch (std::exception &e) {
+        } catch (std::exception &) {
             fmt::print(stderr, "Unable to load method {}\n", method_name);
             exit(EXIT_PARAMETER_ERROR);
         }
@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
         try {
             method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
                                                 boost::dll::load_mode::append_decorations);
-        } catch (std::exception &e) {
+        } catch (std::exception &) {
             fmt::print(stderr, "Unable to load method {}\n", method_name);
             exit(EXIT_PARAMETER_ERROR);
         }
@@ -252,7 +252,7 @@ int main(int argc, char **argv) {
         try {
             method = boost::dll::import<Method>("../lib/" + method_name, "method",
                                                 boost::dll::load_mode::append_decorations);
-        } catch (std::exception &e) {
+        } catch (std::exception &) {
             fmt::print(stderr, "Unable to load method {}\n", method_name);
             exit(EXIT_FAILURE);
         }

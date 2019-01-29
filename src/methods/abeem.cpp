@@ -11,8 +11,8 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
-
 #define IDX(i, j) ((i) * mn + (j))
+
 
 std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
 

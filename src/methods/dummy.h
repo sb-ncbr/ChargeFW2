@@ -8,14 +8,13 @@
 
 #include "../method.h"
 
+
 class Dummy : public Method {
 public:
-    explicit Dummy() : Method("Dummy", {}, {}, {}, {}) {};
+    explicit Dummy() : Method("Dummy", {}, {}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT Dummy method;
 Dummy method;
-
-

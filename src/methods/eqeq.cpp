@@ -11,8 +11,8 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
-
 #define IDX(i, j) ((i) * m + (j))
+
 
 std::vector<double> EQeq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

@@ -10,6 +10,7 @@
 
 #include "structures/molecule.h"
 
+
 enum class RequiredFeatures {
     BOND_INFO,
     BOND_DISTANCES,
@@ -19,6 +20,7 @@ enum class RequiredFeatures {
 
 class Parameters;
 
+
 struct MethodOption {
     std::string name;
     std::string description;
@@ -26,6 +28,7 @@ struct MethodOption {
     std::string default_value;
     std::vector<std::string> choices;
 };
+
 
 class Method {
 protected:
@@ -38,6 +41,8 @@ protected:
     std::map<std::string, std::string> option_values_{};
 
     Parameters *parameters_{nullptr};
+
+    ~Method() = default;
 
 public:
     Method(std::string name, std::vector<std::string> common, std::vector<std::string> atom,
@@ -62,9 +67,7 @@ public:
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;
     }
 
-    virtual std::vector<RequiredFeatures> get_requirements() const {
-        return {};
-    }
+    virtual std::vector<RequiredFeatures> get_requirements() const;
 
     virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
 
@@ -100,6 +103,8 @@ class EEMethod : public Method {
 
 protected:
     virtual std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const = 0;
+
+    ~EEMethod() = default;
 
 public:
     EEMethod(std::string name, std::vector<std::string> common, std::vector<std::string> atom,

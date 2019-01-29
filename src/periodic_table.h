@@ -10,6 +10,7 @@
 
 #include "element.h"
 
+
 class PeriodicTable {
     std::vector<Element> elements_;
     std::map<std::string, size_t> symbol_Z_;

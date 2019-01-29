@@ -6,6 +6,7 @@
 
 #include "element.h"
 
+
 int Element::valence_electron_count() const {
     if (group_ < 3) {
         return group_;

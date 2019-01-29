@@ -11,7 +11,6 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
-
 #define IDX(i, j) ((i) * m + (j))
 
 

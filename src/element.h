@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+
 class Element {
     size_t Z_{};
     std::string symbol_;

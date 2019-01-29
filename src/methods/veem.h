@@ -8,14 +8,13 @@
 
 #include "../method.h"
 
+
 class VEEM : public Method {
 public:
-    explicit VEEM() : Method("VEEM", {}, {}, {}, {}) {};
+    explicit VEEM() : Method("VEEM", {}, {}, {}, {}) {}
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT VEEM method;
 VEEM method;
-
-

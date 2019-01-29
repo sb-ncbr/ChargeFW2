@@ -10,6 +10,11 @@
 #include "config.h"
 
 
+std::vector<RequiredFeatures> Method::get_requirements() const {
+    return {};
+}
+
+
 void Method::set_parameters(Parameters *parameters) {
     if (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size() == 0 and parameters == nullptr) {
         return;
@@ -73,8 +78,8 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
         for (const auto &atom: molecule.atoms()) {
             fragment_atoms = molecule.get_close_atoms(atom, radius);
             auto res = solve_system(fragment_atoms,
-                                        static_cast<double>(molecule.total_charge()) * fragment_atoms.size() /
-                                        molecule.atoms().size());
+                                    static_cast<double>(molecule.total_charge()) * fragment_atoms.size() /
+                                    molecule.atoms().size());
             results.push_back(res[0]);
         }
 

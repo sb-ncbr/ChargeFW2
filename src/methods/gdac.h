@@ -10,6 +10,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class GDAC : public Method {
     enum atom{A, B};
 public:

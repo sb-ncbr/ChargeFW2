@@ -8,6 +8,7 @@
 
 #include "../method.h"
 
+
 class Formal : public Method {
 public:
     explicit Formal() : Method("Formal", {}, {}, {}, {}) {};

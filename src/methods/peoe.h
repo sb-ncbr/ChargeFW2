@@ -11,6 +11,7 @@
 #include "../structures/molecule.h"
 #include "../method.h"
 
+
 class PEOE : public Method {
     enum common{dampH};
     enum atom{A, B, C};
