@@ -87,7 +87,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
         molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
 
     } catch (const std::exception &) {
-        fmt::print(stderr, "Invalid PDB/PQR file\n");
+        fmt::print(stderr, "Invalid mmCIF file\n");
         exit(EXIT_FILE_ERROR);
     }
 

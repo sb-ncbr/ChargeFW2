@@ -66,7 +66,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
                 double x, y, z;
 
                 size_t residue_id = 0;
-                std::string residue = "UNK";
+                std::string residue = "UNL";
                 as >> idx >> atom_name >> x >> y >> z >> atom_type;
                 as >> residue_id >> residue;
 
@@ -86,7 +86,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
             /* Read @<TRIPOS>BOND */
             std::getline(file, line);
             if (line != "@<TRIPOS>BOND") {
-                fmt::print(stderr, "No MOLECULE record\n");
+                fmt::print(stderr, "No BOND record\n");
                 throw std::exception();
             }
 
