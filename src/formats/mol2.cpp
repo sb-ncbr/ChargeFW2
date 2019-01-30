@@ -11,6 +11,7 @@
 #include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
+#include "../charges.h"
 #include "../periodic_table.h"
 #include "mol2.h"
 #include "config.h"
@@ -121,4 +122,53 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
     }
 
     return MoleculeSet(std::move(molecules));
+}
+
+
+void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
+    auto file = std::fopen(filename.c_str(), "w");
+    if (!file) {
+        fmt::print(stderr, "Cannot open file: {}\n", filename);
+        exit(EXIT_FILE_ERROR);
+    }
+
+    for (const auto &molecule: ms.molecules()) {
+        try {
+            auto chg = charges[molecule.name()];
+            fmt::print(file, "@<TRIPOS>MOLECULE\n");
+            fmt::print(file, "{}\n", molecule.name());
+            fmt::print(file, "{} {}\n", molecule.atoms().size(), molecule.bonds().size());
+
+            /* Try to guess if the molecule is protein or not */
+            if (molecule.atoms()[0].residue_id()) {
+                fmt::print(file, "PROTEIN\n");
+            } else {
+                fmt::print(file, "SMALL\n");
+            }
+            fmt::print(file, "USER_CHARGES\n");
+            fmt::print(file, "****\n");
+            fmt::print(file, "Charges calculated by ChargeFW2 {}, method: {}\n", VERSION, charges.method_name());
+
+            fmt::print(file, "@<TRIPOS>ATOM\n");
+            for (size_t i = 0; i < molecule.atoms().size(); i++) {
+                const auto &atom = molecule.atoms()[i];
+                fmt::print(file, "{:>5d} {:>3s} {:>8.3f} {:>8.3f} {:>8.3f} {:s} {:>3d} {:>3s} {:>6.3f}\n",
+                           i + 1, atom.name(), atom.pos()[0], atom.pos()[1], atom.pos()[2], atom.element().symbol(),
+                           atom.residue_id(), atom.residue(), chg[i]);
+            }
+
+            fmt::print(file, "@<TRIPOS>BOND\n");
+            for(size_t i = 0; i < molecule.bonds().size(); i++) {
+                const auto &bond = molecule.bonds()[i];
+                fmt::print(file, "{:>5d} {:>5d} {:>5d} {:>2d}\n",
+                        i + 1, bond.first().index() + 1, bond.second().index() + 1, bond.order());
+            };
+
+
+        }
+        catch (std::out_of_range &) {
+            /* Do nothing */
+        }
+    }
+    fclose(file);
 }

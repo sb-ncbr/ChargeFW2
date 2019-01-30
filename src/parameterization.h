@@ -20,7 +20,7 @@ class Parameterization {
     boost::shared_ptr<Method> method_;
     const Charges &reference_charges_;
     std::unique_ptr<Parameters> parameters_;
-    std::string charge_output_file_;
+    std::string charge_output_dir_;
     std::string parameters_output_file_;
 
 public:

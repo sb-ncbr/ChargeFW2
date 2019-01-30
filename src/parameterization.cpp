@@ -5,12 +5,14 @@
 #include <vector>
 #include <set>
 #include <fmt/format.h>
+#include <filesystem>
 #include <nlopt.hpp>
 
 #include "parameterization.h"
 #include "parameters.h"
 #include "charges.h"
 #include "statistics.h"
+#include "formats/txt.h"
 #include "external/lhs/latin_random.hpp"
 
 
@@ -88,7 +90,12 @@ void Parameterization::parametrize() {
     for (const auto &molecule: set_.molecules()) {
         charges.insert(molecule.name(), method_->calculate_charges(molecule));
     }
-    charges.save_to_file(charge_output_file_);
+
+    auto txt = TXT();
+    std::filesystem::path dir(charge_output_dir_);
+    std::filesystem::path file("charges.txt");
+
+    txt.save_charges(set_, charges, dir / file);
 }
 
 
@@ -96,7 +103,7 @@ Parameterization::Parameterization(const MoleculeSet &ms, boost::shared_ptr<Meth
                                    const Charges &reference_charges, const std::string &charge_output_file,
                                    const std::string &parameters_output_file) :
         set_{ms}, method_{method}, reference_charges_{reference_charges},
-        charge_output_file_{charge_output_file}, parameters_output_file_{parameters_output_file} {
+        charge_output_dir_{charge_output_file}, parameters_output_file_{parameters_output_file} {
 
     parameters_ = std::unique_ptr<Parameters>();
     parameters_ = std::make_unique<Parameters>(ms, method);

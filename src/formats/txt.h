@@ -1,18 +1,16 @@
 //
-// Created by krab1k on 24.1.19.
+// Created by krab1k on 30.1.19.
 //
 
 #pragma once
 
-#include "reader.h"
+#include <string>
+
 #include "writer.h"
 #include "../charges.h"
 
 
-class Mol2 : public Reader, public Writer {
-
+class TXT : public Writer {
 public:
-    MoleculeSet read_file(const std::string &filename) override;
-
     void save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) override;
 };

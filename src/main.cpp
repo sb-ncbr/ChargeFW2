@@ -12,6 +12,7 @@
 #include "formats/mol2.h"
 #include "formats/pdb.h"
 #include "formats/mmcif.h"
+#include "formats/txt.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
 #include "charges.h"
@@ -33,7 +34,7 @@ int main(int argc, char **argv) {
             ("input-file", po::value<std::string>(), "Input file")
             ("par-file", po::value<std::string>(), "File with parameters (json)")
             ("ref-chg-file", po::value<std::string>(), "File with reference charges")
-            ("chg-file", po::value<std::string>(), "File to output charges to")
+            ("chg-out-dir", po::value<std::string>(), "Directory to output charges to")
             ("method", po::value<std::string>(), "Method");
 
     po::variables_map vm;
@@ -88,8 +89,8 @@ int main(int argc, char **argv) {
         m.info();
 
     } else if (mode == "charges") {
-        if (!vm.count("chg-file")) {
-            fmt::print(stderr, "File where to store charges must be provided\n");
+        if (!vm.count("chg-out-dir")) {
+            fmt::print(stderr, "Directory where to store charges must be provided\n");
             exit(EXIT_PARAMETER_ERROR);
         }
 
@@ -98,7 +99,7 @@ int main(int argc, char **argv) {
             exit(EXIT_PARAMETER_ERROR);
         }
 
-        auto chg_name = vm["chg-file"].as<std::string>();
+        auto chg_out_dir = vm["chg-out-dir"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
 
         boost::shared_ptr<Method> method;
@@ -177,6 +178,8 @@ int main(int argc, char **argv) {
 
         auto charges = Charges();
 
+        charges.set_method_name(method_name);
+
         clock_t begin = clock();
 
         for (auto &mol: m.molecules()) {
@@ -187,7 +190,17 @@ int main(int argc, char **argv) {
 
         fmt::print("Computation took {:.2f} seconds\n", double(end - begin) / CLOCKS_PER_SEC);
 
-        charges.save_to_file(chg_name);
+        auto txt = TXT();
+        auto mol2 = Mol2();
+
+        std::filesystem::path dir(chg_out_dir);
+        std::filesystem::path file(input_name);
+        auto mol2_str = file.filename().string() + ".mol2";
+        auto txt_str = file.filename().string() + ".txt";
+
+        mol2.save_charges(m, charges, dir / std::filesystem::path(mol2_str));
+        txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
+
 
     } else if (mode == "best-parameters") {
         if (!vm.count("method")) {
@@ -225,8 +238,8 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
-        if (!vm.count("chg-file")) {
-            fmt::print(stderr, "File where to store charges must be provided");
+        if (!vm.count("chg-out-dir")) {
+            fmt::print(stderr, "Directory where to store charges must be provided");
             exit(EXIT_FAILURE);
         }
 
@@ -240,7 +253,7 @@ int main(int argc, char **argv) {
             exit(EXIT_FAILURE);
         }
 
-        auto out_charge_name = vm["chg-file"].as<std::string>();
+        auto chg_out_dir = vm["chg-out-dir"].as<std::string>();
         auto par_name = vm["par-file"].as<std::string>();
         auto ref_charge_name = vm["ref-chg-file"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
@@ -259,7 +272,7 @@ int main(int argc, char **argv) {
 
         Charges reference_charges(ref_charge_name);
 
-        auto p = Parameterization(m, method, reference_charges, out_charge_name, par_name);
+        auto p = Parameterization(m, method, reference_charges, chg_out_dir, par_name);
         p.parametrize();
 
     } else {
