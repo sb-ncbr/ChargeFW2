@@ -70,12 +70,15 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             auto atom_name = records[it->second];
 
             it = record_positions.find("label_seq_id");
-            auto residue_id = std::stoul(records[it->second]);
+            auto residue_id = std::stoi(records[it->second]);
 
             it = record_positions.find("label_comp_id");
             auto residue = records[it->second];
 
-            atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue);
+            it = record_positions.find("label_asym_id");
+            auto chain_id = records[it->second];
+
+            atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
 
             idx++;
             std::getline(file, line);

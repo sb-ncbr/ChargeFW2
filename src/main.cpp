@@ -11,6 +11,7 @@
 #include "formats/sdf.h"
 #include "formats/mol2.h"
 #include "formats/pdb.h"
+#include "formats/pqr.h"
 #include "formats/mmcif.h"
 #include "formats/txt.h"
 #include "structures/molecule_set.h"
@@ -67,6 +68,7 @@ int main(int argc, char **argv) {
 
     auto ext = std::filesystem::path(input_name).extension();
 
+    bool protein_structure = false;
     std::unique_ptr<Reader> reader;
     if (ext == ".sdf") {
         reader = std::make_unique<SDF>();
@@ -74,8 +76,10 @@ int main(int argc, char **argv) {
         reader = std::make_unique<Mol2>();
     } else if (ext == ".pdb") {
         reader = std::make_unique<PDB>();
+        protein_structure = true;
     } else if (ext == ".cif") {
         reader = std::make_unique<mmCIF>();
+        protein_structure = true;
     } else {
         fmt::print(stderr, "Filetype {} not supported\n", ext);
         exit(EXIT_FILE_ERROR);
@@ -191,15 +195,23 @@ int main(int argc, char **argv) {
         fmt::print("Computation took {:.2f} seconds\n", double(end - begin) / CLOCKS_PER_SEC);
 
         auto txt = TXT();
-        auto mol2 = Mol2();
-
         std::filesystem::path dir(chg_out_dir);
         std::filesystem::path file(input_name);
-        auto mol2_str = file.filename().string() + ".mol2";
         auto txt_str = file.filename().string() + ".txt";
-
-        mol2.save_charges(m, charges, dir / std::filesystem::path(mol2_str));
         txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
+
+        if (protein_structure) {
+            auto pqr = PQR();
+            auto pqr_str = file.filename().string() + ".pqr";
+            pqr.save_charges(m, charges, dir / std::filesystem::path(pqr_str));
+
+
+        } else {
+            auto mol2 = Mol2();
+            auto mol2_str = file.filename().string() + ".mol2";
+            mol2.save_charges(m, charges, dir / std::filesystem::path(mol2_str));
+        }
+
 
 
     } else if (mode == "best-parameters") {

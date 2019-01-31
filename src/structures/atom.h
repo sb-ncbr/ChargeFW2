@@ -22,16 +22,17 @@ class Atom {
     size_t atom_type_{};
     int formal_charge_{};
     std::string atom_name_{};
-    size_t residue_id_{};
+    int residue_id_{};
     std::string residue_{};
+    std::string chain_id_{};
 
     friend class Molecule;
 
     friend class MoleculeSet;
 
 public:
-    Atom(size_t index, const Element *element, double x, double y, double z, std::string atom_name, size_t residue_id,
-         std::string residue);
+    Atom(size_t index, const Element *element, double x, double y, double z, std::string atom_name, int residue_id,
+         std::string residue, std::string chain_id);
 
     size_t index() const { return index_; }
 
@@ -45,9 +46,11 @@ public:
 
     size_t atom_type() const { return atom_type_; }
 
-    size_t residue_id() const { return residue_id_; }
+    int residue_id() const { return residue_id_; }
 
     std::string residue() const { return residue_; }
+
+    std::string chain_id() const { return chain_id_; }
 
     std::string name() const { return atom_name_; }
 

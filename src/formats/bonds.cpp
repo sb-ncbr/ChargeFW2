@@ -100,8 +100,8 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
     update_bonds(bonds, atoms, residue_atoms);
 
     /* Add bonds on the protein backbone */
-    std::map<size_t, const Atom *> N_backbone;
-    std::map<size_t, const Atom *> C_backbone;
+    std::map<int, const Atom *> N_backbone;
+    std::map<int, const Atom *> C_backbone;
 
     for (const auto &atom: *atoms) {
         if (atom.name() == "C") {

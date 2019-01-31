@@ -80,7 +80,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 
                 auto element = PeriodicTable::pte().getElement(element_symbol);
 
-                atoms->emplace_back(i, element, x, y, z, atom_name, residue_id, residue);
+                atoms->emplace_back(i, element, x, y, z, atom_name, residue_id, residue, "");
             }
 
             /* Read @<TRIPOS>BOND */
@@ -140,10 +140,10 @@ void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std
             fmt::print(file, "{} {}\n", molecule.atoms().size(), molecule.bonds().size());
 
             /* Try to guess if the molecule is protein or not */
-            if (molecule.atoms()[0].residue_id()) {
-                fmt::print(file, "PROTEIN\n");
-            } else {
+            if (molecule.atoms()[0].chain_id().empty()) {
                 fmt::print(file, "SMALL\n");
+            } else {
+                fmt::print(file, "PROTEIN\n");
             }
             fmt::print(file, "USER_CHARGES\n");
             fmt::print(file, "****\n");
@@ -152,7 +152,7 @@ void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std
             fmt::print(file, "@<TRIPOS>ATOM\n");
             for (size_t i = 0; i < molecule.atoms().size(); i++) {
                 const auto &atom = molecule.atoms()[i];
-                fmt::print(file, "{:>5d} {:>3s} {:>8.3f} {:>8.3f} {:>8.3f} {:s} {:>3d} {:>3s} {:>6.3f}\n",
+                fmt::print(file, "{:>5d} {:<6s} {:>8.3f} {:>8.3f} {:>8.3f} {:s} {:>3d} {:>3s} {:>6.3f}\n",
                            i + 1, atom.name(), atom.pos()[0], atom.pos()[1], atom.pos()[2], atom.element().symbol(),
                            atom.residue_id(), atom.residue(), chg[i]);
             }

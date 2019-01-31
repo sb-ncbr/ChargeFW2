@@ -8,9 +8,10 @@
 #include "../periodic_table.h"
 
 
-Atom::Atom(size_t idx, const Element *element, double x, double y, double z, std::string atom_name, size_t residue_id,
-           std::string residue_name) : index_{idx}, element_{element}, atom_name_{std::move(atom_name)},
-                                       residue_id_{residue_id}, residue_{std::move(residue_name)} {
+Atom::Atom(size_t idx, const Element *element, double x, double y, double z, std::string atom_name, int residue_id,
+           std::string residue_name, std::string chain_id) :
+        index_{idx}, element_{element}, atom_name_{std::move(atom_name)}, residue_id_{residue_id},
+        residue_{std::move(residue_name)}, chain_id_{std::move(chain_id)} {
     pos_[0] = x;
     pos_[1] = y;
     pos_[2] = z;
