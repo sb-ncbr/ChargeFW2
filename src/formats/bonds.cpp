@@ -11,6 +11,7 @@
 #include <sstream>
 
 #include "bonds.h"
+#include "common.h"
 #include "../structures/atom.h"
 #include "../structures/bond.h"
 #include "config.h"
@@ -44,6 +45,9 @@ std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> lo
             std::getline(file, line);
             std::stringstream ss(line);
             ss >> atom1_name >> atom2_name >> bond_order;
+
+            atom1_name = fix_atom_name(atom1_name);
+            atom2_name = fix_atom_name(atom2_name);
 
             residues_info[residue].emplace_back(atom1_name, atom2_name, bond_order);
         }

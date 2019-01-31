@@ -8,6 +8,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "pdb.h"
+#include "common.h"
 #include "config.h"
 #include "bonds.h"
 #include "../periodic_table.h"
@@ -27,9 +28,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
 
         auto atoms = std::make_unique<std::vector<Atom>>();
 
-        /* Read header record and the pdbid */
-        std::getline(file, line);
-        std::string name = line.substr(62, 4);
+        std::string name = filename;
 
         size_t idx = 0;
         while (std::getline(file, line)) {
@@ -42,10 +41,9 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                 auto x = std::stod(line.substr(30, 8));
                 auto y = std::stod(line.substr(38, 8));
                 auto z = std::stod(line.substr(46, 8));
-                auto element_symbol = line.substr(76, 2);
-                boost::trim(element_symbol);
+                auto symbol = line.substr(76, 2);
 
-                auto element = PeriodicTable::pte().getElement(element_symbol);
+                auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
 
                 atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
                 idx++;

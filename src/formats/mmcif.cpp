@@ -9,6 +9,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "mmcif.h"
+#include "common.h"
 #include "bonds.h"
 #include "config.h"
 #include "../periodic_table.h"
@@ -28,7 +29,11 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
     try {
         auto atoms = std::make_unique<std::vector<Atom>>();
         do {
-            std::getline(file, line);
+            if (not std::getline(file, line)) {
+                fmt::print(stderr, "Invalid mmCIF file: No _atom_site record found.\n");
+                exit(EXIT_FILE_ERROR);
+            }
+
             if (boost::starts_with(line, "_entry.id")) {
                 std::stringstream ss(line);
                 ss >> name >> name;
@@ -63,11 +68,11 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             auto z = std::stod(records[it->second]);
 
             it = record_positions.find("type_symbol");
-            auto element_symbol = records[it->second];
-            auto element = PeriodicTable::pte().getElement(element_symbol);
+            auto symbol = records[it->second];
+            auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
 
             it = record_positions.find("label_atom_id");
-            auto atom_name = records[it->second];
+            auto atom_name = fix_atom_name(records[it->second]);
 
             it = record_positions.find("label_seq_id");
             auto residue_id = std::stoi(records[it->second]);

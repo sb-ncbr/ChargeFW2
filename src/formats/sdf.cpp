@@ -9,12 +9,12 @@
 #include <vector>
 #include <memory>
 #include <fmt/format.h>
-#include <boost/algorithm/string.hpp>
 
 #include "../structures/atom.h"
 #include "../structures/bond.h"
 #include "../structures/molecule.h"
 #include "../periodic_table.h"
+#include "common.h"
 #include "sdf.h"
 #include "config.h"
 
@@ -51,11 +51,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                     double y = std::stod(line.substr(10, 10));
                     double z = std::stod(line.substr(20, 10));
 
-                    auto element_symbol = boost::trim_copy(line.substr(31, 3));
-                    boost::to_lower(element_symbol);
-                    element_symbol[0] = static_cast<char>(std::toupper(element_symbol[0]));
-
-                    auto element = PeriodicTable::pte().getElement(element_symbol);
+                    auto element = PeriodicTable::pte().getElement(get_element_symbol(line.substr(31, 3)));
 
                     atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "");
                 }
@@ -114,11 +110,11 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                     ss.str(line.substr(7));
                     ss.clear();
 
-                    std::string element_symbol;
+                    std::string symbol;
                     size_t idx;
                     double x, y, z;
                     int formal_charge = 0;
-                    ss >> idx >> element_symbol >> x >> y >> z;
+                    ss >> idx >> symbol >> x >> y >> z;
 
                     /* Search for charge data */
                     auto pos = line.find("CHG=");
@@ -141,10 +137,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
                     charges[idx - 1] = formal_charge;
 
-                    boost::to_lower(element_symbol);
-                    element_symbol[0] = static_cast<char>(std::toupper(element_symbol[0]));
-
-                    auto element = PeriodicTable::pte().getElement(element_symbol);
+                    auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
 
                     atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "");
                 }
