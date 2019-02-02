@@ -1,5 +1,6 @@
 find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
 find_package(fmt REQUIRED)
+find_package(nanoflann REQUIRED)
 
 include_directories(${PROJECT_BINARY_DIR}/src)
 

@@ -24,6 +24,8 @@
 
 std::string best_parameters(MoleculeSet &ms, const boost::shared_ptr<Method> &method);
 
+boost::shared_ptr<Method> load_method(const std::string &method_name);
+
 
 int main(int argc, char **argv) {
     namespace po = boost::program_options;
@@ -106,15 +108,7 @@ int main(int argc, char **argv) {
         auto chg_out_dir = vm["chg-out-dir"].as<std::string>();
         auto method_name = vm["method"].as<std::string>();
 
-        boost::shared_ptr<Method> method;
-
-        try {
-            method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
-                                                boost::dll::load_mode::append_decorations);
-        } catch (std::exception &) {
-            fmt::print(stderr, "Unable to load method {}\n", method_name);
-            exit(EXIT_PARAMETER_ERROR);
-        }
+        boost::shared_ptr<Method> method = load_method(method_name);
 
         po::options_description method_options("Method options");
         for (const auto &[opt, info]: method->get_options()) {
@@ -204,14 +198,11 @@ int main(int argc, char **argv) {
             auto pqr = PQR();
             auto pqr_str = file.filename().string() + ".pqr";
             pqr.save_charges(m, charges, dir / std::filesystem::path(pqr_str));
-
-
         } else {
             auto mol2 = Mol2();
             auto mol2_str = file.filename().string() + ".mol2";
             mol2.save_charges(m, charges, dir / std::filesystem::path(mol2_str));
         }
-
 
 
     } else if (mode == "best-parameters") {
@@ -222,15 +213,7 @@ int main(int argc, char **argv) {
 
         auto method_name = vm["method"].as<std::string>();
 
-        boost::shared_ptr<Method> method;
-
-        try {
-            method = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
-                                                boost::dll::load_mode::append_decorations);
-        } catch (std::exception &) {
-            fmt::print(stderr, "Unable to load method {}\n", method_name);
-            exit(EXIT_PARAMETER_ERROR);
-        }
+        boost::shared_ptr<Method> method = load_method(method_name);
 
         if (!method->has_parameters()) {
             fmt::print(stderr, "Method uses no parameters\n");
@@ -240,10 +223,6 @@ int main(int argc, char **argv) {
         fmt::print("Best parameters are: {}\n", best_parameters(m, method));
 
     } else if (mode == "parameters") {
-        if (!vm.count("input-file")) {
-            fmt::print(stderr, "Input file must be provided");
-            exit(EXIT_FAILURE);
-        }
 
         if (!vm.count("ref-chg-file")) {
             fmt::print(stderr, "File with reference charges must be provided");
@@ -272,15 +251,7 @@ int main(int argc, char **argv) {
 
         m.classify_atoms(AtomClassifier::PLAIN);
 
-        boost::shared_ptr<Method> method;
-
-        try {
-            method = boost::dll::import<Method>("../lib/" + method_name, "method",
-                                                boost::dll::load_mode::append_decorations);
-        } catch (std::exception &) {
-            fmt::print(stderr, "Unable to load method {}\n", method_name);
-            exit(EXIT_FAILURE);
-        }
+        boost::shared_ptr<Method> method = load_method(method_name);
 
         Charges reference_charges(ref_charge_name);
 
@@ -320,4 +291,15 @@ std::string best_parameters(MoleculeSet &ms, const boost::shared_ptr<Method> &me
     }
 
     return best_name;
+}
+
+
+boost::shared_ptr<Method> load_method(const std::string &method_name) {
+    try {
+        return boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
+                                          boost::dll::load_mode::append_decorations);
+    } catch (std::exception &) {
+        fmt::print(stderr, "Unable to load method {}\n", method_name);
+        exit(EXIT_PARAMETER_ERROR);
+    }
 }
