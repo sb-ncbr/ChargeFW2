@@ -10,7 +10,7 @@
 
 class Reader {
 public:
-    virtual MoleculeSet read_file(const std::string &filename) = 0;
+    virtual MoleculeSet read_file(const std::string &filename, bool read_hetatms) = 0;
 
     virtual ~Reader();
 };

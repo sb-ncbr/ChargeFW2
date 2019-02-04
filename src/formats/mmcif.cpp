@@ -15,7 +15,7 @@
 #include "../periodic_table.h"
 
 
-MoleculeSet mmCIF::read_file(const std::string &filename) {
+MoleculeSet mmCIF::read_file(const std::string &filename, bool read_hetatms) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);
@@ -58,6 +58,11 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             std::vector<std::string> records{std::istream_iterator<std::string>(ss),
                                              std::istream_iterator<std::string>{}};
 
+            bool hetatm = false;
+            if (line[0] == 'H') {
+                hetatm = true;
+            }
+
             auto it = record_positions.find("Cartn_x");
             auto x = std::stod(records[it->second]);
 
@@ -74,8 +79,12 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             it = record_positions.find("label_atom_id");
             auto atom_name = fix_atom_name(records[it->second]);
 
-            it = record_positions.find("label_seq_id");
-            auto residue_id = std::stoi(records[it->second]);
+            int residue_id = 0;
+            /* HETATM record does not have label_seq_id */
+            if (not hetatm) {
+                it = record_positions.find("label_seq_id");
+                residue_id = std::stoi(records[it->second]);
+            }
 
             it = record_positions.find("label_comp_id");
             auto residue = records[it->second];
@@ -88,7 +97,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             idx++;
             std::getline(file, line);
             boost::trim(line);
-        } while (boost::starts_with(line, "ATOM"));
+        } while (boost::starts_with(line, "ATOM") or (read_hetatms and boost::starts_with(line, "HETATM")));
 
         auto bonds = get_bonds(atoms);
         std::map<size_t, int> charges;

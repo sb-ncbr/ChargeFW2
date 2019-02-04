@@ -17,7 +17,7 @@
 #include "config.h"
 
 
-MoleculeSet Mol2::read_file(const std::string &filename) {
+MoleculeSet Mol2::read_file(const std::string &filename, bool) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);

@@ -11,5 +11,5 @@
 class mmCIF: public Reader {
 
 public:
-    MoleculeSet read_file(const std::string &filename) override;
+    MoleculeSet read_file(const std::string &filename, bool read_hetatms) override;
 };

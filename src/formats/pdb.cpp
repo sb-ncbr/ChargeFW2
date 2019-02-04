@@ -14,7 +14,7 @@
 #include "../periodic_table.h"
 
 
-MoleculeSet PDB::read_file(const std::string &filename) {
+MoleculeSet PDB::read_file(const std::string &filename, bool read_hetatms) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);
@@ -31,8 +31,11 @@ MoleculeSet PDB::read_file(const std::string &filename) {
         std::string name = filename;
 
         size_t idx = 0;
+        bool atom_block_found = false;
         while (std::getline(file, line)) {
-            if (boost::starts_with(line, "ATOM")) {
+            if (boost::starts_with(line, "ATOM") or (read_hetatms and boost::starts_with(line, "HETATM"))) {
+                atom_block_found = true;
+
                 std::string atom_name = line.substr(12, 4);
                 boost::trim(atom_name);
                 auto residue = line.substr(17, 3);
@@ -47,6 +50,12 @@ MoleculeSet PDB::read_file(const std::string &filename) {
 
                 atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
                 idx++;
+            } else if (boost::starts_with(line, "TER")) {
+                /* Chain ended, look for next one */
+                continue;
+            } else if (atom_block_found) {
+                /* We are done reading ATOM and HETATM records */
+                break;
             }
         }
 
