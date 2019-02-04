@@ -14,7 +14,7 @@
 #include "../periodic_table.h"
 
 
-MoleculeSet PDB::read_file(const std::string &filename, bool read_hetatms) {
+MoleculeSet PDB::read_file(const std::string &filename, bool read_hetatms, bool ignore_water) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);
@@ -39,6 +39,10 @@ MoleculeSet PDB::read_file(const std::string &filename, bool read_hetatms) {
                 std::string atom_name = line.substr(12, 4);
                 boost::trim(atom_name);
                 auto residue = line.substr(17, 3);
+                if (ignore_water and residue == "HOH") {
+                    continue;
+                }
+
                 auto residue_id = std::stoi(line.substr(22, 4));
                 auto chain_id = line.substr(21, 1);
                 auto x = std::stod(line.substr(30, 8));

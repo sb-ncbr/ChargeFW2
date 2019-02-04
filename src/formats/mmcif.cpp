@@ -15,7 +15,7 @@
 #include "../periodic_table.h"
 
 
-MoleculeSet mmCIF::read_file(const std::string &filename, bool read_hetatms) {
+MoleculeSet mmCIF::read_file(const std::string &filename, bool read_hetatms, bool ignore_water) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);
@@ -92,9 +92,11 @@ MoleculeSet mmCIF::read_file(const std::string &filename, bool read_hetatms) {
             it = record_positions.find("label_asym_id");
             auto chain_id = records[it->second];
 
-            atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
+            if (not ignore_water or residue != "HOH") {
+                atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
+                idx++;
+            }
 
-            idx++;
             std::getline(file, line);
             boost::trim(line);
         } while (boost::starts_with(line, "ATOM") or (read_hetatms and boost::starts_with(line, "HETATM")));

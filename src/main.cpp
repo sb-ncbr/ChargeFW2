@@ -39,6 +39,7 @@ int main(int argc, char **argv) {
             ("ref-chg-file", po::value<std::string>(), "File with reference charges")
             ("chg-out-dir", po::value<std::string>(), "Directory to output charges to")
             ("read-hetatm", po::bool_switch()->default_value(false), "Read HETATM records from PDB/mmCIF files")
+            ("ignore-water", po::bool_switch()->default_value(false), "Discard water molecules from PDB/mmCIF files")
             ("method", po::value<std::string>(), "Method");
 
     po::variables_map vm;
@@ -88,7 +89,7 @@ int main(int argc, char **argv) {
         exit(EXIT_FILE_ERROR);
     }
 
-    MoleculeSet m = reader->read_file(input_name, vm["read-hetatm"].as<bool>());
+    MoleculeSet m = reader->read_file(input_name, vm["read-hetatm"].as<bool>(), vm["ignore-water"].as<bool>());
 
     auto mode = vm["mode"].as<std::string>();
     if (mode == "info") {

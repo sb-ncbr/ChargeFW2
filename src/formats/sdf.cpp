@@ -19,7 +19,7 @@
 #include "config.h"
 
 
-MoleculeSet SDF::read_file(const std::string &filename, bool) {
+MoleculeSet SDF::read_file(const std::string &filename, bool, bool) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print("Cannot open file: {}\n", filename);
