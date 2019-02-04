@@ -9,11 +9,11 @@
 #include <string>
 #include <fmt/format.h>
 
+#include "chargefw2.h"
 #include "molecule_set.h"
 #include "../periodic_table.h"
 #include "../parameters.h"
 #include "../method.h"
-#include "config.h"
 
 
 MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : molecules_{std::move(molecules)} {

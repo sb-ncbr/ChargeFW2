@@ -12,5 +12,5 @@
 class SDF: public Reader {
 
 public:
-    MoleculeSet read_file(const std::string &filename, bool, bool) override;
+    MoleculeSet read_file(const std::string &filename) override;
 };

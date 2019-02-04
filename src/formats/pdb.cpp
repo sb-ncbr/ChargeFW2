@@ -7,14 +7,15 @@
 #include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
+#include "chargefw2.h"
+#include "../config.h"
 #include "pdb.h"
 #include "common.h"
-#include "config.h"
 #include "bonds.h"
 #include "../periodic_table.h"
 
 
-MoleculeSet PDB::read_file(const std::string &filename, bool read_hetatms, bool ignore_water) {
+MoleculeSet PDB::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);
@@ -33,13 +34,13 @@ MoleculeSet PDB::read_file(const std::string &filename, bool read_hetatms, bool 
         size_t idx = 0;
         bool atom_block_found = false;
         while (std::getline(file, line)) {
-            if (boost::starts_with(line, "ATOM") or (read_hetatms and boost::starts_with(line, "HETATM"))) {
+            if (boost::starts_with(line, "ATOM") or (config::read_hetatm and boost::starts_with(line, "HETATM"))) {
                 atom_block_found = true;
 
                 std::string atom_name = line.substr(12, 4);
                 boost::trim(atom_name);
                 auto residue = line.substr(17, 3);
-                if (ignore_water and residue == "HOH") {
+                if (config::ignore_water and residue == "HOH") {
                     continue;
                 }
 

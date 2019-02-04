@@ -13,7 +13,6 @@
 #include <functional>
 #include <tuple>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 #include "structures/atom.h"
 #include "structures/bond.h"
@@ -88,7 +87,7 @@ class Parameters {
 public:
     explicit Parameters(const std::string &filename);
 
-    explicit Parameters(const MoleculeSet &ms, boost::shared_ptr<Method> method);
+    explicit Parameters(const MoleculeSet &ms, std::shared_ptr<Method> method);
 
     void print() const;
 

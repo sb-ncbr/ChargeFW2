@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <boost/shared_ptr.hpp>
 #include <string>
 
 #include "structures/molecule_set.h"
@@ -17,21 +16,21 @@
 
 class Parameterization {
     const MoleculeSet &set_;
-    boost::shared_ptr<Method> method_;
+    std::shared_ptr<Method> method_;
     const Charges &reference_charges_;
     std::unique_ptr<Parameters> parameters_;
     std::string charge_output_dir_;
     std::string parameters_output_file_;
 
 public:
-    Parameterization(const MoleculeSet &ms, boost::shared_ptr<Method> method, const Charges &reference_charges,
+    Parameterization(const MoleculeSet &ms, std::shared_ptr<Method> method, const Charges &reference_charges,
                      const std::string &charge_output_file, const std::string &parameters_output_file);
 
     void parametrize();
 
     const MoleculeSet &set() const { return set_; }
 
-    boost::shared_ptr<Method> method() { return method_; }
+    std::shared_ptr<Method> method() { return method_; }
 
     const Charges &reference_charges() const { return reference_charges_; }
 };

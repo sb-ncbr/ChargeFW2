@@ -10,11 +10,11 @@
 #include <map>
 #include <sstream>
 
+#include "chargefw2.h"
 #include "bonds.h"
 #include "common.h"
 #include "../structures/atom.h"
 #include "../structures/bond.h"
-#include "config.h"
 
 
 std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> load_residues_info();

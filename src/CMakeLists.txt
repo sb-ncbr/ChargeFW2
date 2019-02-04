@@ -4,9 +4,9 @@ find_package(nanoflann REQUIRED)
 
 include_directories(${PROJECT_BINARY_DIR}/src)
 
-configure_file(config.h.in config.h)
+configure_file(chargefw2.h.in chargefw2.h)
 
-SET(COMMON_LIBS parameters geometry element method)
+SET(COMMON_LIBS parameters geometry element method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
     target_link_libraries(${lib} structures fmt::fmt-header-only)

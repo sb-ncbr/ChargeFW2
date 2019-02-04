@@ -8,9 +8,9 @@
 #include <sstream>
 #include <fmt/format.h>
 
+#include "chargefw2.h"
 #include "element.h"
 #include "periodic_table.h"
-#include "config.h"
 
 
 PeriodicTable::PeriodicTable() {

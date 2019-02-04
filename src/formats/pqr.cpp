@@ -4,10 +4,10 @@
 
 #include <string>
 
+#include "chargefw2.h"
 #include "pqr.h"
 #include "../structures/molecule_set.h"
 #include "../charges.h"
-#include "config.h"
 
 
 void PQR::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {

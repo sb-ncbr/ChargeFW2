@@ -5,9 +5,9 @@
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 
+#include "chargefw2.h"
 #include "method.h"
 #include "parameters.h"
-#include "config.h"
 
 
 std::vector<RequiredFeatures> Method::get_requirements() const {

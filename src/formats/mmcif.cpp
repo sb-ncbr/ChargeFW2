@@ -8,14 +8,15 @@
 #include <fstream>
 #include <boost/algorithm/string.hpp>
 
+#include "chargefw2.h"
+#include "../config.h"
 #include "mmcif.h"
 #include "common.h"
 #include "bonds.h"
-#include "config.h"
 #include "../periodic_table.h"
 
 
-MoleculeSet mmCIF::read_file(const std::string &filename, bool read_hetatms, bool ignore_water) {
+MoleculeSet mmCIF::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);
@@ -92,14 +93,14 @@ MoleculeSet mmCIF::read_file(const std::string &filename, bool read_hetatms, boo
             it = record_positions.find("label_asym_id");
             auto chain_id = records[it->second];
 
-            if (not ignore_water or residue != "HOH") {
+            if (not config::ignore_water or residue != "HOH") {
                 atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
                 idx++;
             }
 
             std::getline(file, line);
             boost::trim(line);
-        } while (boost::starts_with(line, "ATOM") or (read_hetatms and boost::starts_with(line, "HETATM")));
+        } while (boost::starts_with(line, "ATOM") or (config::read_hetatm and boost::starts_with(line, "HETATM")));
 
         auto bonds = get_bonds(atoms);
         std::map<size_t, int> charges;

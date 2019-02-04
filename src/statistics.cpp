@@ -5,9 +5,9 @@
 #include <cmath>
 #include <fmt/format.h>
 
+#include "chargefw2.h"
 #include "charges.h"
 #include "statistics.h"
-#include "config.h"
 
 
 double RMSD(const Charges &charges1, const Charges &charges2) {

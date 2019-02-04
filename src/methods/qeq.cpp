@@ -7,9 +7,9 @@
 #include <mkl_lapacke.h>
 #include <mkl.h>
 
-#include "../structures/atom.h"
+#include "chargefw2.h"
 #include "qeq.h"
-#include "config.h"
+#include "../structures/atom.h"
 #include "../geometry.h"
 #include "../parameters.h"
 

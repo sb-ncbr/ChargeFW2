@@ -11,13 +11,13 @@
 #include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
+#include "chargefw2.h"
 #include "../charges.h"
 #include "../periodic_table.h"
 #include "mol2.h"
-#include "config.h"
 
 
-MoleculeSet Mol2::read_file(const std::string &filename, bool, bool) {
+MoleculeSet Mol2::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Cannot open file: {}\n", filename);

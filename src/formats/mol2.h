@@ -12,7 +12,7 @@
 class Mol2 : public Reader, public Writer {
 
 public:
-    MoleculeSet read_file(const std::string &filename, bool, bool) override;
+    MoleculeSet read_file(const std::string &filename) override;
 
     void save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) override;
 };

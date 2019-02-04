@@ -9,5 +9,5 @@
 class PDB : public Reader {
 
 public:
-    MoleculeSet read_file(const std::string &filename, bool read_hetatms, bool ignore_water) override;
+    MoleculeSet read_file(const std::string &filename) override;
 };
