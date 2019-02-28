@@ -1,6 +1,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 #include <boost/dll/import.hpp>
+#include <fstream>
+#include <nlohmann/json.hpp>
 #include <memory>
 #include <ctime>
 #include <algorithm>
@@ -20,7 +22,10 @@
 #include "method.h"
 #include "config.h"
 #include "parameterization.h"
+#include "utility/utility.h"
 
+
+void get_suitable_methods(MoleculeSet &ms);
 
 std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method);
 
@@ -146,12 +151,62 @@ int main(int argc, char **argv) {
         auto p = Parameterization(m, method, reference_charges, config::chg_out_dir, config::par_file);
         p.parametrize();
 
+    } else if (config::mode == "suitable-methods") {
+        get_suitable_methods(m);
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
         exit(EXIT_PARAMETER_ERROR);
     }
 
     return 0;
+}
+
+
+void get_suitable_methods(MoleculeSet &ms) {
+
+    std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
+    using json = nlohmann::json;
+    json j;
+    std::ifstream f(filename);
+    if (!f) {
+        fmt::print(stderr, "Cannot open file: {}\n", filename);
+        exit(EXIT_FILE_ERROR);
+    }
+
+    f >> j;
+    f.close();
+
+    for (const auto &method_info: j) {
+        auto method = load_method(method_info["internal_name"].get<std::string>());
+
+        /* Methods without parameters should be suitable */
+        if (not method->has_parameters()) {
+            fmt::print("{}\n", method->name());
+            continue;
+        }
+
+        bool parameters_found = false;
+        for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
+            auto p = std::make_unique<Parameters>(set.path());
+
+            if (method->name() != p->method_name())
+                continue;
+
+            size_t unclassified = ms.classify_set_from_parameters(*p, false);
+
+            // If all molecules are covered by the parameters, we found our best
+            if (!unclassified) {
+                if (not parameters_found) {
+                    fmt::print("{} ", method->name());
+                    parameters_found = true;
+                }
+                fmt::print("{} ", std::filesystem::path(set).filename().string());
+            }
+        }
+        if (parameters_found) {
+            fmt::print("\n");
+        }
+    }
 }
 
 

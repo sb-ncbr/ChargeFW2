@@ -1,6 +1,7 @@
 [
   {
     "name": "EEM",
+    "internal_name": "eem",
     "full_name": "Electronegativity Equalization Method",
     "publication" : "10.1021/ja00275a013",
     "type": "3D",
@@ -27,6 +28,7 @@
   },
   {
     "name": "ABEEM",
+    "internal_name": "abeem",
     "full_name": "Atom-Bond Electronegativity Equalization Method",
     "publication" : "10.1021/jp9711048",
     "type": "3D",
@@ -34,6 +36,7 @@
   },
   {
     "name": "SFKEEM",
+    "internal_name": "sfkeem",
     "full_name":  "Selfconsistent Functional Kernel Equalized Electronegativity Method",
     "publication": "10.1021/ci050505e",
     "type": "3D",
@@ -60,6 +63,7 @@
   },
   {
     "name": "QEq",
+    "internal_name": "qeq",
     "full_name": "Charge Equilibration",
     "publication" : "10.1021/j100161a070",
     "type": "3D",
@@ -98,6 +102,7 @@
   },
   {
     "name": "SMP/QEq",
+    "internal_name": "smpqeq",
     "full_name": "Self-Consistent Charge Equilibration Method",
     "publication" : "10.1021/jp8063273",
     "type": "3D",
@@ -124,6 +129,7 @@
   },
   {
     "name": "EQeq",
+    "internal_name": "eqeq",
     "full_name": "Extended Charge Equilibration Method",
     "publication" : "10.1021/jz3008485",
     "type": "3D",
@@ -150,6 +156,7 @@
   },
   {
     "name": "EQeq+C",
+    "internal_name": "eqeqc",
     "full_name": "Bond-Order-Corrected Extended Charge Equilibration Method",
     "publication" : "10.1021/acs.jctc.5b00037",
     "type": "3D",
@@ -176,6 +183,7 @@
   },
   {
     "name": "DelRe",
+    "internal_name": "delre",
     "full_name": "Method of Del Re",
     "publication" : "10.1039/JR9580004031",
     "type": "2D",
@@ -183,6 +191,7 @@
   },
   {
     "name": "PEOE",
+    "internal_name": "peoe",
     "full_name": "Partial Equalization of Atomic Electronegativity",
     "publication" : "10.1016/0040-4020(80)80168-2",
     "type": "2D",
@@ -199,6 +208,7 @@
   },
   {
     "name": "MPEOE",
+    "internal_name": "mpeoe",
     "full_name": "Modified Partial Equalization of Atomic Electronegativity",
     "publication" : "10.1021/j100374a066",
     "type": "2D",
@@ -215,6 +225,7 @@
   },
   {
     "name": "GDAC",
+    "internal_name": "gdac",
     "full_name": "Geometry-Dependent Net Atomic Charges",
     "publication" : "10.1021/jp0023213",
     "type": "3D",
@@ -231,6 +242,7 @@
   },
   {
     "name": "MGC",
+    "internal_name": "mgc",
     "full_name": "Molecular Graph Charge",
     "publication": "10.1002/poc.378",
     "type": "2D",
@@ -238,6 +250,7 @@
   },
   {
     "name": "KCM",
+    "internal_name": "kcm",
     "full_name": "Kirchhoff Charge Model",
     "publication": "10.1002/jcc.20892",
     "type": "2D",
@@ -245,6 +258,7 @@
   },
   {
     "name": "DENR",
+    "internal_name": "denr",
     "full_name": "Dynamical Electronegativity Relaxation",
     "publication": "10.1080/10629360701844142",
     "type": "2D",
@@ -252,6 +266,7 @@
   },
   {
     "name": "TSEF",
+    "internal_name": "tsef",
     "full_name": "Topologically Symmetrical Energy Function",
     "publication": "10.1080/10629360701844142",
     "type": "2D",
@@ -259,6 +274,7 @@
   },
   {
     "name": "Charge2",
+    "internal_name": "charge2",
     "full_name": "Charge2",
     "publication" : "10.1002/jcc.540030316",
     "type": "2D",
@@ -266,6 +282,7 @@
   },
   {
     "name": "VEEM",
+    "internal_name": "veem",
     "full_name": "Valence Electrons Equalization Method",
     "publication" : "10.1088/1674-0068/24/01/31-39",
     "type": "2D",
@@ -273,6 +290,7 @@
   },
   {
     "name": "Formal",
+    "internal_name": "formal",
     "full_name": "Formal charges",
     "type": "other",
     "publication" : null,
