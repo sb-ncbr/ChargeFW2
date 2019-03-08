@@ -53,7 +53,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
                     auto element = PeriodicTable::pte().getElement(get_element_symbol(line.substr(31, 3)));
 
-                    atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "");
+                    atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "", false);
                 }
 
                 auto bonds = std::make_unique<std::vector<Bond> >();
@@ -139,7 +139,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
                     auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
 
-                    atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "");
+                    atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "", false);
                 }
 
                 /* Skip 'M  V30 END ATOM' line */

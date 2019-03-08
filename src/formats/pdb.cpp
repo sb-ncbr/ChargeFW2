@@ -44,6 +44,11 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                     continue;
                 }
 
+                bool hetatm = false;
+                if (line[0] == 'H') {
+                    hetatm = true;
+                }
+
                 auto residue_id = std::stoi(line.substr(22, 4));
                 auto chain_id = line.substr(21, 1);
                 auto x = std::stod(line.substr(30, 8));
@@ -53,7 +58,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
 
                 auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
 
-                atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
+                atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
                 idx++;
             } else if (boost::starts_with(line, "TER")) {
                 /* Chain ended, look for next one */

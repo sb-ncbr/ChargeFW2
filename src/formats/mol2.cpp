@@ -80,7 +80,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 
                 auto element = PeriodicTable::pte().getElement(element_symbol);
 
-                atoms->emplace_back(i, element, x, y, z, atom_name, residue_id, residue, "");
+                atoms->emplace_back(i, element, x, y, z, atom_name, residue_id, residue, "", false);
             }
 
             /* Read @<TRIPOS>BOND */

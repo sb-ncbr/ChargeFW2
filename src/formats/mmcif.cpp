@@ -121,7 +121,7 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
         auto chain_id = records[it->second];
 
         if (not config::ignore_water or residue != "HOH") {
-            atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id);
+            atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
             idx++;
         }
 
@@ -185,7 +185,7 @@ read_ccd_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<
         it = record_positions.find("comp_id");
         auto residue = records[it->second];
 
-        atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "0");
+        atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "0", false);
         idx++;
 
         std::getline(file, line);

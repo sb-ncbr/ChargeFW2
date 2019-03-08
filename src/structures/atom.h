@@ -25,6 +25,7 @@ class Atom {
     int residue_id_{};
     std::string residue_{};
     std::string chain_id_{};
+    bool hetatm_{};
 
     friend class Molecule;
 
@@ -32,7 +33,7 @@ class Atom {
 
 public:
     Atom(size_t index, const Element *element, double x, double y, double z, std::string atom_name, int residue_id,
-         std::string residue, std::string chain_id);
+         std::string residue, std::string chain_id, bool hetatm);
 
     size_t index() const { return index_; }
 
@@ -53,6 +54,8 @@ public:
     std::string chain_id() const { return chain_id_; }
 
     std::string name() const { return atom_name_; }
+
+    bool hetatm() const { return hetatm_; }
 
     bool inline operator==(const Atom &other) const {
         return this->index_ == other.index_ and this->molecule_ == other.molecule_;
