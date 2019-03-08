@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
         reader = std::make_unique<SDF>();
     } else if (ext == ".mol2") {
         reader = std::make_unique<Mol2>();
-    } else if (ext == ".pdb") {
+    } else if (ext == ".pdb" or ext == ".ent") {
         reader = std::make_unique<PDB>();
         protein_structure = true;
     } else if (ext == ".cif") {

@@ -81,6 +81,8 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
     } while (boost::starts_with(line, "_atom_site."));
 
     size_t idx = 0;
+
+    int first_model_no = -1;
     do {
         std::stringstream ss(line);
         std::vector<std::string> records{std::istream_iterator<std::string>(ss),
@@ -119,6 +121,18 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
 
         it = record_positions.find("label_asym_id");
         auto chain_id = records[it->second];
+
+        it = record_positions.find("pdbx_PDB_model_num");
+        auto model_no = std::stoi(records[it->second]);
+
+        if (first_model_no == -1) {
+            first_model_no = model_no;
+        } else {
+            if (first_model_no < model_no) {
+                /* We are currently reading atom from another model */
+                break;
+            }
+        }
 
         if (not config::ignore_water or residue != "HOH") {
             atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
