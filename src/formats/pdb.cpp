@@ -34,6 +34,11 @@ MoleculeSet PDB::read_file(const std::string &filename) {
         size_t idx = 0;
         bool atom_block_found = false;
         while (std::getline(file, line)) {
+            if (boost::starts_with(line, "HEADER")) {
+                name = line.substr(62, 4);
+                continue;
+            }
+
             if (boost::starts_with(line, "ATOM") or (config::read_hetatm and boost::starts_with(line, "HETATM"))) {
                 atom_block_found = true;
 
