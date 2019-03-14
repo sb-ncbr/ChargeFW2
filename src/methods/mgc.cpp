@@ -19,7 +19,7 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
     auto *X0 = static_cast<double *>(mkl_malloc(n * sizeof(double), 64));
     auto *ipiv = static_cast<int *>(mkl_malloc(n * sizeof(int), 64));
 
-    double product = 1;
+    double log_sum = 0;
     for (size_t i = 0; i < n; i++) {
         #define IDX(i, j) ((i) * n + (j))
         auto &atom_i = molecule.atoms()[i];
@@ -29,7 +29,7 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
             S[IDX(i, j)] = -molecule.bond_order(atom_i, atom_j);
         }
         X0[i] = atom_i.element().electronegativity();
-        product *= X0[i];
+        log_sum += log(X0[i]);
     }
 
     auto n_int = static_cast<int>(n);
@@ -41,11 +41,11 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
     std::vector<double> results;
     results.assign(X0, X0 + n);
 
-    product = pow(product, 1.0 / n);
+    double avg_chi = exp(log_sum / n);
 
     for (size_t i = 0; i < n; i++) {
         results[i] -= molecule.atoms()[i].element().electronegativity();
-        results[i] /= product;
+        results[i] /= avg_chi;
     }
 
     mkl_free(S);
