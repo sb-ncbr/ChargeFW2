@@ -20,9 +20,9 @@ std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
     auto *chi = static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
     auto *q = static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
     auto *ipiv = static_cast<int *>(mkl_calloc(n, sizeof(int), 64));
-    auto *tmp =  static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
+    auto *tmp = static_cast<double *>(mkl_calloc(n, sizeof(double), 64));
     auto *I = static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
-    auto *eta =  static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
+    auto *eta = static_cast<double *>(mkl_calloc(n * n, sizeof(double), 64));
 
     for (size_t i = 0; i < n; i++) {
         auto &atom_i = molecule.atoms()[i];
@@ -34,6 +34,7 @@ std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
             auto &atom_j = molecule.atoms()[j];
             if (molecule.bonded(atom_i, atom_j)) {
                 L[i * n + j] = -1;
+                L[j * n + i] = -1;
             }
         }
     }
@@ -52,7 +53,7 @@ std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
     }
 
     std::vector<double> res(n, 0);
-    for(size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         res[i] = q[i];
     }
 
