@@ -33,7 +33,7 @@ PeriodicTable::PeriodicTable() {
 
             while (std::getline(line_stream, cell, ',')) {
                 cols.emplace_back(cell);
-            };
+            }
 
             size_t index = std::stoul(cols[0]);
             std::string name = cols[1];
@@ -58,10 +58,12 @@ PeriodicTable::PeriodicTable() {
     }
 }
 
+
 const PeriodicTable &PeriodicTable::pte() {
     static PeriodicTable pte;
     return pte;
 }
+
 
 const Element *PeriodicTable::getElement(const std::string &symbol) const {
     if (!symbol_Z_.count(symbol)) {

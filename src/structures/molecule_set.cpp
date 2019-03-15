@@ -250,21 +250,21 @@ void MoleculeSet::fulfill_requirements(const std::vector<RequiredFeatures> &feat
                     molecule.init_bond_distances();
                 }
                 break;
-            };
+            }
 
             case RequiredFeatures::BOND_INFO: {
                 for (auto &molecule: *molecules_) {
                     molecule.init_bond_info();
                 }
                 break;
-            };
+            }
 
             case RequiredFeatures::DISTANCE_TREE: {
                 for (auto &molecule: *molecules_) {
                     molecule.init_distance_tree();
                 }
                 break;
-            };
+            }
         }
     }
 }

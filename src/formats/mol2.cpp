@@ -158,11 +158,11 @@ void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std
             }
 
             fmt::print(file, "@<TRIPOS>BOND\n");
-            for(size_t i = 0; i < molecule.bonds().size(); i++) {
+            for (size_t i = 0; i < molecule.bonds().size(); i++) {
                 const auto &bond = molecule.bonds()[i];
                 fmt::print(file, "{:>5d} {:>5d} {:>5d} {:>2d}\n",
-                        i + 1, bond.first().index() + 1, bond.second().index() + 1, bond.order());
-            };
+                           i + 1, bond.first().index() + 1, bond.second().index() + 1, bond.order());
+            }
 
 
         }
