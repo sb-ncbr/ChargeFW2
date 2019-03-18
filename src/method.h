@@ -97,7 +97,7 @@ int Method::get_option_value<int>(const std::string &name) const;
 class EEMethod : public Method {
     std::map<std::string, MethodOption> augment_options(std::map<std::string, MethodOption> options) const {
         options["type"] = {"type", "Type of a solver", "str", "full", {"full", "cutoff"}};
-        options["radius"] = {"radius", "Radius for cutoff", "double", "8", {}};
+        options["radius"] = {"radius", "Radius for cutoff", "double", "12", {}};
         return options;
     }
 
@@ -115,10 +115,6 @@ public:
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     std::vector<RequiredFeatures> get_requirements() const override {
-        if (get_option_value<std::string>("type") == "cutoff") {
-            return {RequiredFeatures::DISTANCE_TREE};
-        } else {
-            return std::vector<RequiredFeatures>();
-        }
+        return {RequiredFeatures::DISTANCE_TREE};
     }
 };

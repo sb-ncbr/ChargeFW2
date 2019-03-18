@@ -66,6 +66,13 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
     auto method = get_option_value<std::string>("type");
     auto radius = get_option_value<double>("radius");
     std::vector<const Atom *> fragment_atoms;
+
+    if (method == "full" and molecule.atoms().size() > 20000) {
+        fmt::print(stderr, "Switching to cutoff as the molecule is too big\n");
+        fmt::print(stderr, "Using default radius {}\n", radius);
+        method = "cutoff";
+    }
+
     if (method == "full") {
         for (const auto &atom: molecule.atoms()) {
             fragment_atoms.push_back(&atom);
