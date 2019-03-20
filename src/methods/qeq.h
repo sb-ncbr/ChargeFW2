@@ -15,7 +15,7 @@
 
 class QEq : public EEMethod {
     enum atom{electronegativity, hardness};
-    double overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type) const;
+    double overlap_term(const Atom &atom_i, const Atom &atom_j, const std::string &type) const;
     std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
     explicit QEq() : EEMethod("QEq", {}, {"electronegativity", "hardness"}, {},

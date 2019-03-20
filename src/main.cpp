@@ -179,6 +179,20 @@ void get_suitable_methods(MoleculeSet &ms) {
     for (const auto &method_info: j) {
         auto method = load_method(method_info["internal_name"].get<std::string>());
 
+        bool suitable = true;
+        for (const auto &molecule: ms.molecules()) {
+            if (not method->is_suitable_for_molecule(molecule) or
+                (molecule.atoms().size() > LARGE_MOLECULE_ATOM_COUNT and
+                 not method->is_suitable_for_large_molecule())) {
+                suitable = false;
+                break;
+            }
+        }
+
+        if (not suitable) {
+            continue;
+        }
+
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
             fmt::print("{}\n", method->name());

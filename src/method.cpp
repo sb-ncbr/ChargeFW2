@@ -49,6 +49,11 @@ std::string Method::get_option_value<std::string>(const std::string &name) const
 }
 
 
+bool Method::is_suitable_for_molecule(const Molecule &) const {
+    return true;
+}
+
+
 template<>
 double Method::get_option_value<double>(const std::string &name) const {
     return std::stod(option_values_.at(name));

@@ -11,7 +11,7 @@ std::vector<double> VEEM::calculate_charges(const Molecule &molecule) const {
     double num = 0;
     double den = 0;
 
-    for(size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         auto &atom = molecule.atoms()[i];
         num += atom.element().electronegativity() * atom.element().valence_electron_count();
         den += atom.element().valence_electron_count();
@@ -19,10 +19,23 @@ std::vector<double> VEEM::calculate_charges(const Molecule &molecule) const {
 
     double eq_en = num / den;
 
-    for(size_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         auto &atom = molecule.atoms()[i];
         q[i] = atom.element().valence_electron_count() * (eq_en - atom.element().electronegativity()) / eq_en;
     }
 
     return q;
+}
+
+
+bool VEEM::is_suitable_for_molecule(const Molecule &molecule) const {
+    try {
+        for (const auto &atom: molecule.atoms()) {
+            atom.element().valence_electron_count();
+        }
+        return true;
+    }
+    catch (const std::exception &) {
+        return false;
+    }
 }

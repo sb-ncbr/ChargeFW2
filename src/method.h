@@ -69,6 +69,10 @@ public:
 
     virtual std::vector<RequiredFeatures> get_requirements() const;
 
+    virtual bool is_suitable_for_molecule(const Molecule &) const;
+
+    virtual bool is_suitable_for_large_molecule() const { return true; }
+
     virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
 
     std::string name() { return name_; }

@@ -16,7 +16,7 @@
 #define IDX(i, j) ((i) * m + (j))
 
 
-double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, std::string type) const {
+double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::string &type) const {
     auto Ji = parameters_->atom()->parameter(atom::hardness)(atom_i);
     auto Jj = parameters_->atom()->parameter(atom::hardness)(atom_j);
     auto Rij = distance(atom_i, atom_j);
@@ -48,13 +48,14 @@ std::vector<double> QEq::solve_system(const std::vector<const Atom *> &atoms, do
     auto *b = static_cast<double *>(mkl_malloc(m * sizeof(double), 64));
     auto *ipiv = static_cast<int *>(mkl_malloc(m * sizeof(int), 64));
 
+    const auto type = get_option_value<std::string>("overlap_term");
+
     for (size_t i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         A[IDX(i, i)] = parameters_->atom()->parameter(atom::hardness)(atom_i);
         b[i] = - parameters_->atom()->parameter(atom::electronegativity)(atom_i);
         for (size_t j = i + 1; j < n; j++) {
             const auto &atom_j = *atoms[j];
-            auto type = get_option_value<std::string>("overlap_term");
             A[IDX(i, j)] = overlap_term(atom_i, atom_j, type);
         }
     }

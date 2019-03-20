@@ -22,6 +22,8 @@ public:
     std::vector<RequiredFeatures> get_requirements() const override {
         return {RequiredFeatures::BOND_INFO};
     }
+
+    bool is_suitable_for_large_molecule() const override { return false; }
 };
 
 extern "C" BOOST_SYMBOL_EXPORT MGC method;
