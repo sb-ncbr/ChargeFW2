@@ -18,9 +18,9 @@ std::vector<double> Charge2::calculate_charges(const Molecule &molecule) const {
     const size_t n = molecule.atoms().size();
     std::vector<double> q(n, 0);
     for (int i = 0; i < n_iters; i++) {
-        for (auto &atom: molecule.atoms()) {
+        for (const auto &atom: molecule.atoms()) {
             double alpha_charge = 0.0;
-            for (auto &bonded: molecule.k_bond_distance(atom, 1)) {
+            for (const auto &bonded: molecule.k_bond_distance(atom, 1)) {
                 double a;
                 if (atom.element().period() == 2 and bonded->element().period() == 2) {
                     a = parameters_->common()->parameter(common::a1);
@@ -29,20 +29,21 @@ std::vector<double> Charge2::calculate_charges(const Molecule &molecule) const {
                 } else {
                     a = parameters_->common()->parameter(common::a3);
                 }
-                alpha_charge += (parameters_->atom()->parameter(atom::chi)(*bonded) -
-                                 parameters_->atom()->parameter(atom::chi)(*bonded)) / a;
+                auto Ej = parameters_->atom()->parameter(atom::chi)(*bonded);
+                auto Ei = parameters_->atom()->parameter(atom::chi)(atom);
+                alpha_charge += (Ej - Ei) / a;
             }
             double beta_charge = 0.0;
             double P = parameters_->atom()->parameter(atom::P0)(atom) * (1 + parameters_->common()->parameter(
                     common::alpha) * (parameters_->atom()->parameter(atom::q0)(atom) - q[atom.index()]));
-            for (auto &bonded: molecule.k_bond_distance(atom, 2)) {
+            for (const auto &bonded: molecule.k_bond_distance(atom, 2)) {
                 // 7.17 should be replaced with something like:
                 // parameters->atom()->parameter(atom::chi)(hydrogen)
                 beta_charge += (parameters_->atom()->parameter(atom::chi)(*bonded) - 7.17) * P /
                                parameters_->common()->parameter(common::b);
             }
             double gamma_charge = 0.0;
-            for (auto &bonded: molecule.k_bond_distance(atom, 3)) {
+            for (const auto &bonded: molecule.k_bond_distance(atom, 3)) {
                 beta_charge += (parameters_->atom()->parameter(atom::chi)(*bonded) - 7.17) * P /
                                parameters_->common()->parameter(common::b) /
                                parameters_->common()->parameter(common::c);

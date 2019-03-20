@@ -116,7 +116,7 @@ std::vector<const Atom *> Molecule::k_bond_distance(const Atom &atom, size_t k) 
     std::vector<const Atom *> res;
     for (size_t i = 0; i < n; i++) {
         if (bond_distances_[atom.index() * n + i] == static_cast<int>(k)) {
-            res.push_back(&atoms_->operator[](k));
+            res.push_back(&atoms_->operator[](i));
         }
     }
     return res;
