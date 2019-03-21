@@ -1,7 +1,7 @@
 {
   "metadata": {
     "name": "Martin-Noble 2015 (MOF/REPEAT)",
-    "method": "EQeq+C",
+    "method": "eqeqc",
     "publication": "10.1021/acs.jctc.5b00037"
   },
   "common": {

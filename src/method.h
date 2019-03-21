@@ -75,7 +75,9 @@ public:
 
     virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
 
-    std::string name() { return name_; }
+    std::string name() const { return name_; }
+
+    std::string internal_name() const;
 
     std::map<std::string, MethodOption> get_options() const { return options_; }
 

@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "method": "EEM",
     "name": "Bultinck 2002 (NPA)",
+    "method": "eem",
     "publication": "10.1021/jp020547v"
   },
   "common": {

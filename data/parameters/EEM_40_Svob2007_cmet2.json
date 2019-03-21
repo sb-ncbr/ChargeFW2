@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "method": "EEM",
     "name": "Svobodova 2007 (cmet2)",
+    "method": "eem",
     "publication": "10.3390/i8070572"
   },
   "common": {

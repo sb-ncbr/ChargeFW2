@@ -1,7 +1,7 @@
 {
   "metadata": {
     "name": "Gasteiger 1980",
-    "method": "PEOE",
+    "method": "peoe",
     "publication": "10.1016/0040-4020(80)80168-2"
   },
   "common":

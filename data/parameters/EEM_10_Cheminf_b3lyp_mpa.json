@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "method": "EEM",
     "name": "Geidl 2015 (Cheminf_b3lyp_mpa)",
+    "method": "eem",
     "publication": "10.1186/s13321-015-0107-1"
   },
   "common": {

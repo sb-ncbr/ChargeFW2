@@ -1,7 +1,7 @@
 {
   "metadata": {
     "name": "Zhang 2009",
-    "method": "SMP/QEq",
+    "method": "smpqeq",
     "publication": "10.1021/jp8063273"
   },
   "atom":

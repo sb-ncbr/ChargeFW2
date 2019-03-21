@@ -1,7 +1,7 @@
 {
   "metadata": {
     "name": "No 1990 (DP1)",
-    "method": "MPEOE",
+    "method": "mpeoe",
     "publication": "10.1021/j100374a066"
   },
   "common":

@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "method": "EEM",
     "name": "Ouyang 2009 (124 calibrated set)",
+    "method": "eem",
     "publication": "10.1039/b821696g"
   },
   "common": {

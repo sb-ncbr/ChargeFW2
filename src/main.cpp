@@ -177,7 +177,8 @@ void get_suitable_methods(MoleculeSet &ms) {
     f.close();
 
     for (const auto &method_info: j) {
-        auto method = load_method(method_info["internal_name"].get<std::string>());
+        auto method_name = method_info["internal_name"].get<std::string>();
+        auto method = load_method(method_name);
 
         bool suitable = true;
         for (const auto &molecule: ms.molecules()) {
@@ -195,7 +196,7 @@ void get_suitable_methods(MoleculeSet &ms) {
 
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
-            fmt::print("{}\n", method->name());
+            fmt::print("{}\n", method_name);
             continue;
         }
 
@@ -203,7 +204,7 @@ void get_suitable_methods(MoleculeSet &ms) {
         for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
             auto p = std::make_unique<Parameters>(set.path());
 
-            if (method->name() != p->method_name())
+            if (method_name != p->method_name())
                 continue;
 
             size_t unclassified = ms.classify_set_from_parameters(*p, false);
@@ -211,7 +212,7 @@ void get_suitable_methods(MoleculeSet &ms) {
             // If all molecules are covered by the parameters, we found our best
             if (!unclassified) {
                 if (not parameters_found) {
-                    fmt::print("{} ", method->name());
+                    fmt::print("{} ", method_name);
                     parameters_found = true;
                 }
                 fmt::print("{} ", std::filesystem::path(set).filename().string());
@@ -231,7 +232,7 @@ std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &meth
     for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
         auto p = std::make_unique<Parameters>(set.path());
 
-        if (method->name() != p->method_name())
+        if (method->internal_name() != p->method_name())
             continue;
 
         size_t unclassified = ms.classify_set_from_parameters(*p, false);

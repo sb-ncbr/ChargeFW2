@@ -8,6 +8,7 @@
 #include "chargefw2.h"
 #include "method.h"
 #include "parameters.h"
+#include "utility/utility.h"
 
 
 std::vector<RequiredFeatures> Method::get_requirements() const {
@@ -51,6 +52,13 @@ std::string Method::get_option_value<std::string>(const std::string &name) const
 
 bool Method::is_suitable_for_molecule(const Molecule &) const {
     return true;
+}
+
+
+std::string Method::internal_name() const {
+    auto name = to_lowercase(name_);
+    name.erase(std::remove_if(name.begin(), name.end(), [](char c) { return !std::isalnum(c); }), name.end());
+    return name;
 }
 
 
