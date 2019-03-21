@@ -111,6 +111,7 @@ void Parameters::save_to_file(const std::string &filename) const {
 }
 
 void Parameters::print() const {
+    fmt::print("Parameters: {}\n", name_);
     if (common_) {
         fmt::print("Common parameters\n");
         for (size_t i = 0; i < common_->names().size(); i++) {

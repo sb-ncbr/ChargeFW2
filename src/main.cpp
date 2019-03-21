@@ -82,8 +82,6 @@ int main(int argc, char **argv) {
             }
 
             p = std::make_unique<Parameters>(par_name);
-
-            fmt::print("Parameters:\n");
             p->print();
 
             size_t unclassified = m.classify_set_from_parameters(*p);
