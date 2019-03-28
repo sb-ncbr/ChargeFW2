@@ -2,6 +2,10 @@
 // Created by krab1k on 6.11.18.
 //
 
+#include <vector>
+#include <map>
+#include <set>
+#include <numeric>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 
@@ -80,9 +84,13 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
     auto radius = get_option_value<double>("radius");
     std::vector<const Atom *> fragment_atoms;
 
-    if (method == "full" and molecule.atoms().size() > 20000) {
+    if (method == "full" and molecule.atoms().size() > 50000) {
         fmt::print(stderr, "Switching to cutoff as the molecule is too big\n");
-        fmt::print(stderr, "Using default radius {}\n", radius);
+        fmt::print(stderr, "Using radius {}\n", radius);
+        method = "cover";
+    } else if (method == "full" and molecule.atoms().size() > 20000) {
+        fmt::print(stderr, "Switching to cover as the molecule is too big\n");
+        fmt::print(stderr, "Using radius {}\n", radius);
         method = "cutoff";
     }
 
@@ -93,7 +101,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
         return solve_system(fragment_atoms, molecule.total_charge());
 
-    } else /* method == "cutoff" */ {
+    } else if (method == "cutoff") {
         std::vector<double> results;
         for (const auto &atom: molecule.atoms()) {
             fragment_atoms = molecule.get_close_atoms(atom, radius);
@@ -112,6 +120,79 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
         for (auto &val: results) {
             val += correction;
+        }
+
+        return results;
+    } else /* method == "cover" */ {
+        const size_t n = molecule.atoms().size();
+
+        /* 1st step - identify pivots */
+        std::map<size_t, std::set<size_t>> neighbors;
+        for (const auto &bond: molecule.bonds()) {
+            neighbors[bond.first().index()].insert(bond.second().index());
+            neighbors[bond.second().index()].insert(bond.first().index());
+        }
+
+        std::set<size_t> all;
+        for (size_t i = 0; i < n; i++) {
+            all.insert(i);
+        }
+
+        std::map<size_t, std::set<size_t>> bonding_sizes;
+        for (const auto &[key, val]: neighbors) {
+            bonding_sizes[val.size()].insert(key);
+        }
+
+        std::set<const Atom *> pivots;
+        for (auto it = bonding_sizes.rbegin(); it != bonding_sizes.rend(); it++) {
+            for (const auto &idx: it->second) {
+                if (all.find(idx) != all.end()) {
+                    pivots.insert(&molecule.atoms()[idx]);
+                    for (const auto &neighbor: neighbors[idx]) {
+                        all.erase(neighbor);
+                    }
+                }
+            }
+        }
+
+        /* 2nd step - solve EEM for fragments, sum up charges */
+        std::vector<double> results(n, 0);
+        std::vector<int> charges_count(n, 0);
+
+        for (const auto &atom: pivots) {
+            fragment_atoms = molecule.get_close_atoms(*atom, radius);
+            auto res = solve_system(fragment_atoms,
+                                    static_cast<double>(molecule.total_charge()) * fragment_atoms.size() / n);
+
+            std::set<size_t> close_atoms = {atom->index()};
+            for (const auto &i: neighbors[atom->index()]) {
+                close_atoms.insert(i);
+                for (const auto &j: neighbors[i]) {
+                    close_atoms.insert(j);
+                }
+            }
+
+            for (const auto &i: close_atoms) {
+                charges_count[i]++;
+            }
+
+            for (size_t i = 0; i < fragment_atoms.size(); i++) {
+                if (close_atoms.find(fragment_atoms[i]->index()) != close_atoms.end()) {
+                    results[fragment_atoms[i]->index()] += res[i];
+                }
+            }
+        }
+
+        for (size_t i = 0; i < results.size(); i++) {
+            results[i] /= charges_count[i];
+        }
+
+        /* 3rd step - correct charges */
+        auto sum = std::accumulate(results.begin(), results.end(), 0.0);
+        auto correction = (molecule.total_charge() - sum) / n;
+
+        for (auto &r: results) {
+            r += correction;
         }
 
         return results;

@@ -102,7 +102,7 @@ int Method::get_option_value<int>(const std::string &name) const;
 
 class EEMethod : public Method {
     std::map<std::string, MethodOption> augment_options(std::map<std::string, MethodOption> options) const {
-        options["type"] = {"type", "Type of a solver", "str", "full", {"full", "cutoff"}};
+        options["type"] = {"type", "Type of a solver", "str", "full", {"full", "cutoff", "cover"}};
         options["radius"] = {"radius", "Radius for cutoff", "double", "12", {}};
         return options;
     }
