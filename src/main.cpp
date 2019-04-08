@@ -25,9 +25,9 @@
 #include "utility/utility.h"
 
 
-void get_suitable_methods(MoleculeSet &ms);
+void get_suitable_methods(MoleculeSet &ms, bool is_protein);
 
-std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method);
+std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein);
 
 std::shared_ptr<Method> load_method(const std::string &method_name);
 
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 
     auto ext = std::filesystem::path(config::input_file).extension();
 
-    bool protein_structure = false;
+    bool is_protein_structure = false;
     std::unique_ptr<Reader> reader;
     if (ext == ".sdf") {
         reader = std::make_unique<SDF>();
@@ -46,10 +46,10 @@ int main(int argc, char **argv) {
         reader = std::make_unique<Mol2>();
     } else if (ext == ".pdb" or ext == ".ent") {
         reader = std::make_unique<PDB>();
-        protein_structure = true;
+        is_protein_structure = true;
     } else if (ext == ".cif") {
         reader = std::make_unique<mmCIF>();
-        protein_structure = true;
+        is_protein_structure = true;
     } else {
         fmt::print(stderr, "Filetype {} not supported\n", ext);
         exit(EXIT_FILE_ERROR);
@@ -71,7 +71,7 @@ int main(int argc, char **argv) {
         if (method->has_parameters()) {
             std::string par_name;
             if (config::par_file.empty()) {
-                par_name = best_parameters(m, method);
+                par_name = best_parameters(m, method, is_protein_structure);
                 if (par_name.empty()) {
                     fmt::print(stderr, "No parameters found \n");
                     exit(EXIT_PARAMETER_ERROR);
@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
         auto txt_str = file.filename().string() + ".txt";
         txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
 
-        if (protein_structure) {
+        if (is_protein_structure) {
             auto pqr = PQR();
             auto pqr_str = file.filename().string() + ".pqr";
             pqr.save_charges(m, charges, dir / std::filesystem::path(pqr_str));
@@ -135,7 +135,7 @@ int main(int argc, char **argv) {
             exit(EXIT_PARAMETER_ERROR);
         }
 
-        fmt::print("Best parameters are: {}\n", best_parameters(m, method));
+        fmt::print("Best parameters are: {}\n", best_parameters(m, method, is_protein_structure));
 
     } else if (config::mode == "parameters") {
         m.classify_atoms(AtomClassifier::PLAIN);
@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
         p.parametrize();
 
     } else if (config::mode == "suitable-methods") {
-        get_suitable_methods(m);
+        get_suitable_methods(m, is_protein_structure);
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
         exit(EXIT_PARAMETER_ERROR);
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 }
 
 
-void get_suitable_methods(MoleculeSet &ms) {
+void get_suitable_methods(MoleculeSet &ms, bool is_protein) {
 
     std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
     using json = nlohmann::json;
@@ -202,12 +202,16 @@ void get_suitable_methods(MoleculeSet &ms) {
         for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
             auto p = std::make_unique<Parameters>(set.path());
 
-            if (method_name != p->method_name())
+            if (method_name != p->method_name()) {
                 continue;
+            }
+
+            if (is_protein and p->source() != "protein") {
+                continue;
+            }
 
             size_t unclassified = ms.classify_set_from_parameters(*p, false);
 
-            // If all molecules are covered by the parameters, we found our best
             if (!unclassified) {
                 if (not parameters_found) {
                     fmt::print("{} ", method_name);
@@ -223,15 +227,20 @@ void get_suitable_methods(MoleculeSet &ms) {
 }
 
 
-std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method) {
+std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein) {
     std::string best_name;
     size_t best_unclassified = ms.molecules().size();
 
     for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
         auto p = std::make_unique<Parameters>(set.path());
 
-        if (method->internal_name() != p->method_name())
+        if (method->internal_name() != p->method_name()) {
             continue;
+        }
+
+        if (is_protein and p->source() != "protein") {
+            continue;
+        }
 
         size_t unclassified = ms.classify_set_from_parameters(*p, false);
 

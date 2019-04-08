@@ -32,6 +32,12 @@ Parameters::Parameters(const std::string &filename) {
         name_ = j["metadata"]["name"];
         method_name_ = j["metadata"]["method"];
 
+        if (j["metadata"].count("source")) {
+            source_ = j["metadata"]["source"];
+        } else {
+            source_ = "small";
+        }
+
         if (j.count("common")) {
             auto names = j["common"]["names"].get<std::vector<std::string>>();
             auto values = j["common"]["values"].get<std::vector<double>>();

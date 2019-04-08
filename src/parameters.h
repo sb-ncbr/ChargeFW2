@@ -79,6 +79,7 @@ public:
 class Parameters {
     std::string name_{};
     std::string method_name_{};
+    std::string source_{};
 
     std::unique_ptr<CommonParameters> common_{nullptr};
     std::unique_ptr<AtomParameters> atoms_{nullptr};
@@ -96,6 +97,8 @@ public:
     const std::string &name() const { return name_; }
 
     const std::string &method_name() const { return method_name_; }
+
+    const std::string &source() const { return source_; }
 
     std::vector<double> get_vector() const;
 
