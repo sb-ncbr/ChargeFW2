@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <boost/dll/import.hpp>
 
 #include "structures/molecule.h"
 
@@ -124,3 +125,6 @@ public:
         return {RequiredFeatures::DISTANCE_TREE};
     }
 };
+
+
+std::shared_ptr<Method> load_method(const std::string &method_name);

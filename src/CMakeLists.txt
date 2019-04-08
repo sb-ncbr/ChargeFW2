@@ -19,7 +19,7 @@ add_subdirectory(utility)
 add_subdirectory(external/lhs)
 
 SET(SOURCES main.cpp periodic_table.cpp periodic_table.h charges.h charges.cpp statistics.h statistics.cpp
-            parameterization.h parameterization.cpp)
+            parameterization.h parameterization.cpp candidates.h candidates.cpp)
 
 add_executable(chargefw2 ${SOURCES})
 

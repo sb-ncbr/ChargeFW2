@@ -1,12 +1,10 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <boost/dll/import.hpp>
-#include <fstream>
 #include <nlohmann/json.hpp>
 #include <memory>
+#include <filesystem>
 #include <ctime>
 #include <algorithm>
-#include <filesystem>
 
 #include "chargefw2.h"
 #include "formats/reader.h"
@@ -20,16 +18,10 @@
 #include "parameters.h"
 #include "charges.h"
 #include "method.h"
+#include "candidates.h"
 #include "config.h"
 #include "parameterization.h"
 #include "utility/utility.h"
-
-
-void get_suitable_methods(MoleculeSet &ms, bool is_protein);
-
-std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein);
-
-std::shared_ptr<Method> load_method(const std::string &method_name);
 
 
 int main(int argc, char **argv) {
@@ -157,116 +149,4 @@ int main(int argc, char **argv) {
     }
 
     return 0;
-}
-
-
-void get_suitable_methods(MoleculeSet &ms, bool is_protein) {
-
-    std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
-    using json = nlohmann::json;
-    json j;
-    std::ifstream f(filename);
-    if (!f) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
-    }
-
-    f >> j;
-    f.close();
-
-    for (const auto &method_info: j) {
-        auto method_name = method_info["internal_name"].get<std::string>();
-        auto method = load_method(method_name);
-
-        bool suitable = true;
-        for (const auto &molecule: ms.molecules()) {
-            if (not method->is_suitable_for_molecule(molecule) or
-                (molecule.atoms().size() > LARGE_MOLECULE_ATOM_COUNT and
-                 not method->is_suitable_for_large_molecule())) {
-                suitable = false;
-                break;
-            }
-        }
-
-        if (not suitable) {
-            continue;
-        }
-
-        /* Methods without parameters should be suitable */
-        if (not method->has_parameters()) {
-            fmt::print("{}\n", method_name);
-            continue;
-        }
-
-        bool parameters_found = false;
-        for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
-            auto p = std::make_unique<Parameters>(set.path());
-
-            if (method_name != p->method_name()) {
-                continue;
-            }
-
-            if (is_protein and p->source() != "protein") {
-                continue;
-            }
-
-            size_t unclassified = ms.classify_set_from_parameters(*p, false);
-
-            if (!unclassified) {
-                if (not parameters_found) {
-                    fmt::print("{} ", method_name);
-                    parameters_found = true;
-                }
-                fmt::print("{} ", std::filesystem::path(set).filename().string());
-            }
-        }
-        if (parameters_found) {
-            fmt::print("\n");
-        }
-    }
-}
-
-
-std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein) {
-    std::string best_name;
-    size_t best_unclassified = ms.molecules().size();
-
-    for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
-        auto p = std::make_unique<Parameters>(set.path());
-
-        if (method->internal_name() != p->method_name()) {
-            continue;
-        }
-
-        if (is_protein and p->source() != "protein") {
-            continue;
-        }
-
-        size_t unclassified = ms.classify_set_from_parameters(*p, false);
-
-        // If all molecules are covered by the parameters, we found our best
-        if (!unclassified) {
-            return set.path();
-        }
-
-        if (unclassified < best_unclassified) {
-            best_unclassified = unclassified;
-            best_name = set.path();
-        }
-    }
-
-    return best_name;
-}
-
-
-std::shared_ptr<Method> load_method(const std::string &method_name) {
-    try {
-        auto ptr = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
-                                              boost::dll::load_mode::append_decorations);
-        /* Some magic from: https://stackoverflow.com/a/12315035/2693542 */
-        return std::shared_ptr<Method>(ptr.get(), [ptr](Method *) mutable { ptr.reset(); });
-    } catch (std::exception &) {
-        fmt::print(stderr, "Unable to load method {}\n", method_name);
-        exit(EXIT_PARAMETER_ERROR);
-    }
 }

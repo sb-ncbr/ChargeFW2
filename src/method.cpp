@@ -198,3 +198,16 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
         return results;
     }
 }
+
+
+std::shared_ptr<Method> load_method(const std::string &method_name) {
+    try {
+        auto ptr = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
+                                              boost::dll::load_mode::append_decorations);
+        /* Some magic from: https://stackoverflow.com/a/12315035/2693542 */
+        return std::shared_ptr<Method>(ptr.get(), [ptr](Method *) mutable { ptr.reset(); });
+    } catch (std::exception &) {
+        fmt::print(stderr, "Unable to load method {}\n", method_name);
+        exit(EXIT_PARAMETER_ERROR);
+    }
+}
