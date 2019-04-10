@@ -9,7 +9,7 @@ configure_file(chargefw2.h.in chargefw2.h)
 SET(COMMON_LIBS parameters geometry element method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
-    target_link_libraries(${lib} structures fmt::fmt-header-only)
+    target_link_libraries(${lib} structures fmt::fmt)
 endforeach ()
 
 add_subdirectory(structures)
@@ -26,6 +26,6 @@ add_executable(chargefw2 ${SOURCES})
 add_dependencies(chargefw2 ${METHODS})
 
 target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs
-        Boost::program_options Boost::system Boost::filesystem dl stdc++fs nlopt_cxx fmt::fmt-header-only)
+        Boost::program_options Boost::system Boost::filesystem dl stdc++fs nlopt_cxx fmt::fmt)
 
 install(TARGETS chargefw2 DESTINATION bin)

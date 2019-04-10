@@ -4,9 +4,14 @@ project(ChargeFW2)
 set(CMAKE_CXX_STANDARD 17)
 
 # Setup MKL
-set(MKLROOT /opt/intel/mkl)
-set(MKL_CXX_FLAGS  "-m64 -isystem ${MKLROOT}/include")
-set(MKL_LINKER_FLAGS "-L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_rt -lpthread -lm -ldl")
+if(${META_CLOUD})
+    set(MKL_CXX_FLAGS "-m64 -isystem /usr/include/mkl")
+    set(MKL_LINKER_FLAGS "-Wl,--no-as-needed -lmkl_rt -lpthread -lm -ldl")
+else()
+    set(MKLROOT /opt/intel/mkl)
+    set(MKL_CXX_FLAGS  "-m64 -isystem ${MKLROOT}/include")
+    set(MKL_LINKER_FLAGS "-L${MKLROOT}/lib/intel64 -Wl,--no-as-needed -lmkl_rt -lpthread -lm -ldl")
+endif()
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(WARNING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded\
@@ -30,6 +35,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
 if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
+
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Make debug builds much faster
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Og")
