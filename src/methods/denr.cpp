@@ -29,14 +29,15 @@ std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
         chi[i] = parameters_->atom()->parameter(atom::electronegativity)(atom_i);
         eta[i * n + i] = parameters_->atom()->parameter(atom::hardness)(atom_i);
         I[i * n + i] = 1.0;
-        L[i * n + i] = molecule.degree(atom_i);
-        for (size_t j = i + 1; j < n; j++) {
-            auto &atom_j = molecule.atoms()[j];
-            if (molecule.bonded(atom_i, atom_j)) {
-                L[i * n + j] = -1;
-                L[j * n + i] = -1;
-            }
-        }
+    }
+
+    for (const auto &bond: molecule.bonds()) {
+        auto i1 = bond.first().index();
+        auto i2 = bond.second().index();
+        L[i1 * n + i1] += 1;
+        L[i2 * n + i2] += 1;
+        L[i1 * n + i2] -= 1;
+        L[i2 * n + i1] -= 1;
     }
 
     double step = parameters_->common()->parameter(common::step);
