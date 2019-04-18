@@ -20,16 +20,23 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
     auto *ipiv = static_cast<int *>(mkl_malloc(n * sizeof(int), 64));
 
     double log_sum = 0;
-    for (size_t i = 0; i < n; i++) {
-        #define IDX(i, j) ((i) * n + (j))
-        auto &atom_i = molecule.atoms()[i];
-        S[IDX(i, i)] = 1 + molecule.degree(atom_i);
-        for(size_t j = i + 1; j < n; j++) {
-            auto &atom_j = molecule.atoms()[j];
-            S[IDX(i, j)] = -molecule.bond_order(atom_i, atom_j);
-        }
-        X0[i] = atom_i.element().electronegativity();
+
+    #define IDX(i, j) ((i) * n + (j))
+    for (const auto &atom: molecule.atoms()) {
+        auto i = atom.index();
+        S[IDX(i, i)] = 1;
+        X0[i] = atom.element().electronegativity();
         log_sum += log(X0[i]);
+    }
+
+    for (const auto &bond: molecule.bonds()) {
+        auto i1 = bond.first().index();
+        auto i2 = bond.second().index();
+        auto order = bond.order();
+        S[IDX(i1, i1)] += order;
+        S[IDX(i2, i2)] += order;
+        S[IDX(i1, i2)] -= order;
+        S[IDX(i2, i1)] -= order;
     }
 
     auto n_int = static_cast<int>(n);

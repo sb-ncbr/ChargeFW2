@@ -19,10 +19,6 @@ public:
 
     std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
-    std::vector<RequiredFeatures> get_requirements() const override {
-        return {RequiredFeatures::BOND_INFO};
-    }
-
     bool is_suitable_for_large_molecule() const override { return false; }
 };
 
