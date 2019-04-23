@@ -30,12 +30,15 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
 void MoleculeSet::info() const {
     fmt::print("Number of molecules: {}\n", molecules_->size());
     std::map<size_t, int> counts;
-    for (const Molecule &m: *molecules_) {
+    size_t n_atoms = 0;
+    for (const auto &m: *molecules_) {
         for (auto &a : m.atoms()) {
             counts[a.atom_type()] += 1;
+            n_atoms++;
         }
     }
 
+    fmt::print("Number of atoms: {}\n", n_atoms);
     for (auto &[key, val]: counts) {
         auto[symbol, cls, type] = atom_types_[key];
         fmt::print("{:2s} {} {}: {}\n", symbol, cls, type, val);
