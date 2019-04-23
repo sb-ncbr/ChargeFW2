@@ -134,14 +134,16 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
             }
         }
 
-        if (not config::ignore_water or residue != "HOH") {
+        if ((not hetatm) or
+            (config::read_hetatm and residue != "HOH") or
+            (config::read_hetatm and not config::ignore_water)) {
             atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
             idx++;
         }
 
         std::getline(file, line);
         boost::trim(line);
-    } while (boost::starts_with(line, "ATOM") or (config::read_hetatm and boost::starts_with(line, "HETATM")));
+    } while (line[0] != '#');
 
     auto bonds = get_bonds(atoms);
     std::map<size_t, int> charges;
