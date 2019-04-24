@@ -8,6 +8,8 @@
 #include <numeric>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+#include <omp.h>
+#include <mkl.h>
 
 #include "chargefw2.h"
 #include "method.h"
@@ -82,9 +84,8 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
     auto method = get_option_value<std::string>("type");
     auto radius = get_option_value<double>("radius");
-    std::vector<const Atom *> fragment_atoms;
 
-    if (method != "cover" and molecule.atoms().size() > 50000) {
+    if (method != "cover" and molecule.atoms().size() > 100000) {
         fmt::print(stderr, "Switching to cover as the molecule is too big\n");
         fmt::print(stderr, "Using radius {}\n", radius);
         method = "cover";
@@ -95,6 +96,8 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
     }
 
     if (method == "full") {
+        mkl_set_num_threads(mkl_get_max_threads());
+        std::vector<const Atom *> fragment_atoms;
         for (const auto &atom: molecule.atoms()) {
             fragment_atoms.push_back(&atom);
         }
@@ -102,13 +105,17 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
         return solve_system(fragment_atoms, molecule.total_charge());
 
     } else if (method == "cutoff") {
-        std::vector<double> results;
-        for (const auto &atom: molecule.atoms()) {
-            fragment_atoms = molecule.get_close_atoms(atom, radius);
+        const size_t n = molecule.atoms().size();
+        std::vector<double> results(n, 0);
+        mkl_set_num_threads(1);
+
+        #pragma omp parallel for
+        for (size_t i = 0; i < n; i++) {
+            auto fragment_atoms = molecule.get_close_atoms(molecule.atoms()[i], radius);
             auto res = solve_system(fragment_atoms,
                                     static_cast<double>(molecule.total_charge()) * fragment_atoms.size() /
                                     molecule.atoms().size());
-            results.push_back(res[0]);
+            results[i] = res[0];
         }
 
         double correction = molecule.total_charge();
@@ -124,6 +131,8 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
         return results;
     } else /* method == "cover" */ {
+        mkl_set_num_threads(1);
+
         const size_t n = molecule.atoms().size();
 
         /* 1st step - identify pivots */
@@ -159,26 +168,32 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
         std::vector<double> results(n, 0);
         std::vector<int> charges_count(n, 0);
 
-        for (const auto &atom: pivots) {
-            fragment_atoms = molecule.get_close_atoms(*atom, radius);
+        std::vector<const Atom *> pivots_vector(pivots.begin(), pivots.end());
+
+        #pragma omp parallel for
+        for (size_t i = 0; i < pivots_vector.size(); i++) {
+            auto &atom = pivots_vector[i];
+            auto fragment_atoms = molecule.get_close_atoms(*atom, radius);
             auto res = solve_system(fragment_atoms,
                                     static_cast<double>(molecule.total_charge()) * fragment_atoms.size() / n);
 
             std::set<size_t> close_atoms = {atom->index()};
-            for (const auto &i: neighbors[atom->index()]) {
-                close_atoms.insert(i);
-                for (const auto &j: neighbors[i]) {
-                    close_atoms.insert(j);
+            for (const auto &j: neighbors[atom->index()]) {
+                close_atoms.insert(j);
+                for (const auto &k: neighbors[j]) {
+                    close_atoms.insert(k);
                 }
             }
 
-            for (const auto &i: close_atoms) {
-                charges_count[i]++;
+            for (const auto &j: close_atoms) {
+                #pragma omp atomic
+                charges_count[j]++;
             }
 
-            for (size_t i = 0; i < fragment_atoms.size(); i++) {
-                if (close_atoms.find(fragment_atoms[i]->index()) != close_atoms.end()) {
-                    results[fragment_atoms[i]->index()] += res[i];
+            for (size_t j = 0; j < fragment_atoms.size(); j++) {
+                if (close_atoms.find(fragment_atoms[j]->index()) != close_atoms.end()) {
+                    #pragma omp atomic
+                    results[fragment_atoms[j]->index()] += res[j];
                 }
             }
         }
