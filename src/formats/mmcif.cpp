@@ -15,10 +15,25 @@
 #include "bonds.h"
 #include "../periodic_table.h"
 
+
+bool is_already_loaded(const std::vector<Atom> &atoms, const std::string &atom_name, int residue_id);
+
 void
 read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<std::vector<Molecule>> &molecules);
 
 void read_ccd_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<std::vector<Molecule>> &molecules);
+
+
+bool is_already_loaded(const std::vector<Atom> &atoms, const std::string &atom_name, int residue_id) {
+    for (auto it = atoms.rbegin(); it != atoms.rend(); it++) {
+        if (it->residue_id() != residue_id) {
+            return false;
+        } else if (it->name() == atom_name) {
+            return true;
+        }
+    }
+    return false;
+}
 
 
 MoleculeSet mmCIF::read_file(const std::string &filename) {
@@ -109,6 +124,9 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
         it = record_positions.find("label_atom_id");
         auto atom_name = fix_atom_name(records[it->second]);
 
+        it = record_positions.find("label_alt_id");
+        auto alt_id = records[it->second];
+
         int residue_id = 0;
         /* HETATM record does not have label_seq_id */
         if (not hetatm) {
@@ -134,11 +152,13 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
             }
         }
 
-        if ((not hetatm) or
-            (config::read_hetatm and residue != "HOH") or
-            (config::read_hetatm and not config::ignore_water)) {
-            atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
-            idx++;
+        if (alt_id == "." or not is_already_loaded(*atoms, atom_name, residue_id)) {
+            if ((not hetatm) or
+                (config::read_hetatm and residue != "HOH") or
+                (config::read_hetatm and not config::ignore_water)) {
+                atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
+                idx++;
+            }
         }
 
         std::getline(file, line);

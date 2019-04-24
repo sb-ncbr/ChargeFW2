@@ -98,17 +98,21 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
     std::map<std::string, const Atom *> residue_atoms;
 
     auto current_residue_id = (*atoms)[0].residue_id();
+    auto current_chain = (*atoms)[0].chain_id();
 
     for (const auto &atom: *atoms) {
         auto id = atom.residue_id();
+        auto chain = atom.chain_id();
+
         /* Atom lies in the same residue */
-        if (current_residue_id == id) {
+        if (current_residue_id == id and current_chain == chain) {
             residue_atoms[atom.name()] = &atom;
         } else {
             /* New residue found, process the old one */
             update_bonds(bonds, atoms, residue_atoms);
 
             current_residue_id = id;
+            current_chain = chain;
             residue_atoms.clear();
             residue_atoms[atom.name()] = &atom;
         }
@@ -121,10 +125,13 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
     std::map<int, const Atom *> C_backbone;
 
     for (const auto &atom: *atoms) {
-        if (atom.name() == "C") {
-            C_backbone[atom.residue_id()] = &atom;
-        } else if (atom.name() == "N") {
-            N_backbone[atom.residue_id()] = &atom;
+        /* Skip HETATM */
+        if (not atom.hetatm()) {
+            if (atom.name() == "C") {
+                C_backbone[atom.residue_id()] = &atom;
+            } else if (atom.name() == "N") {
+                N_backbone[atom.residue_id()] = &atom;
+            }
         }
     }
 
