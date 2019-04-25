@@ -3,9 +3,11 @@
 //
 
 #include <string>
+#include <vector>
 #include <boost/algorithm/string.hpp>
 
 #include "common.h"
+#include "../structures/atom.h"
 
 
 std::string get_element_symbol(const std::string &substring) {
@@ -24,4 +26,16 @@ std::string fix_atom_name(std::string &atom_name) {
     }
 
     return atom_name;
+}
+
+
+bool is_already_loaded(const std::vector<Atom> &atoms, const std::string &atom_name, int residue_id) {
+    for (auto it = atoms.rbegin(); it != atoms.rend(); it++) {
+        if (it->residue_id() != residue_id) {
+            return false;
+        } else if (it->name() == atom_name) {
+            return true;
+        }
+    }
+    return false;
 }

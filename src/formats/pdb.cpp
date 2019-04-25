@@ -32,7 +32,6 @@ MoleculeSet PDB::read_file(const std::string &filename) {
         std::string name = filename;
 
         size_t idx = 0;
-        bool atom_block_found = false;
         while (std::getline(file, line)) {
             if (boost::starts_with(line, "HEADER")) {
                 name = line.substr(62, 4);
@@ -40,8 +39,6 @@ MoleculeSet PDB::read_file(const std::string &filename) {
             }
 
             if (boost::starts_with(line, "ATOM") or (config::read_hetatm and boost::starts_with(line, "HETATM"))) {
-                atom_block_found = true;
-
                 std::string atom_name = line.substr(12, 4);
                 boost::trim(atom_name);
                 auto residue = line.substr(17, 3);
@@ -61,16 +58,14 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                 auto z = std::stod(line.substr(46, 8));
                 auto symbol = line.substr(76, 2);
 
+                auto alt_loc = line[16];
                 auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
 
-                atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
-                idx++;
-            } else if (boost::starts_with(line, "TER")) {
-                /* Chain ended, look for next one */
-                continue;
-            } else if (atom_block_found) {
-                /* We are done reading ATOM and HETATM records */
-                break;
+                if (alt_loc == ' ' or not is_already_loaded(*atoms, atom_name, residue_id)) {
+                    atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
+                    idx++;
+
+                }
             }
         }
 

@@ -16,24 +16,10 @@
 #include "../periodic_table.h"
 
 
-bool is_already_loaded(const std::vector<Atom> &atoms, const std::string &atom_name, int residue_id);
-
 void
 read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<std::vector<Molecule>> &molecules);
 
 void read_ccd_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<std::vector<Molecule>> &molecules);
-
-
-bool is_already_loaded(const std::vector<Atom> &atoms, const std::string &atom_name, int residue_id) {
-    for (auto it = atoms.rbegin(); it != atoms.rend(); it++) {
-        if (it->residue_id() != residue_id) {
-            return false;
-        } else if (it->name() == atom_name) {
-            return true;
-        }
-    }
-    return false;
-}
 
 
 MoleculeSet mmCIF::read_file(const std::string &filename) {
@@ -127,10 +113,13 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
         it = record_positions.find("label_alt_id");
         auto alt_id = records[it->second];
 
-        int residue_id = 0;
+        int residue_id;
         /* HETATM record does not have label_seq_id */
         if (not hetatm) {
             it = record_positions.find("label_seq_id");
+            residue_id = std::stoi(records[it->second]);
+        } else {
+            it = record_positions.find("auth_seq_id");
             residue_id = std::stoi(records[it->second]);
         }
 
