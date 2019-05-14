@@ -12,6 +12,9 @@ foreach (lib ${COMMON_LIBS})
     target_link_libraries(${lib} structures fmt::fmt)
 endforeach ()
 
+set_target_properties(method PROPERTIES COMPILE_FLAGS ${MKL_CXX_FLAGS})
+target_link_libraries(method ${MKL_LINKER_FLAGS})
+
 add_subdirectory(structures)
 add_subdirectory(methods)
 add_subdirectory(formats)
