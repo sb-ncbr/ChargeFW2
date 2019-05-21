@@ -31,6 +31,8 @@ public:
 
     const std::string &symbol() const { return symbol_; }
 
+    const std::string &name() const { return name_; }
+
     double electronegativity() const { return electronegativity_; }
 
     double covalent_radius() const { return covalent_radius_; }
