@@ -59,7 +59,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                 auto symbol = line.substr(76, 2);
 
                 auto alt_loc = line[16];
-                auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
+                auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
 
                 if (alt_loc == ' ' or not is_already_loaded(*atoms, atom_name, residue_id)) {
                     atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);

@@ -51,7 +51,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                     double y = std::stod(line.substr(10, 10));
                     double z = std::stod(line.substr(20, 10));
 
-                    auto element = PeriodicTable::pte().getElement(get_element_symbol(line.substr(31, 3)));
+                    auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(line.substr(31, 3)));
 
                     atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "", false);
                 }
@@ -137,7 +137,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
                     charges[idx - 1] = formal_charge;
 
-                    auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
+                    auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
 
                     atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "", false);
                 }

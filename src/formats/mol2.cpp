@@ -78,7 +78,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
                     element_symbol = atom_type;
                 }
 
-                auto element = PeriodicTable::pte().getElement(element_symbol);
+                auto element = PeriodicTable::pte().get_element_by_symbol(element_symbol);
 
                 atoms->emplace_back(i, element, x, y, z, atom_name, residue_id, residue, "", false);
             }

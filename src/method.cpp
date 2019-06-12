@@ -221,8 +221,8 @@ std::shared_ptr<Method> load_method(const std::string &method_name) {
                                               boost::dll::load_mode::append_decorations);
         /* Some magic from: https://stackoverflow.com/a/12315035/2693542 */
         return std::shared_ptr<Method>(ptr.get(), [ptr](Method *) mutable { ptr.reset(); });
-    } catch (std::exception &) {
-        fmt::print(stderr, "Unable to load method {}\n", method_name);
+    } catch (std::exception &e) {
+        fmt::print(stderr, "Unable to load method {}: {}\n", method_name, e.what());
         exit(EXIT_PARAMETER_ERROR);
     }
 }

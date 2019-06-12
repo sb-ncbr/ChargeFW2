@@ -35,10 +35,10 @@ install(TARGETS chargefw2 DESTINATION bin)
 
 # Install files required for independent building of new methods
 add_library(libchargefw2 STATIC element.h element.cpp method.cpp method.h parameters.h parameters.cpp
-        structures/molecule.h structures/molecule.cpp geometry.h geometry.cpp)
+        structures/molecule.h structures/molecule.cpp geometry.h geometry.cpp periodic_table.h periodic_table.cpp)
 
 set_target_properties(libchargefw2 PROPERTIES OUTPUT_NAME chargefw2)
 
 install(TARGETS libchargefw2 LIBRARY DESTINATION lib)
 install(FILES structures/atom.h structures/bond.h structures/molecule.h DESTINATION include/structures)
-install(FILES element.h method.h parameters.h geometry.h DESTINATION include)
+install(FILES element.h method.h parameters.h geometry.h periodic_table.h DESTINATION include)

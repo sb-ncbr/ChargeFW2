@@ -105,7 +105,7 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
 
         it = record_positions.find("type_symbol");
         auto symbol = records[it->second];
-        auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
+        auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
 
         it = record_positions.find("label_atom_id");
         auto atom_name = fix_atom_name(records[it->second]);
@@ -200,7 +200,7 @@ read_ccd_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<
 
         it = record_positions.find("type_symbol");
         auto symbol = records[it->second];
-        auto element = PeriodicTable::pte().getElement(get_element_symbol(symbol));
+        auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
 
         it = record_positions.find("atom_id");
         auto atom_name = fix_atom_name(records[it->second]);
