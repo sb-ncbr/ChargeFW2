@@ -50,6 +50,8 @@ public:
 
     bool bonded(const Atom &atom1, const Atom &atom2) const;
 
+    const Bond *get_bond(const Atom &atom1, const Atom &atom2) const;
+
     int bond_order(const Atom &atom1, const Atom &atom2) const;
 
     int degree(const Atom &atom) const;

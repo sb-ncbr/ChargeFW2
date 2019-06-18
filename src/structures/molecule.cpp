@@ -148,3 +148,12 @@ std::vector<const Atom *> Molecule::get_close_atoms(const Atom &atom, double cut
     }
     return close_atoms;
 }
+
+
+const Bond *Molecule::get_bond(const Atom &atom1, const Atom &atom2) const {
+    for (const auto &bond: *bonds_) {
+        if ((atom1 == bond.first() and atom2 == bond.second()) or (atom1 == bond.second() and atom2 == bond.first()))
+            return &bond;
+    }
+    return nullptr;
+}
