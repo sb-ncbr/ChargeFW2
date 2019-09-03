@@ -31,9 +31,9 @@ public:
     explicit CommonParameters(std::vector<std::string> names, std::vector<double> parameters) :
             names_{std::move(names)}, parameters_{std::move(parameters)} {}
 
-    const std::vector<std::string> &names() const { return names_; }
+    [[nodiscard]] const std::vector<std::string> &names() const { return names_; }
 
-    double parameter(size_t idx) const { return parameters_[idx]; }
+    [[nodiscard]] double parameter(size_t idx) const { return parameters_[idx]; }
 };
 
 class AtomParameters {
@@ -49,11 +49,11 @@ public:
             : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
-    const std::vector<std::string> &names() const { return names_; }
+    [[nodiscard]] const std::vector<std::string> &names() const { return names_; }
 
-    const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
+    [[nodiscard]] const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    std::function<double(const Atom &)> parameter(size_t idx) const;
+    [[nodiscard]] std::function<double(const Atom &)> parameter(size_t idx) const;
 };
 
 class BondParameters {
@@ -69,11 +69,11 @@ public:
             : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
-    const std::vector<std::string> &names() const { return names_; }
+    [[nodiscard]] const std::vector<std::string> &names() const { return names_; }
 
-    const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
+    [[nodiscard]] const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    std::function<double(const Bond &)> parameter(size_t idx) const;
+    [[nodiscard]] std::function<double(const Bond &)> parameter(size_t idx) const;
 };
 
 class Parameters {
@@ -94,19 +94,19 @@ public:
 
     void save_to_file(const std::string &filename) const;
 
-    const std::string &name() const { return name_; }
+    [[nodiscard]] const std::string &name() const { return name_; }
 
-    const std::string &method_name() const { return method_name_; }
+    [[nodiscard]] const std::string &method_name() const { return method_name_; }
 
-    const std::string &source() const { return source_; }
+    [[nodiscard]] const std::string &source() const { return source_; }
 
-    std::vector<double> get_vector() const;
+    [[nodiscard]] std::vector<double> get_vector() const;
 
     void set_from_vector(const std::vector<double> &parameters);
 
-    const CommonParameters *common() const { return common_.get(); }
+    [[nodiscard]] const CommonParameters *common() const { return common_.get(); }
 
-    const AtomParameters *atom() const { return atoms_.get(); }
+    [[nodiscard]] const AtomParameters *atom() const { return atoms_.get(); }
 
-    const BondParameters *bond() const { return bonds_.get(); }
+    [[nodiscard]] const BondParameters *bond() const { return bonds_.get(); }
 };

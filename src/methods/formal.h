@@ -13,7 +13,7 @@ class Formal : public Method {
 public:
     explicit Formal() : Method("Formal", {}, {}, {}, {}) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     virtual ~Formal() = default;
 };

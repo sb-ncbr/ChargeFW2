@@ -39,7 +39,7 @@ void load_residues_info(const std::string &filename,
         while (not line.empty()) {
             std::string atom1_name;
             std::string atom2_name;
-            int bond_order;
+            int bond_order = -1;
 
             std::getline(file, line);
             std::stringstream ss(line);

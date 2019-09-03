@@ -14,7 +14,7 @@
 class EEM : public EEMethod {
     enum common {kappa};
     enum atom {A, B};
-    std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
+    [[nodiscard]] std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 
 public:
     explicit EEM() : EEMethod("EEM", {"kappa"}, {"A", "B"}, {}, {}) {}

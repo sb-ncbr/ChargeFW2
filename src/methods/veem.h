@@ -15,9 +15,9 @@ public:
 
     virtual ~VEEM() = default;
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
-    bool is_suitable_for_molecule(const Molecule &molecule) const override;
+    [[nodiscard]] bool is_suitable_for_molecule(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT VEEM method;

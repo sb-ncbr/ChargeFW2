@@ -12,7 +12,7 @@
 
 
 class EQeq : public EEMethod {
-    std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
+    [[nodiscard]] std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
     explicit EQeq() : EEMethod("EQeq", {}, {}, {}, {}) {}
 

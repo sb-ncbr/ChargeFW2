@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <limits>
 
 #include "charges.h"
 #include "utility/utility.h"
@@ -24,7 +25,7 @@ Charges::Charges(const std::string &filename) {
         names_.push_back(name);
 
         std::getline(f, line);
-        double value;
+        double value = std::numeric_limits<double>::quiet_NaN();
         std::vector<double> values;
         std::stringstream ss(line);
         while (ss >> value) {

@@ -33,7 +33,7 @@ class Molecule {
     std::unique_ptr<kdtree_t> index_{nullptr};
     std::unique_ptr<AtomKDTreeAdaptor> adaptor_{nullptr};
 
-    std::vector<size_t> get_bonded(size_t atom_idx) const;
+    [[nodiscard]] std::vector<size_t> get_bonded(size_t atom_idx) const;
 
     void init_bond_info();
 
@@ -42,32 +42,32 @@ class Molecule {
     void init_distance_tree();
 
 public:
-    const std::vector<Atom> &atoms() const { return *atoms_; }
+    [[nodiscard]] const std::vector<Atom> &atoms() const { return *atoms_; }
 
-    const std::vector<Bond> &bonds() const { return *bonds_; }
+    [[nodiscard]] const std::vector<Bond> &bonds() const { return *bonds_; }
 
-    const std::string &name() const { return name_; }
+    [[nodiscard]] const std::string &name() const { return name_; }
 
-    bool bonded(const Atom &atom1, const Atom &atom2) const;
+    [[nodiscard]] bool bonded(const Atom &atom1, const Atom &atom2) const;
 
-    const Bond *get_bond(const Atom &atom1, const Atom &atom2) const;
+    [[nodiscard]] const Bond *get_bond(const Atom &atom1, const Atom &atom2) const;
 
-    int bond_order(const Atom &atom1, const Atom &atom2) const;
+    [[nodiscard]] int bond_order(const Atom &atom1, const Atom &atom2) const;
 
-    int degree(const Atom &atom) const;
+    [[nodiscard]] int degree(const Atom &atom) const;
 
-    std::vector<const Atom *> get_close_atoms(const Atom &atom, double cutoff) const;
+    [[nodiscard]] std::vector<const Atom *> get_close_atoms(const Atom &atom, double cutoff) const;
 
     Molecule() = default;
 
     Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms, std::unique_ptr<std::vector<Bond> > bonds,
              const std::map<size_t, int> &charges);
 
-    int bond_distance(const Atom &atom1, const Atom &atom2) const;
+    [[nodiscard]] int bond_distance(const Atom &atom1, const Atom &atom2) const;
 
-    std::vector<const Atom *> k_bond_distance(const Atom &atom, size_t k) const;
+    [[nodiscard]] std::vector<const Atom *> k_bond_distance(const Atom &atom, size_t k) const;
 
-    int total_charge() const;
+    [[nodiscard]] int total_charge() const;
 
     friend class MoleculeSet;
 };
@@ -91,13 +91,13 @@ namespace fmt {
 class AtomKDTreeAdaptor {
     const Molecule *molecule_;
 public:
-    AtomKDTreeAdaptor(const Molecule *molecule) : molecule_{molecule} {}
+    explicit AtomKDTreeAdaptor(const Molecule *molecule) : molecule_{molecule} {}
 
-    inline size_t kdtree_get_point_count() const {
+    [[nodiscard]] inline size_t kdtree_get_point_count() const {
         return molecule_->atoms().size();
     }
 
-    inline double kdtree_get_pt(const size_t idx, const size_t dim) const {
+    [[nodiscard]] inline double kdtree_get_pt(const size_t idx, const size_t dim) const {
         return molecule_->atoms()[idx].pos()[dim];
     }
 

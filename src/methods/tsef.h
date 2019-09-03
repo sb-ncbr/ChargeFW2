@@ -18,9 +18,9 @@ public:
 
     virtual ~TSEF() = default;
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
-    std::vector<RequiredFeatures> get_requirements() const override {
+    [[nodiscard]] std::vector<RequiredFeatures> get_requirements() const override {
         return {RequiredFeatures::BOND_DISTANCES};
     }
 };

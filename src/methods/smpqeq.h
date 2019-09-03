@@ -13,7 +13,7 @@
 
 class SMP_QEq : public EEMethod {
     enum atom{first, second, third, fourth};
-    std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
+    [[nodiscard]] std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
 public:
     explicit SMP_QEq() : EEMethod("SMP/QEq", {}, {"first", "second", "third", "fourth"}, {}, {}) {}
 

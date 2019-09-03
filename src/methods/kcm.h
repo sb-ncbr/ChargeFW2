@@ -18,9 +18,9 @@ public:
 
     virtual ~KCM() = default;
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
-    bool is_suitable_for_large_molecule() const override { return false; }
+    [[nodiscard]] bool is_suitable_for_large_molecule() const override { return false; }
 };
 
 extern "C" BOOST_SYMBOL_EXPORT KCM method;

@@ -25,7 +25,7 @@ public:
 
     virtual ~MPEOE() = default;
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
 
 extern "C" BOOST_SYMBOL_EXPORT MPEOE method;

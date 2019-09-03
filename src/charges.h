@@ -20,9 +20,9 @@ public:
 
     void set_method_name(const std::string &method_name) { method_name_ = method_name; }
 
-    std::string method_name() const { return method_name_; }
+    [[nodiscard]] std::string method_name() const { return method_name_; }
 
-    std::vector<std::string> names() const { return names_; }
+    [[nodiscard]] std::vector<std::string> names() const { return names_; }
 
     std::vector<double> operator[](const std::string &name) const { return charges_.at(name); }
 

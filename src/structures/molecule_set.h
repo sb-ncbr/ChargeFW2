@@ -36,7 +36,7 @@ class MoleculeSet {
 
     size_t classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
 
-    std::vector<int> get_max_bond_orders(const Molecule &molecule) const;
+    [[nodiscard]] std::vector<int> get_max_bond_orders(const Molecule &molecule) const;
 
     void set_atom_type(Atom &atom, const std::tuple<std::string, std::string, std::string> &tuple);
 
@@ -47,7 +47,7 @@ public:
 
     void info() const;
 
-    const std::vector<Molecule> &molecules() const { return *molecules_; }
+    [[nodiscard]] const std::vector<Molecule> &molecules() const { return *molecules_; }
 
     void classify_atoms(AtomClassifier cls);
 
@@ -55,9 +55,9 @@ public:
 
     size_t classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
 
-    std::vector<std::tuple<std::string, std::string, std::string>> atom_types() const { return atom_types_; }
+    [[nodiscard]] std::vector<std::tuple<std::string, std::string, std::string>> atom_types() const { return atom_types_; }
 
-    std::vector<std::tuple<std::string, std::string, std::string, std::string>>
+    [[nodiscard]] std::vector<std::tuple<std::string, std::string, std::string, std::string>>
     bond_types() const { return bond_types_; }
 
     void fulfill_requirements(const std::vector<RequiredFeatures> &features);

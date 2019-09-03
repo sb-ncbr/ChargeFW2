@@ -31,7 +31,7 @@ std::vector<double> VEEM::calculate_charges(const Molecule &molecule) const {
 bool VEEM::is_suitable_for_molecule(const Molecule &molecule) const {
     try {
         for (const auto &atom: molecule.atoms()) {
-            atom.element().valence_electron_count();
+            (void) atom.element().valence_electron_count();
         }
         return true;
     }

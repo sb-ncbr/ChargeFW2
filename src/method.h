@@ -68,19 +68,19 @@ public:
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;
     }
 
-    virtual std::vector<RequiredFeatures> get_requirements() const;
+    [[nodiscard]] virtual std::vector<RequiredFeatures> get_requirements() const;
 
-    virtual bool is_suitable_for_molecule(const Molecule &) const;
+    [[nodiscard]] virtual bool is_suitable_for_molecule(const Molecule &) const;
 
-    virtual bool is_suitable_for_large_molecule() const { return true; }
+    [[nodiscard]] virtual bool is_suitable_for_large_molecule() const { return true; }
 
-    virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
+    [[nodiscard]] virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
 
-    std::string name() const { return name_; }
+    [[nodiscard]] std::string name() const { return name_; }
 
-    std::string internal_name() const;
+    [[nodiscard]] std::string internal_name() const;
 
-    std::map<std::string, MethodOption> get_options() const { return options_; }
+    [[nodiscard]] std::map<std::string, MethodOption> get_options() const { return options_; }
 
     template<typename T>
     T get_option_value(const std::string &name) const;
@@ -92,24 +92,24 @@ public:
 
 
 template<>
-std::string Method::get_option_value<std::string>(const std::string &name) const;
+[[nodiscard]] std::string Method::get_option_value<std::string>(const std::string &name) const;
 
 template<>
-double Method::get_option_value<double>(const std::string &name) const;
+[[nodiscard]] double Method::get_option_value<double>(const std::string &name) const;
 
 template<>
-int Method::get_option_value<int>(const std::string &name) const;
+[[nodiscard]] int Method::get_option_value<int>(const std::string &name) const;
 
 
 class EEMethod : public Method {
-    std::map<std::string, MethodOption> augment_options(std::map<std::string, MethodOption> options) const {
+    [[nodiscard]] std::map<std::string, MethodOption> augment_options(std::map<std::string, MethodOption> options) const {
         options["type"] = {"type", "Type of a solver", "str", "full", {"full", "cutoff", "cover"}};
         options["radius"] = {"radius", "Radius for cutoff", "double", "12", {}};
         return options;
     }
 
 protected:
-    virtual std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const = 0;
+    [[nodiscard]] virtual std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const = 0;
 
     ~EEMethod() = default;
 
@@ -119,9 +119,9 @@ public:
             Method(std::move(name), std::move(common), std::move(atom), std::move(bond), augment_options(
                     std::move(options))) {}
 
-    std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
-    std::vector<RequiredFeatures> get_requirements() const override {
+    [[nodiscard]] std::vector<RequiredFeatures> get_requirements() const override {
         return {RequiredFeatures::DISTANCE_TREE};
     }
 };
