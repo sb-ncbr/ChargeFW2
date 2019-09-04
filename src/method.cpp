@@ -8,8 +8,8 @@
 #include <numeric>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
+#include <Eigen/Core>
 #include <omp.h>
-#include <mkl.h>
 
 #include "chargefw2.h"
 #include "method.h"
@@ -96,7 +96,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
     }
 
     if (method == "full") {
-        mkl_set_num_threads(mkl_get_max_threads());
+        Eigen::setNbThreads(0);
         std::vector<const Atom *> fragment_atoms;
         for (const auto &atom: molecule.atoms()) {
             fragment_atoms.push_back(&atom);
@@ -107,9 +107,9 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
     } else if (method == "cutoff") {
         const size_t n = molecule.atoms().size();
         std::vector<double> results(n, 0);
-        mkl_set_num_threads(1);
+        Eigen::setNbThreads(1);
 
-        #pragma omp parallel for
+#pragma omp parallel for default(none) shared(results, radius, molecule)
         for (size_t i = 0; i < n; i++) {
             auto fragment_atoms = molecule.get_close_atoms(molecule.atoms()[i], radius);
             auto res = solve_system(fragment_atoms,
@@ -131,7 +131,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
         return results;
     } else /* method == "cover" */ {
-        mkl_set_num_threads(1);
+        Eigen::setNbThreads(1);
 
         const size_t n = molecule.atoms().size();
 
@@ -170,7 +170,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
         std::vector<const Atom *> pivots_vector(pivots.begin(), pivots.end());
 
-        #pragma omp parallel for
+        #pragma omp parallel for default(none) shared(radius, pivots_vector, neighbors, molecule, charges_count, results)
         for (size_t i = 0; i < pivots_vector.size(); i++) {
             auto &atom = pivots_vector[i];
             auto fragment_atoms = molecule.get_close_atoms(*atom, radius);

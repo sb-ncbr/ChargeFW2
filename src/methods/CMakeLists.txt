@@ -8,10 +8,9 @@ foreach(method ${METHODS})
     target_link_libraries(${method} ${DEPS})
 endforeach(method)
 
-set(NEED_MKL eem sfkeem mgc kcm denr delre tsef qeq eqeq eqeqc abeem smpqeq)
-foreach(method ${NEED_MKL})
-    set_target_properties(${method} PROPERTIES COMPILE_FLAGS ${MKL_CXX_FLAGS})
-    target_link_libraries(${method} ${MKL_LINKER_FLAGS})
+set(NEED_EIGEN eem sfkeem mgc kcm denr delre tsef qeq eqeq eqeqc abeem smpqeq)
+foreach(method ${NEED_EIGEN})
+    target_link_libraries(${method} Eigen3::Eigen)
 endforeach(method)
 
 install(TARGETS ${METHODS} LIBRARY DESTINATION lib)

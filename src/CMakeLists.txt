@@ -2,7 +2,7 @@ find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
 find_package(fmt REQUIRED)
 find_package(nanoflann REQUIRED)
 
-include_directories(${PROJECT_BINARY_DIR}/src)
+include_directories(${PROJECT_BINARY_DIR}/src ${EIGEN3_INCLUDE_DIR})
 
 configure_file(chargefw2.h.in chargefw2.h)
 
@@ -12,8 +12,7 @@ foreach (lib ${COMMON_LIBS})
     target_link_libraries(${lib} structures fmt::fmt)
 endforeach ()
 
-set_target_properties(method PROPERTIES COMPILE_FLAGS ${MKL_CXX_FLAGS})
-target_link_libraries(method ${MKL_LINKER_FLAGS})
+target_link_libraries(method Eigen3::Eigen)
 
 add_subdirectory(structures)
 add_subdirectory(methods)
@@ -29,7 +28,7 @@ add_executable(chargefw2 ${SOURCES})
 add_dependencies(chargefw2 ${METHODS})
 
 target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs
-        Boost::program_options Boost::system Boost::filesystem dl stdc++fs nlopt_cxx fmt::fmt ${MKL_LINKER_FLAGS})
+        Boost::program_options Boost::system Boost::filesystem dl stdc++fs nlopt_cxx fmt::fmt)
 
 install(TARGETS chargefw2 DESTINATION bin)
 

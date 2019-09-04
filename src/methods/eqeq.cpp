@@ -4,75 +4,57 @@
 
 #include <vector>
 #include <cmath>
-#include <mkl_lapacke.h>
-#include <mkl.h>
+#include <Eigen/Dense>
 
 #include "eqeq.h"
 #include "../parameters.h"
 #include "../geometry.h"
 
-#define IDX(i, j) ((i) * m + (j))
-
 
 std::vector<double> EQeq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
-    size_t m = n + 1;
 
     const double lambda = 1.2;
     const double k = 14.4;
     double H_electron_affinity = -2.0; // Exception for hydrogen mentioned in the article
 
-    auto *A = static_cast<double *>(mkl_malloc(m * m * sizeof(double), 64));
-    auto *b = static_cast<double *>(mkl_malloc(m * sizeof(double), 64));
-    auto *ipiv = static_cast<int *>(mkl_malloc(m * sizeof(int), 64));
-
-    std::vector<double> X(n, 0);
-    std::vector<double> J(n, 0);
+    Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n + 1, n + 1);
+    Eigen::VectorXd b = Eigen::VectorXd::Zero(n + 1);
+    Eigen::VectorXd J = Eigen::VectorXd::Zero(n);
+    Eigen::VectorXd X = Eigen::VectorXd::Zero(n);
 
     for (size_t i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         if (atom_i.element().symbol() == "H") {
-            X[i] = (atom_i.element().ionization_potential() + H_electron_affinity) / 2;
-            J[i] = atom_i.element().ionization_potential() - H_electron_affinity;
+            X(i) = (atom_i.element().ionization_potential() + H_electron_affinity) / 2;
+            J(i) = atom_i.element().ionization_potential() - H_electron_affinity;
         } else {
-            X[i] = (atom_i.element().ionization_potential() + atom_i.element().electron_affinity()) / 2;
-            J[i] = atom_i.element().ionization_potential() - atom_i.element().electron_affinity();
+            X(i) = (atom_i.element().ionization_potential() + atom_i.element().electron_affinity()) / 2;
+            J(i) = atom_i.element().ionization_potential() - atom_i.element().electron_affinity();
         }
     }
 
     for (size_t i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
-        A[IDX(i, i)] = J[i];
-        b[i] = -X[i];
+        A(i, i) = J(i);
+        b(i) = -X(i);
         for (size_t j = i + 1; j < n; j++) {
             const auto &atom_j = *atoms[j];
-            double a = std::sqrt(J[i] * J[j]) / k;
+            double a = std::sqrt(J(i) * J(j)) / k;
             double Rij = distance(atom_i, atom_j);
             double overlap = std::exp(-a * a * Rij * Rij) * (2 * a - a * a * Rij - 1 / Rij);
-            A[IDX(i, j)] = lambda * k / 2 * (1 / Rij + overlap);
+            auto x = lambda * k / 2 * (1 / Rij + overlap);
+            A(i, j) = x;
+            A(j, i) = x;
         }
     }
 
-    for (size_t i = 0; i < n; i++) {
-        A[IDX(i, n)] = 1;
-    }
+    A.row(n) = Eigen::VectorXd::Constant(n + 1, 1);
+    A.col(n) = Eigen::VectorXd::Constant(n + 1, 1);
+    A(n, n) = 0;
+    b(n) = total_charge;
 
-    A[IDX(n, n)] = 0;
-    b[n] = total_charge;
-
-    auto m_int = static_cast<int>(m);
-    int info = LAPACKE_dsysv(LAPACK_ROW_MAJOR, 'U', m_int, 1, A, m_int, ipiv, b, 1);
-    if (info) {
-        throw std::runtime_error("Cannot solve linear system");
-    }
-
-    std::vector<double> results;
-    results.assign(b, b + n);
-
-    mkl_free(A);
-    mkl_free(b);
-    mkl_free(ipiv);
-
-    return results;
+    Eigen::VectorXd q = A.partialPivLu().solve(b).head(n);
+    return std::vector<double>(q.data(), q.data() + q.size());
 }
