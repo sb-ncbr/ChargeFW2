@@ -84,15 +84,15 @@ std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &meth
     std::string best_name;
     size_t best_unclassified = ms.molecules().size();
 
+    auto internal = method->internal_name();
     for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
-        if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()),
-                                   method->internal_name())) {
+        if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()), internal)) {
             continue;
         }
 
         auto p = std::make_unique<Parameters>(set.path());
 
-        if (method->internal_name() != p->method_name()) {
+        if (internal != p->method_name()) {
             continue;
         }
 
