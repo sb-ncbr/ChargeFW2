@@ -18,11 +18,11 @@ class PeriodicTable {
 public:
     static const PeriodicTable &pte();
 
-    const Element *get_element_by_Z(size_t Z) const { return &elements_[Z]; }
+    [[nodiscard]] const Element *get_element_by_Z(size_t Z) const { return &elements_[Z]; }
 
-    const Element *get_element_by_symbol(const std::string &symbol) const;
+    [[nodiscard]] const Element *get_element_by_symbol(const std::string &symbol) const;
 
-    const Element *get_element_by_name(const std::string &symbol) const;
+    [[nodiscard]] const Element *get_element_by_name(const std::string &symbol) const;
 
     PeriodicTable();
 };

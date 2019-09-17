@@ -3,7 +3,6 @@
 //
 
 #include <vector>
-#include <cmath>
 #include <Eigen/Dense>
 
 #include "tsef.h"

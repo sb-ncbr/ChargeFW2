@@ -28,9 +28,9 @@ public:
 
     void parametrize();
 
-    const MoleculeSet &set() const { return set_; }
+    [[nodiscard]] const MoleculeSet &set() const { return set_; }
 
     std::shared_ptr<Method> method() { return method_; }
 
-    const Charges &reference_charges() const { return reference_charges_; }
+    [[nodiscard]] const Charges &reference_charges() const { return reference_charges_; }
 };

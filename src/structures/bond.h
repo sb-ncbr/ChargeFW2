@@ -15,19 +15,19 @@ class Bond {
     size_t bond_type_{};
     const Molecule *molecule_{};
 public:
-    Bond(const Atom *atom1, const Atom *atom2, int order) : first_{atom1}, second_{atom2}, order_{order} {}
+    Bond(const Atom *atom1, const Atom *atom2, int order) noexcept : first_{atom1}, second_{atom2}, order_{order} {}
 
-    bool hasAtom(const Atom &atom) const { return atom == *first_ or atom == *second_; }
+    [[nodiscard]] bool hasAtom(const Atom &atom) const { return atom == *first_ or atom == *second_; }
 
-    const Atom &first() const { return *first_; }
+    [[nodiscard]] const Atom &first() const { return *first_; }
 
-    const Atom &second() const { return *second_; }
+    [[nodiscard]] const Atom &second() const { return *second_; }
 
-    int order() const { return order_; }
+    [[nodiscard]] int order() const { return order_; }
 
-    size_t bond_type() const { return bond_type_; }
+    [[nodiscard]] size_t bond_type() const { return bond_type_; }
 
-    std::array<double, 3> get_center(bool weighted=false) const;
+    [[nodiscard]] std::array<double, 3> get_center(bool weighted=false) const;
 
     friend class MoleculeSet;
 };

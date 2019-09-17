@@ -52,7 +52,7 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     // bond-atom part
     for (size_t i = 0; i < m; i++) {
         const auto &bond = molecule.bonds()[i];
-        b[n + i] = -parameters_->bond()->parameter(bond::A)(bond);
+        b(n + i) = -parameters_->bond()->parameter(bond::A)(bond);
         for (size_t j = 0; j < n; j++) {
             const auto &atom = molecule.atoms()[j];
             if (bond.hasAtom(atom)) {

@@ -25,7 +25,7 @@ std::vector<double> SMP_QEq::solve_system(const std::vector<const Atom *> &atoms
             A(i, i) = 2 * (parameters_->atom()->parameter(atom::second)(atom_i) +
                                 parameters_->atom()->parameter(atom::third)(atom_i) * b(i) +
                                 parameters_->atom()->parameter(atom::fourth)(atom_i) * b(i) * b(i));
-            b[i] = -parameters_->atom()->parameter(atom::first)(atom_i);
+            b(i) = -parameters_->atom()->parameter(atom::first)(atom_i);
             for (size_t j = i + 1; j < n; j++) {
                 const auto &atom_j = *atoms[j];
                 auto gamma = 2 * std::sqrt(parameters_->atom()->parameter(atom::second)(atom_i) *
