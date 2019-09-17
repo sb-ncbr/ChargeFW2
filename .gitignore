@@ -1,3 +1,5 @@
 build-*
 .idea
 test
+cmake-build-debug
+cmake-build-release
