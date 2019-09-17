@@ -17,6 +17,7 @@ namespace config {
     std::string par_file;
     std::string ref_chg_file;
     std::string chg_out_dir;
+    std::string log_file;
     std::string method_name;
     bool read_hetatm;
     bool ignore_water;
@@ -34,6 +35,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
             ("par-file", po::value<std::string>()->default_value(""), "File with parameters (json)")
             ("ref-chg-file", po::value<std::string>()->default_value(""), "File with reference charges")
             ("chg-out-dir", po::value<std::string>()->default_value(""), "Directory to output charges to")
+            ("log-file", po::value<std::string>()->default_value(""), "Log file")
             ("read-hetatm", po::bool_switch()->default_value(false), "Read HETATM records from PDB/mmCIF files")
             ("ignore-water", po::bool_switch()->default_value(false), "Discard water molecules from PDB/mmCIF files")
             ("method", po::value<std::string>()->default_value(""), "Method");
@@ -64,6 +66,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
     config::par_file = vm["par-file"].as<std::string>();
     config::chg_out_dir = vm["chg-out-dir"].as<std::string>();
     config::ref_chg_file = vm["ref-chg-file"].as<std::string>();
+    config::log_file = vm["log-file"].as<std::string>();
     config::method_name = vm["method"].as<std::string>();
     config::read_hetatm = vm["read-hetatm"].as<bool>();
     config::ignore_water = vm["ignore-water"].as<bool>();

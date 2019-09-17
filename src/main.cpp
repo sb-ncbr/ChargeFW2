@@ -3,7 +3,11 @@
 #include <nlohmann/json.hpp>
 #include <memory>
 #include <filesystem>
+#include <cstdio>
+#include <sys/resource.h>
 #include <ctime>
+#include <chrono>
+#include <unistd.h>
 #include <algorithm>
 
 #include "chargefw2.h"
@@ -27,6 +31,8 @@
 int main(int argc, char **argv) {
     auto parsed = parse_args(argc, argv);
     check_common_args();
+
+    auto start = std::chrono::system_clock::now();
 
     auto ext = std::filesystem::path(config::input_file).extension();
 
@@ -93,15 +99,9 @@ int main(int argc, char **argv) {
 
         charges.set_method_name(config::method_name);
 
-        clock_t begin = clock();
-
         for (auto &mol: m.molecules()) {
             charges.insert(mol.name(), method->calculate_charges(mol));
         }
-
-        clock_t end = clock();
-
-        fmt::print("Computation took {:.2f} seconds\n", double(end - begin) / CLOCKS_PER_SEC);
 
         auto txt = TXT();
         std::filesystem::path dir(config::chg_out_dir);
@@ -119,6 +119,36 @@ int main(int argc, char **argv) {
             mol2.save_charges(m, charges, dir / std::filesystem::path(mol2_str));
         }
 
+        if (not config::log_file.empty()) {
+            struct rusage usage = {};
+            getrusage(RUSAGE_SELF, &usage);
+
+            double utime = usage.ru_utime.tv_sec + static_cast<double>(usage.ru_utime.tv_usec) / 10e6;
+            double stime = usage.ru_stime.tv_sec + static_cast<double>(usage.ru_stime.tv_usec) / 10e6;
+            double mem = static_cast<double>(usage.ru_maxrss) / 1024;
+            auto now = time(0);
+            char current_time[100];
+            strftime(current_time, 100, "%c", localtime(&now));
+            auto end = std::chrono::system_clock::now();
+            std::chrono::duration<double> walltime = end - start;
+
+            auto pid = getpid();
+            std::string parameters;
+            if (method->parameters()) {
+                parameters = method->parameters()->name();
+            } else {
+                parameters = std::string("None");
+            }
+
+            auto log_file = std::fopen(config::log_file.c_str(), "a");
+
+            fmt::print(log_file, "{} [{}]; File: {}; Processed molecules: {}; Method: {}; Parameters: {}\n",
+                       current_time, pid, config::input_file, m.molecules().size(), method->name(), parameters);
+
+            fmt::print(log_file,
+                       "{} [{}]; Walltime: {:.2f} s; User time: {:.2f} s; System time: {:.2f} s; Peak memory: {:.1f} MB \n",
+                       current_time, pid, walltime.count(), utime, stime, mem);
+        }
     } else if (config::mode == "best-parameters") {
         std::shared_ptr<Method> method = load_method(config::method_name);
 
