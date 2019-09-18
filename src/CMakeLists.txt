@@ -30,6 +30,8 @@ add_dependencies(chargefw2 ${METHODS})
 target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs
         Boost::program_options Boost::system Boost::filesystem dl stdc++fs nlopt fmt::fmt)
 
+set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
+
 install(TARGETS chargefw2 DESTINATION bin)
 
 # Install files required for independent building of new methods

@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
             double utime = usage.ru_utime.tv_sec + static_cast<double>(usage.ru_utime.tv_usec) / 10e6;
             double stime = usage.ru_stime.tv_sec + static_cast<double>(usage.ru_stime.tv_usec) / 10e6;
             double mem = static_cast<double>(usage.ru_maxrss) / 1024;
-            auto now = time(0);
+            auto now = time(nullptr);
             char current_time[100];
             strftime(current_time, 100, "%c", localtime(&now));
             auto end = std::chrono::system_clock::now();
