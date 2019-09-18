@@ -9,7 +9,7 @@
 #include "utility/utility.h"
 
 
-void get_suitable_methods(MoleculeSet &ms, bool is_protein) {
+void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
     std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
     using json = nlohmann::json;
@@ -63,7 +63,7 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein) {
                 continue;
             }
 
-            size_t unclassified = ms.classify_set_from_parameters(*p, false);
+            size_t unclassified = ms.classify_set_from_parameters(*p, false, permissive_types);
 
             if (!unclassified) {
                 if (not parameters_found) {
@@ -80,9 +80,12 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein) {
 }
 
 
-std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein) {
+std::string
+best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein, bool permissive_types) {
     std::string best_name;
+    std::string best_name_permissive;
     size_t best_unclassified = ms.molecules().size();
+    size_t best_unclassified_permissive = ms.molecules().size();
 
     auto internal = method->internal_name();
     for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
@@ -101,6 +104,11 @@ std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &meth
         }
 
         size_t unclassified = ms.classify_set_from_parameters(*p, false);
+        size_t unclassified_permissive = ms.molecules().size();
+
+        if (unclassified != 0 and permissive_types) {
+            unclassified_permissive = ms.classify_set_from_parameters(*p, false, permissive_types);
+        }
 
         // If all molecules are covered by the parameters, we found our best
         if (!unclassified) {
@@ -111,7 +119,16 @@ std::string best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &meth
             best_unclassified = unclassified;
             best_name = set.path();
         }
+
+        if (permissive_types and unclassified_permissive < best_unclassified_permissive) {
+            best_unclassified_permissive = unclassified_permissive;
+            best_name_permissive = set.path();
+        }
     }
 
-    return best_name;
+    if (permissive_types and best_unclassified_permissive < best_unclassified) {
+        return best_name_permissive;
+    } else {
+        return best_name;
+    }
 }

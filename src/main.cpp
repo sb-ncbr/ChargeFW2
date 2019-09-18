@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
         if (method->has_parameters()) {
             std::string par_name;
             if (config::par_file.empty()) {
-                par_name = best_parameters(m, method, is_protein_structure);
+                par_name = best_parameters(m, method, is_protein_structure, config::permissive_types);
                 if (par_name.empty()) {
                     fmt::print(stderr, "No parameters found \n");
                     exit(EXIT_PARAMETER_ERROR);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
             p = std::make_unique<Parameters>(par_name);
             p->print();
 
-            size_t unclassified = m.classify_set_from_parameters(*p);
+            size_t unclassified = m.classify_set_from_parameters(*p, true, config::permissive_types);
             fmt::print("\nNumber of unclassified molecules: {}\n\n", unclassified);
 
             method->set_parameters(p.get());
@@ -156,9 +156,12 @@ int main(int argc, char **argv) {
             fmt::print(stderr, "Method uses no parameters\n");
             exit(EXIT_PARAMETER_ERROR);
         }
-
-        fmt::print("Best parameters are: {}\n", best_parameters(m, method, is_protein_structure));
-
+        auto best = best_parameters(m, method, is_protein_structure, config::permissive_types);
+        if (best.empty()) {
+            fmt::print("There are no best parameters\n");
+        } else {
+            fmt::print("Best parameters are: {}\n", best);
+        }
     } else if (config::mode == "parameters") {
         m.classify_atoms(AtomClassifier::PLAIN);
 
@@ -172,7 +175,7 @@ int main(int argc, char **argv) {
         p.parametrize();
 
     } else if (config::mode == "suitable-methods") {
-        get_suitable_methods(m, is_protein_structure);
+        get_suitable_methods(m, is_protein_structure, config::permissive_types);
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
         exit(EXIT_PARAMETER_ERROR);

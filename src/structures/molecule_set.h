@@ -32,9 +32,11 @@ class MoleculeSet {
     std::vector<std::tuple<std::string, std::string, std::string, std::string>> bond_types_{};
     std::unique_ptr<std::vector<Molecule> > molecules_{nullptr};
 
-    size_t classify_atoms_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
+    size_t classify_atoms_from_parameters(const Parameters &parameters, bool remove_unclassified = true,
+                                          bool permissive_types = false);
 
-    size_t classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
+    size_t classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified = true,
+                                          bool permissive_types = false);
 
     [[nodiscard]] std::vector<int> get_max_bond_orders(const Molecule &molecule) const;
 
@@ -53,9 +55,11 @@ public:
 
     void classify_bonds(BondClassifier cls);
 
-    size_t classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified = true);
+    size_t classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified = true,
+                                        bool permissive_types = false);
 
-    [[nodiscard]] std::vector<std::tuple<std::string, std::string, std::string>> atom_types() const { return atom_types_; }
+    [[nodiscard]] std::vector<std::tuple<std::string, std::string, std::string>>
+    atom_types() const { return atom_types_; }
 
     [[nodiscard]] std::vector<std::tuple<std::string, std::string, std::string, std::string>>
     bond_types() const { return bond_types_; }

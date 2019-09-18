@@ -122,7 +122,19 @@ void MoleculeSet::set_bond_type(Bond &bond,
 }
 
 
-size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified) {
+inline bool check_bond_symbols(const Bond &bond, const std::string &symbol1, const std::string &symbol2) {
+    if (symbol1 != "*" and symbol2 != "*") {
+        if ((bond.first().element().symbol() != symbol1 or bond.second().element().symbol() != symbol2) and
+            (bond.second().element().symbol() != symbol1 or bond.first().element().symbol() != symbol2)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters, bool remove_unclassified,
+                                                   bool permissive_types) {
     std::vector<int> unclassified;
     bond_types_ = parameters.bond()->keys();
     int m = 0;
@@ -131,11 +143,8 @@ size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters,
             bool found = false;
             for (size_t i = 0; i < bond_types_.size(); i++) {
                 auto &[symbol1, symbol2, cls, type] = bond_types_[i];
-                if (symbol1 != "*" or symbol2 != "*") {
-                    if ((bond.first().element().symbol() != symbol1 or bond.second().element().symbol() != symbol2) and
-                        (bond.second().element().symbol() != symbol1 or bond.first().element().symbol() != symbol2)) {
-                        continue;
-                    }
+                if (not check_bond_symbols(bond, symbol1, symbol2)) {
+                    continue;
                 }
                 if (cls == "plain") {
                     bond.bond_type_ = i;
@@ -153,8 +162,27 @@ size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters,
                 }
             }
             if (!found) {
-                unclassified.push_back(m);
-                break;
+                bool is_unclassified = true;
+                if (permissive_types) {
+                    for (size_t i = 0; i < bond_types_.size(); i++) {
+                        auto &[symbol1, symbol2, cls, type] = bond_types_[i];
+                        if (not check_bond_symbols(bond, symbol1, symbol2)) {
+                            continue;
+                        }
+                        if (cls == "bo") {
+                            /* Try to match smaller bond order */
+                            if (std::to_string(bond.order_ - 1) == type) {
+                                bond.bond_type_ = i;
+                                is_unclassified = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (is_unclassified) {
+                    unclassified.push_back(m);
+                    break;
+                }
             }
         }
         m++;
@@ -170,19 +198,20 @@ size_t MoleculeSet::classify_bonds_from_parameters(const Parameters &parameters,
 }
 
 
-size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters, bool remove_unclassified) {
+size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters, bool remove_unclassified,
+                                                   bool permissive_types) {
     std::vector<int> unclassified;
     atom_types_ = parameters.atom()->keys();
     int m = 0;
     for (auto &molecule: *molecules_) {
         std::vector<int> max_bond_orders = get_max_bond_orders(molecule);
-
         for (auto &atom: *molecule.atoms_) {
             bool found = false;
             for (size_t i = 0; i < atom_types_.size(); i++) {
                 auto &[symbol, cls, type] = atom_types_[i];
-                if (atom.element().symbol() != symbol)
+                if (atom.element().symbol() != symbol) {
                     continue;
+                }
                 if (cls == "plain") {
                     atom.atom_type_ = i;
                     found = true;
@@ -200,8 +229,33 @@ size_t MoleculeSet::classify_atoms_from_parameters(const Parameters &parameters,
                 }
             }
             if (!found) {
-                unclassified.push_back(m);
-                break;
+                bool is_unclassified = true;
+                if (permissive_types) {
+                    for (size_t i = 0; i < atom_types_.size(); i++) {
+                        auto &[symbol, cls, type] = atom_types_[i];
+                        if (atom.element().symbol() != symbol) {
+                            continue;
+                        }
+                        if (cls == "hbo") {
+                            std::string current_type;
+                            /* Try to match similar bond order */
+                            if (max_bond_orders[atom.index_] == 0) {
+                                current_type = "1";
+                            } else {
+                                current_type = std::to_string(max_bond_orders[atom.index_] - 1);
+                            }
+                            if (current_type == type) {
+                                atom.atom_type_ = i;
+                                is_unclassified = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (is_unclassified) {
+                    unclassified.push_back(m);
+                    break;
+                }
             }
         }
         m++;
@@ -232,13 +286,14 @@ std::vector<int> MoleculeSet::get_max_bond_orders(const Molecule &molecule) cons
 }
 
 
-size_t MoleculeSet::classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified) {
+size_t MoleculeSet::classify_set_from_parameters(const Parameters &parameters, bool remove_unclassified,
+                                                 bool permissive_types) {
     size_t unclassified = 0;
     if (parameters.atom() != nullptr)
-        unclassified += classify_atoms_from_parameters(parameters, remove_unclassified);
+        unclassified += classify_atoms_from_parameters(parameters, remove_unclassified, permissive_types);
 
     if (parameters.bond() != nullptr)
-        unclassified += classify_bonds_from_parameters(parameters, remove_unclassified);
+        unclassified += classify_bonds_from_parameters(parameters, remove_unclassified, permissive_types);
 
     return unclassified;
 }

@@ -20,6 +20,7 @@ namespace config {
     extern std::string log_file;
     extern bool read_hetatm;
     extern bool ignore_water;
+    extern bool permissive_types;
 }
 
 

@@ -21,6 +21,7 @@ namespace config {
     std::string method_name;
     bool read_hetatm;
     bool ignore_water;
+    bool permissive_types;
 }
 
 
@@ -38,6 +39,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
             ("log-file", po::value<std::string>()->default_value(""), "Log file")
             ("read-hetatm", po::bool_switch()->default_value(false), "Read HETATM records from PDB/mmCIF files")
             ("ignore-water", po::bool_switch()->default_value(false), "Discard water molecules from PDB/mmCIF files")
+            ("permissive-types", po::bool_switch()->default_value(false), "Use similar parameters for similar atom/bond types if no exact match is found")
             ("method", po::value<std::string>()->default_value(""), "Method");
 
     po::variables_map vm;
@@ -70,6 +72,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
     config::method_name = vm["method"].as<std::string>();
     config::read_hetatm = vm["read-hetatm"].as<bool>();
     config::ignore_water = vm["ignore-water"].as<bool>();
+    config::permissive_types = vm["permissive-types"].as<bool>();
 
     return parsed;
 }
