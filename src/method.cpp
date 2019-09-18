@@ -109,7 +109,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
         std::vector<double> results(n, 0);
         Eigen::setNbThreads(1);
 
-        #pragma omp parallel for default(none) shared(results, radius, molecule, n)
+#pragma omp parallel for default(none) shared(results, radius, molecule) firstprivate(n)
         for (size_t i = 0; i < n; i++) {
             auto fragment_atoms = molecule.get_close_atoms(molecule.atoms()[i], radius);
             auto res = solve_system(fragment_atoms,
@@ -170,7 +170,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
         std::vector<const Atom *> pivots_vector(pivots.begin(), pivots.end());
 
-        #pragma omp parallel for default(none) shared(radius, pivots_vector, neighbors, molecule, charges_count, results, n)
+#pragma omp parallel for default(none) shared(radius, pivots_vector, neighbors, molecule, charges_count, results) firstprivate(n)
         for (size_t i = 0; i < pivots_vector.size(); i++) {
             auto &atom = pivots_vector[i];
             auto fragment_atoms = molecule.get_close_atoms(*atom, radius);
