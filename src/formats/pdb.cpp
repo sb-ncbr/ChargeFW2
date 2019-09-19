@@ -67,6 +67,11 @@ MoleculeSet PDB::read_file(const std::string &filename) {
 
                 }
             }
+
+            /* If they are multiple models present, end after the first one */
+            if (boost::starts_with(line, "ENDMDL")) {
+                break;
+            }
         }
 
         auto bonds = get_bonds(atoms);
