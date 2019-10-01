@@ -4,8 +4,10 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <sstream>
 #include <fstream>
+#include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
@@ -15,6 +17,18 @@
 #include "bonds.h"
 #include "../periodic_table.h"
 
+
+const std::set<std::string> required_protein_fields = {"Cartn_x", "Cartn_y", "Cartn_z", "type_symbol",
+                                                       "label_atom_id", "label_alt_id", "label_seq_id",
+                                                       "auth_seq_id", "label_comp_id", "label_asym_id",
+                                                       "pdbx_PDB_model_num"};
+
+const std::set<std::string> required_ccd_fields = {"model_Cartn_x", "model_Cartn_y", "model_Cartn_z", "type_symbol",
+                                                   "atom_id", "comp_id"};
+
+
+bool has_required_keys(const std::map<std::string, size_t> &fields, const std::set<std::string> &required,
+                       std::string &missing);
 
 void
 read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<std::vector<Molecule>> &molecules);
@@ -58,6 +72,18 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
 }
 
 
+bool has_required_keys(const std::map<std::string, size_t> &fields, const std::set<std::string> &required,
+                       std::string &missing) {
+    for (const auto &req_field: required) {
+        if (fields.find(req_field) == fields.end()) {
+            missing = req_field;
+            return false;
+        }
+    }
+    return true;
+}
+
+
 void
 read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<std::vector<Molecule>> &molecules) {
 
@@ -80,6 +106,12 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
         category_idx++;
         std::getline(file, line);
     } while (boost::starts_with(line, "_atom_site."));
+
+    std::string missing;
+    if (not has_required_keys(record_positions, required_protein_fields, missing)) {
+        fmt::print(stderr, "mmCIF file does not contain required field: _atom_site.{}\n", missing);
+        exit(EXIT_FILE_ERROR);
+    }
 
     size_t idx = 0;
 
@@ -182,6 +214,11 @@ read_ccd_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<
         std::getline(file, line);
     } while (boost::starts_with(line, "_chem_comp_atom."));
 
+    std::string missing;
+    if (not has_required_keys(record_positions, required_ccd_fields, missing)) {
+        fmt::print(stderr, "mmCIF file does not contain required field: _chem_comp_atom.{}\n", missing);
+        exit(EXIT_FILE_ERROR);
+    }
 
     size_t idx = 0;
     do {
