@@ -8,9 +8,11 @@
 #include <fstream>
 #include <sstream>
 #include <iterator>
+#include <set>
 #include <fmt/format.h>
 #include <boost/algorithm/string.hpp>
 
+#include "common.h"
 #include "chargefw2.h"
 #include "../charges.h"
 #include "../periodic_table.h"
@@ -28,6 +30,8 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 
     std::string line;
 
+    std::set<std::string> molecule_names;
+
     try {
         while (std::getline(file, line)) {
 
@@ -43,6 +47,10 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 
             std::string name;
             std::getline(file, name);
+
+            name = sanitize_name(name);
+            name = get_unique_name(name, molecule_names);
+            molecule_names.insert(name);
 
             std::getline(file, line);
 

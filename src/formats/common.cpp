@@ -4,10 +4,36 @@
 
 #include <string>
 #include <vector>
+#include <set>
+#include <cctype>
 #include <boost/algorithm/string.hpp>
 
 #include "common.h"
 #include "../structures/atom.h"
+
+
+std::string sanitize_name(const std::string &name) {
+    std::string new_name;
+    for (const auto c: name) {
+        if (isalnum(c)) {
+            new_name += c;
+        } else {
+            new_name += '_';
+        }
+    }
+    return new_name;
+}
+
+
+std::string get_unique_name(const std::string &name, const std::set<std::string> &already_used) {
+    int count = 0;
+    std::string new_name = name;
+    while (already_used.find(new_name) != already_used.end()) {
+        new_name = name + std::string("_") + std::to_string(count);
+        count++;
+    }
+    return new_name;
+}
 
 
 std::string get_element_symbol(const std::string &substring) {

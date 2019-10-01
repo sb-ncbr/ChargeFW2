@@ -52,14 +52,14 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             if (boost::starts_with(line, "_entry.id")) {
                 std::stringstream ss(line);
                 ss >> name >> name;
-                read_protein_molecule(file, name, molecules);
+                read_protein_molecule(file, sanitize_name(name), molecules);
                 break;
             }
 
             if (boost::starts_with(line, "_chem_comp.id")) {
                 std::stringstream ss(line);
                 ss >> name >> name;
-                read_ccd_molecule(file, name, molecules);
+                read_ccd_molecule(file, sanitize_name(name), molecules);
                 break;
             }
         }

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <sstream>
 #include <tuple>
+#include <set>
 #include <vector>
 #include <memory>
 #include <fmt/format.h>
@@ -27,11 +28,18 @@ MoleculeSet SDF::read_file(const std::string &filename) {
     }
 
     std::string line;
+
+    std::set<std::string> molecule_names;
 	
     auto molecules = std::make_unique<std::vector<Molecule> >();
     try {
         while (std::getline(file, line)) {
             std::string name = line; // Read name of the molecule
+
+            name = sanitize_name(name.substr(0, 80));
+            name = get_unique_name(name, molecule_names);
+            molecule_names.insert(name);
+
             std::getline(file, line); // Line with comments
             std::getline(file, line); // Line with comments
 
