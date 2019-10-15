@@ -2,7 +2,8 @@ find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
 find_package(fmt REQUIRED)
 find_package(nanoflann REQUIRED)
 
-include_directories(${PROJECT_BINARY_DIR}/src ${EIGEN3_INCLUDE_DIR})
+include_directories(${PROJECT_BINARY_DIR}/src)
+include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 configure_file(chargefw2.h.in chargefw2.h)
 
