@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <Eigen/Core>
 #include <vector>
 #include <boost/config.hpp>
 
@@ -12,7 +13,9 @@
 
 
 class EQeq : public EEMethod {
-    [[nodiscard]] std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
+    [[nodiscard]] Eigen::VectorXd solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
+
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 public:
     explicit EQeq() : EEMethod("EQeq", {}, {}, {}, {}) {}
 

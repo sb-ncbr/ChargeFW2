@@ -4,14 +4,14 @@
 
 #include <vector>
 #include <cmath>
-#include <Eigen/Dense>
+#include <Eigen/LU>
 
 #include "eqeq.h"
 #include "../parameters.h"
 #include "../geometry.h"
 
 
-std::vector<double> EQeq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+Eigen::VectorXd EQeq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -55,6 +55,11 @@ std::vector<double> EQeq::solve_system(const std::vector<const Atom *> &atoms, d
     A(n, n) = 0;
     b(n) = total_charge;
 
-    Eigen::VectorXd q = A.partialPivLu().solve(b).head(n);
+    return A.partialPivLu().solve(b).head(n);
+}
+
+
+std::vector<double> EQeq::calculate_charges(const Molecule &molecule) const {
+    Eigen::VectorXd q = solve_EE(molecule);
     return std::vector<double>(q.data(), q.data() + q.size());
 }

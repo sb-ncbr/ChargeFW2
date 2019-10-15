@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <Eigen/Core>
 #include <vector>
 #include <boost/config.hpp>
 
@@ -13,7 +14,9 @@
 
 class SMP_QEq : public EEMethod {
     enum atom{first, second, third, fourth};
-    [[nodiscard]] std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
+    [[nodiscard]] Eigen::VectorXd solve_system(const std::vector<const Atom *> &atoms, double total_charge) const override;
+
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 public:
     explicit SMP_QEq() : EEMethod("SMP/QEq", {}, {"first", "second", "third", "fourth"}, {}, {}) {}
 

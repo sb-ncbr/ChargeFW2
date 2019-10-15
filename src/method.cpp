@@ -80,12 +80,12 @@ int Method::get_option_value<int>(const std::string &name) const {
 }
 
 
-std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const {
+Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule) const {
 
     auto method = get_option_value<std::string>("type");
     auto radius = get_option_value<double>("radius");
 
-    if (method != "cover" and molecule.atoms().size() > 100000) {
+    if (method != "cover" and molecule.atoms().size() > 80000) {
         fmt::print(stderr, "Switching to cover as the molecule is too big\n");
         fmt::print(stderr, "Using radius {}\n", radius);
         method = "cover";
@@ -106,30 +106,23 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
 
     } else if (method == "cutoff") {
         const size_t n = molecule.atoms().size();
-        std::vector<double> results(n, 0);
+        Eigen::VectorXd results = Eigen::VectorXd::Zero(n);
         Eigen::setNbThreads(1);
 
 #pragma omp parallel for default(none) shared(results, radius, molecule) firstprivate(n)
         for (size_t i = 0; i < n; i++) {
             auto fragment_atoms = molecule.get_close_atoms(molecule.atoms()[i], radius);
-            auto res = solve_system(fragment_atoms,
+            Eigen::VectorXd res = solve_system(fragment_atoms,
                                     static_cast<double>(molecule.total_charge()) * fragment_atoms.size() /
                                     molecule.atoms().size());
-            results[i] = res[0];
+            results(i) = res(0);
         }
 
-        double correction = molecule.total_charge();
-        for (auto val: results) {
-            correction -= val;
-        }
-
+        double correction = molecule.total_charge() - results.sum();
         correction /= molecule.atoms().size();
 
-        for (auto &val: results) {
-            val += correction;
-        }
+        return (results.array() + correction).matrix();
 
-        return results;
     } else /* method == "cover" */ {
         Eigen::setNbThreads(1);
 
@@ -165,7 +158,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
         }
 
         /* 2nd step - solve EEM for fragments, sum up charges */
-        std::vector<double> results(n, 0);
+        Eigen::VectorXd results = Eigen::VectorXd::Zero(n);
         std::vector<int> charges_count(n, 0);
 
         std::vector<const Atom *> pivots_vector(pivots.begin(), pivots.end());
@@ -174,7 +167,7 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
         for (size_t i = 0; i < pivots_vector.size(); i++) {
             auto &atom = pivots_vector[i];
             auto fragment_atoms = molecule.get_close_atoms(*atom, radius);
-            auto res = solve_system(fragment_atoms,
+            Eigen::VectorXd res = solve_system(fragment_atoms,
                                     static_cast<double>(molecule.total_charge()) * fragment_atoms.size() / n);
 
             std::set<size_t> close_atoms = {atom->index()};
@@ -186,31 +179,25 @@ std::vector<double> EEMethod::calculate_charges(const Molecule &molecule) const 
             }
 
             for (const auto &j: close_atoms) {
-                #pragma omp atomic
+#pragma omp atomic
                 charges_count[j]++;
             }
 
             for (size_t j = 0; j < fragment_atoms.size(); j++) {
                 if (close_atoms.find(fragment_atoms[j]->index()) != close_atoms.end()) {
-                    #pragma omp atomic
-                    results[fragment_atoms[j]->index()] += res[j];
+#pragma omp atomic
+                    results(fragment_atoms[j]->index()) += res(j);
                 }
             }
         }
 
-        for (size_t i = 0; i < results.size(); i++) {
-            results[i] /= charges_count[i];
+        for (long i = 0; i < results.size(); i++) {
+            results(i) /= charges_count[i];
         }
 
         /* 3rd step - correct charges */
-        auto sum = std::accumulate(results.begin(), results.end(), 0.0);
-        auto correction = (molecule.total_charge() - sum) / n;
-
-        for (auto &r: results) {
-            r += correction;
-        }
-
-        return results;
+        auto correction = (molecule.total_charge() - results.sum()) / n;
+        return (results.array() + correction).matrix();
     }
 }
 

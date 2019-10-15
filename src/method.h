@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <Eigen/Core>
 #include <string>
 #include <vector>
 #include <utility>
@@ -109,7 +110,7 @@ class EEMethod : public Method {
     }
 
 protected:
-    [[nodiscard]] virtual std::vector<double> solve_system(const std::vector<const Atom *> &atoms, double total_charge) const = 0;
+    [[nodiscard]] virtual Eigen::VectorXd solve_system(const std::vector<const Atom *> &atoms, double total_charge) const = 0;
 
     ~EEMethod() = default;
 
@@ -119,7 +120,7 @@ public:
             Method(std::move(name), std::move(common), std::move(atom), std::move(bond), augment_options(
                     std::move(options))) {}
 
-    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] Eigen::VectorXd solve_EE(const Molecule &molecule) const;
 
     [[nodiscard]] std::vector<RequiredFeatures> get_requirements() const override {
         return {RequiredFeatures::DISTANCE_TREE};

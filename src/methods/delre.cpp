@@ -3,7 +3,7 @@
 //
 
 #include <cmath>
-#include <Eigen/Dense>
+#include <Eigen/LU>
 
 #include "delre.h"
 #include "../structures/molecule.h"

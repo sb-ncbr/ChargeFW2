@@ -4,14 +4,14 @@
 
 #include <vector>
 #include <cmath>
-#include <Eigen/Dense>
+#include <Eigen/LU>
 
 #include "eqeqc.h"
 #include "../parameters.h"
 #include "../geometry.h"
 
 
-std::vector<double> EQeqC::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+Eigen::VectorXd EQeqC::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -55,16 +55,22 @@ std::vector<double> EQeqC::solve_system(const std::vector<const Atom *> &atoms, 
     A(n, n) = 0;
     b(n) = total_charge;
 
-    Eigen::VectorXd q = A.partialPivLu().solve(b).head(n);
+    return A.partialPivLu().solve(b).head(n);
+}
 
-    // Above is the same as EQeq, now add bond-order-corrections
+
+std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
+    size_t n = molecule.atoms().size();
+
+    Eigen::VectorXd q = solve_EE(molecule);
+
     for (size_t i = 0; i < n; i++) {
-        const auto &atom_i = *atoms[i];
+        const auto &atom_i = molecule.atoms()[i];
         double correction = 0;
         for (size_t j = 0; j < n; j++) {
             if (i == j)
                 continue;
-            const auto &atom_j = *atoms[j];
+            const auto &atom_j = molecule.atoms()[j];
             double tkk = parameters_->atom()->parameter(atom::Dz)(atom_i) - parameters_->atom()->parameter(atom::Dz)(atom_j);
             double bkk = std::exp(-parameters_->common()->parameter(common::alpha) *
                                   (distance(atom_i, atom_j) - atom_i.element().covalent_radius() +
@@ -73,6 +79,5 @@ std::vector<double> EQeqC::solve_system(const std::vector<const Atom *> &atoms, 
         }
         q(i) += correction;
     }
-
     return std::vector<double>(q.data(), q.data() + q.size());
 }

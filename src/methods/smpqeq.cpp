@@ -4,14 +4,14 @@
 
 #include <vector>
 #include <cmath>
-#include <Eigen/Dense>
+#include <Eigen/LU>
 
 #include "smpqeq.h"
 #include "../parameters.h"
 #include "../geometry.h"
 
 
-std::vector<double> SMP_QEq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+Eigen::VectorXd SMP_QEq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -42,5 +42,11 @@ std::vector<double> SMP_QEq::solve_system(const std::vector<const Atom *> &atoms
         b = A.partialPivLu().solve(b);
     }
 
-    return std::vector<double>(b.data(), b.data() + n);
+    return b.head(n);
+}
+
+
+std::vector<double> SMP_QEq::calculate_charges(const Molecule &molecule) const {
+    Eigen::VectorXd q = solve_EE(molecule);
+    return std::vector<double>(q.data(), q.data() + q.size());
 }

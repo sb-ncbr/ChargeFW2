@@ -4,7 +4,7 @@
 
 #include <vector>
 #include <cmath>
-#include <Eigen/Dense>
+#include <Eigen/LU>
 
 #include "denr.h"
 #include "../structures/molecule.h"

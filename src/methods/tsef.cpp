@@ -3,7 +3,7 @@
 //
 
 #include <vector>
-#include <Eigen/Dense>
+#include <Eigen/LU>
 
 #include "tsef.h"
 #include "../parameters.h"

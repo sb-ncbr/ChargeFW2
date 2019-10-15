@@ -4,7 +4,7 @@
 
 #include <string>
 #include <cmath>
-#include <Eigen/Dense>
+#include <Eigen/LU>
 
 #include "qeq.h"
 #include "../structures/atom.h"
@@ -35,7 +35,7 @@ double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::stri
 }
 
 
-std::vector<double> QEq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+Eigen::VectorXd QEq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -61,6 +61,11 @@ std::vector<double> QEq::solve_system(const std::vector<const Atom *> &atoms, do
     A(n, n) = 0;
     b(n) = total_charge;
 
-    Eigen::VectorXd q = A.partialPivLu().solve(b).head(n);
+    return A.partialPivLu().solve(b).head(n);
+}
+
+
+std::vector<double> QEq::calculate_charges(const Molecule &molecule) const {
+    Eigen::VectorXd q = solve_EE(molecule);
     return std::vector<double>(q.data(), q.data() + q.size());
 }
