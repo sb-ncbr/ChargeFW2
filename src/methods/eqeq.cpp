@@ -2,6 +2,7 @@
 // Created by krab1k on 31/10/18.
 //
 
+#include <functional>
 #include <vector>
 #include <cmath>
 #include <Eigen/LU>
@@ -10,8 +11,10 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
+using namespace std::placeholders;
 
-Eigen::VectorXd EQeq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+
+Eigen::VectorXd EQeq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -60,6 +63,6 @@ Eigen::VectorXd EQeq::solve_system(const std::vector<const Atom *> &atoms, doubl
 
 
 std::vector<double> EQeq::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule);
+    Eigen::VectorXd q = solve_EE(molecule, std::bind(&EQeq::EE_system, this, _1, _2));
     return std::vector<double>(q.data(), q.data() + q.size());
 }

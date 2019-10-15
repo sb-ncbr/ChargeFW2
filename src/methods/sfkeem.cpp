@@ -4,14 +4,17 @@
 
 #include <vector>
 #include <cmath>
+#include <functional>
 #include <Eigen/LU>
 
 #include "sfkeem.h"
 #include "../parameters.h"
 #include "../geometry.h"
 
+using namespace std::placeholders;
 
-Eigen::VectorXd SFKEEM::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+
+Eigen::VectorXd SFKEEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -42,6 +45,6 @@ Eigen::VectorXd SFKEEM::solve_system(const std::vector<const Atom *> &atoms, dou
 
 
 std::vector<double> SFKEEM::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule);
+    Eigen::VectorXd q = solve_EE(molecule, std::bind(&SFKEEM::EE_system, this, _1, _2));
     return std::vector<double>(q.data(), q.data() + q.size());
 }

@@ -7,6 +7,7 @@
 #include <Eigen/Core>
 #include <string>
 #include <vector>
+#include <functional>
 #include <utility>
 #include <boost/dll/import.hpp>
 
@@ -110,8 +111,6 @@ class EEMethod : public Method {
     }
 
 protected:
-    [[nodiscard]] virtual Eigen::VectorXd solve_system(const std::vector<const Atom *> &atoms, double total_charge) const = 0;
-
     ~EEMethod() = default;
 
 public:
@@ -120,7 +119,10 @@ public:
             Method(std::move(name), std::move(common), std::move(atom), std::move(bond), augment_options(
                     std::move(options))) {}
 
-    [[nodiscard]] Eigen::VectorXd solve_EE(const Molecule &molecule) const;
+    [[nodiscard]] bool is_suitable_for_large_molecule() const override;
+
+    [[nodiscard]] Eigen::VectorXd solve_EE(const Molecule &molecule,
+                                           const std::function<Eigen::VectorXd(const std::vector<const Atom *> &, double)> &) const;
 
     [[nodiscard]] std::vector<RequiredFeatures> get_requirements() const override {
         return {RequiredFeatures::DISTANCE_TREE};

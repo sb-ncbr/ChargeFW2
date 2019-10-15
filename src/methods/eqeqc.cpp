@@ -5,13 +5,16 @@
 #include <vector>
 #include <cmath>
 #include <Eigen/LU>
+#include <functional>
 
 #include "eqeqc.h"
 #include "../parameters.h"
 #include "../geometry.h"
 
+using namespace std::placeholders;
 
-Eigen::VectorXd EQeqC::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+
+Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -62,7 +65,7 @@ Eigen::VectorXd EQeqC::solve_system(const std::vector<const Atom *> &atoms, doub
 std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();
 
-    Eigen::VectorXd q = solve_EE(molecule);
+    Eigen::VectorXd q = solve_EE(molecule, std::bind(&EQeqC::EE_system, this, _1, _2));
 
     for (size_t i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];

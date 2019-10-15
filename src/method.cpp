@@ -8,7 +8,7 @@
 #include <numeric>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
-#include <Eigen/Core>
+#include <Eigen/Dense>
 #include <omp.h>
 
 #include "chargefw2.h"
@@ -79,8 +79,13 @@ int Method::get_option_value<int>(const std::string &name) const {
     return std::stoi(option_values_.at(name));
 }
 
+bool EEMethod::is_suitable_for_large_molecule() const {
+    return true;
+}
 
-Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule) const {
+
+Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
+        const std::function<Eigen::VectorXd(const std::vector<const Atom *> &, double)> &EE_function) const {
 
     auto method = get_option_value<std::string>("type");
     auto radius = get_option_value<double>("radius");
@@ -102,17 +107,17 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule) const {
             fragment_atoms.push_back(&atom);
         }
 
-        return solve_system(fragment_atoms, molecule.total_charge());
+        return EE_function(fragment_atoms, molecule.total_charge());
 
     } else if (method == "cutoff") {
         const size_t n = molecule.atoms().size();
         Eigen::VectorXd results = Eigen::VectorXd::Zero(n);
         Eigen::setNbThreads(1);
 
-#pragma omp parallel for default(none) shared(results, radius, molecule) firstprivate(n)
+#pragma omp parallel for default(none) shared(results, radius, molecule, EE_function) firstprivate(n)
         for (size_t i = 0; i < n; i++) {
             auto fragment_atoms = molecule.get_close_atoms(molecule.atoms()[i], radius);
-            Eigen::VectorXd res = solve_system(fragment_atoms,
+            Eigen::VectorXd res = EE_function(fragment_atoms,
                                     static_cast<double>(molecule.total_charge()) * fragment_atoms.size() /
                                     molecule.atoms().size());
             results(i) = res(0);
@@ -121,7 +126,8 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule) const {
         double correction = molecule.total_charge() - results.sum();
         correction /= molecule.atoms().size();
 
-        return (results.array() + correction).matrix();
+        results.array() += correction;
+        return results;
 
     } else /* method == "cover" */ {
         Eigen::setNbThreads(1);
@@ -163,11 +169,11 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule) const {
 
         std::vector<const Atom *> pivots_vector(pivots.begin(), pivots.end());
 
-#pragma omp parallel for default(none) shared(radius, pivots_vector, neighbors, molecule, charges_count, results) firstprivate(n)
+#pragma omp parallel for default(none) shared(radius, pivots_vector, neighbors, molecule, charges_count, results, EE_function) firstprivate(n)
         for (size_t i = 0; i < pivots_vector.size(); i++) {
             auto &atom = pivots_vector[i];
             auto fragment_atoms = molecule.get_close_atoms(*atom, radius);
-            Eigen::VectorXd res = solve_system(fragment_atoms,
+            Eigen::VectorXd res = EE_function(fragment_atoms,
                                     static_cast<double>(molecule.total_charge()) * fragment_atoms.size() / n);
 
             std::set<size_t> close_atoms = {atom->index()};
@@ -197,7 +203,8 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule) const {
 
         /* 3rd step - correct charges */
         auto correction = (molecule.total_charge() - results.sum()) / n;
-        return (results.array() + correction).matrix();
+        results.array() += correction;
+        return results;
     }
 }
 

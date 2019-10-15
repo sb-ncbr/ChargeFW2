@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <cmath>
+#include <functional>
 #include <string>
 #include <Eigen/LU>
 
@@ -11,8 +12,10 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
+using namespace std::placeholders;
 
-Eigen::VectorXd EEM::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+
+Eigen::VectorXd EEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -40,6 +43,6 @@ Eigen::VectorXd EEM::solve_system(const std::vector<const Atom *> &atoms, double
 
 
 std::vector<double> EEM::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule);
+    Eigen::VectorXd q = solve_EE(molecule, std::bind(&EEM::EE_system, this, _1, _2));
     return std::vector<double>(q.data(), q.data() + q.size());
 }

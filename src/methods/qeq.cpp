@@ -2,6 +2,7 @@
 // Created by krab1k on 02/01/19.
 //
 
+#include <functional>
 #include <string>
 #include <cmath>
 #include <Eigen/LU>
@@ -10,6 +11,8 @@
 #include "../structures/atom.h"
 #include "../geometry.h"
 #include "../parameters.h"
+
+using namespace std::placeholders;
 
 
 double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::string &type) const {
@@ -35,7 +38,7 @@ double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::stri
 }
 
 
-Eigen::VectorXd QEq::solve_system(const std::vector<const Atom *> &atoms, double total_charge) const {
+Eigen::VectorXd QEq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
     size_t n = atoms.size();
 
@@ -66,6 +69,6 @@ Eigen::VectorXd QEq::solve_system(const std::vector<const Atom *> &atoms, double
 
 
 std::vector<double> QEq::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule);
+    Eigen::VectorXd q = solve_EE(molecule, std::bind(&QEq::EE_system, this, _1, _2));
     return std::vector<double>(q.data(), q.data() + q.size());
 }
