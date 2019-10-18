@@ -5,6 +5,7 @@
 #include <fstream>
 #include <vector>
 #include <fmt/format.h>
+#include <filesystem>
 #include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
@@ -13,6 +14,8 @@
 #include "common.h"
 #include "bonds.h"
 #include "../periodic_table.h"
+
+namespace fs = std::filesystem;
 
 
 MoleculeSet PDB::read_file(const std::string &filename) {
@@ -29,7 +32,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
 
         auto atoms = std::make_unique<std::vector<Atom>>();
 
-        std::string name = filename;
+        std::string name = fs::path(filename).filename().replace_extension();
 
         size_t idx = 0;
         while (std::getline(file, line)) {

@@ -23,7 +23,7 @@
 MoleculeSet SDF::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        fmt::print("Cannot open file: {}\n", filename);
+        fmt::print(stderr,"Cannot open file: {}\n", filename);
         exit(EXIT_FILE_ERROR);
     }
 
@@ -35,6 +35,11 @@ MoleculeSet SDF::read_file(const std::string &filename) {
     try {
         while (std::getline(file, line)) {
             std::string name = line; // Read name of the molecule
+
+            if(name.length() > 80) {
+                fmt::print(stderr,"Name of the molecule in SDF must have at most 80 characters: {}\n", name);
+                exit(EXIT_FILE_ERROR);
+            }
 
             name = sanitize_name(name.substr(0, 80));
             name = get_unique_name(name, molecule_names);
