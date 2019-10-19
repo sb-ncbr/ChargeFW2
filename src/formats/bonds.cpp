@@ -36,12 +36,12 @@ void load_residues_info(const std::string &filename,
     std::string line;
     while (std::getline(file, line)) {
         std::string residue = line;
+        std::getline(file, line);
         while (not line.empty()) {
             std::string atom1_name;
             std::string atom2_name;
             int bond_order = -1;
 
-            std::getline(file, line);
             std::stringstream ss(line);
             ss >> atom1_name >> atom2_name >> bond_order;
 
@@ -49,6 +49,7 @@ void load_residues_info(const std::string &filename,
             atom2_name = fix_atom_name(atom2_name);
 
             residues_data[residue].emplace_back(atom1_name, atom2_name, bond_order);
+            std::getline(file, line);
         }
     }
 }
