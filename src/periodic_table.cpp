@@ -67,6 +67,11 @@ const PeriodicTable &PeriodicTable::pte() {
 
 
 const Element *PeriodicTable::get_element_by_symbol(const std::string &symbol) const {
+    /* Treat deuterium as hydrogen */
+    if (symbol == "D") {
+        return get_element_by_Z(0);
+    }
+
     if (!symbol_Z_.count(symbol)) {
         fmt::print(stderr, "No such element: {}\n", symbol);
         exit(EXIT_INTERNAL_ERROR);
