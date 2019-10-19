@@ -126,16 +126,23 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
             hetatm = true;
         }
 
-        auto it = record_positions.find("Cartn_x");
-        auto x = std::stod(records[it->second]);
+        double x, y, z;
 
-        it = record_positions.find("Cartn_y");
-        auto y = std::stod(records[it->second]);
+        try {
+            auto it = record_positions.find("Cartn_x");
+            x = std::stod(records[it->second]);
 
-        it = record_positions.find("Cartn_z");
-        auto z = std::stod(records[it->second]);
+            it = record_positions.find("Cartn_y");
+            y = std::stod(records[it->second]);
 
-        it = record_positions.find("type_symbol");
+            it = record_positions.find("Cartn_z");
+            z = std::stod(records[it->second]);
+        } catch (std::exception &) {
+            fmt::print(stderr, "Error reading coordinates.\n");
+            exit(EXIT_FILE_ERROR);
+        }
+
+        auto it = record_positions.find("type_symbol");
         auto symbol = records[it->second];
         auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
 
@@ -231,16 +238,22 @@ read_ccd_molecule(std::ifstream &file, const std::string &name, std::unique_ptr<
         std::vector<std::string> records{std::istream_iterator<std::string>(ss),
                                          std::istream_iterator<std::string>{}};
 
-        auto it = record_positions.find("model_Cartn_x");
-        auto x = std::stod(records[it->second]);
+        double x, y, z;
+        try {
+            auto it = record_positions.find("model_Cartn_x");
+            x = std::stod(records[it->second]);
 
-        it = record_positions.find("model_Cartn_y");
-        auto y = std::stod(records[it->second]);
+            it = record_positions.find("model_Cartn_y");
+            y = std::stod(records[it->second]);
 
-        it = record_positions.find("model_Cartn_z");
-        auto z = std::stod(records[it->second]);
+            it = record_positions.find("model_Cartn_z");
+            z = std::stod(records[it->second]);
+        } catch (std::exception &) {
+            fmt::print(stderr, "Error reading coordinates.\n");
+            exit(EXIT_FILE_ERROR);
+        }
 
-        it = record_positions.find("type_symbol");
+        auto it = record_positions.find("type_symbol");
         auto symbol = records[it->second];
         auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
 
