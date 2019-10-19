@@ -186,6 +186,11 @@ read_protein_molecule(std::ifstream &file, const std::string &name, std::unique_
         boost::trim(line);
     } while (line[0] != '#');
 
+    if (atoms->empty()) {
+        fmt::print(stderr, "No atoms were loaded from the input file.\n");
+        exit(EXIT_FILE_ERROR);
+    }
+
     auto bonds = get_bonds(atoms);
     std::map<size_t, int> charges;
     molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
