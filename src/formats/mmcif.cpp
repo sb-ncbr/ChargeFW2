@@ -3,12 +3,7 @@
 //
 
 #include <string>
-#include <map>
-#include <set>
-#include <sstream>
-#include <fstream>
 #include <fmt/format.h>
-#include <boost/algorithm/string.hpp>
 #include <gemmi/cif.hpp>
 #include <gemmi/mmcif.hpp>
 
