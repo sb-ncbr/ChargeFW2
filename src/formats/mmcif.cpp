@@ -37,14 +37,13 @@ void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<
                 double x = atom.pos.x;
                 double y = atom.pos.y;
                 double z = atom.pos.z;
-                int residue_id = hetatm ? residue.seqid.num.value : residue.label_seq.value;
                 auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
-                if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue_id)) {
+                if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue.seqid.num.value)) {
                     if ((not hetatm) or
                         (config::read_hetatm and residue.name != "HOH") or
                         (config::read_hetatm and not config::ignore_water)) {
-                        atoms->emplace_back(idx, element, x, y, z, atom.name, residue_id, residue.name, chain.name, hetatm);
+                        atoms->emplace_back(idx, element, x, y, z, atom.name, residue.seqid.num.value, residue.name, chain.name, hetatm);
                         atoms->back()._set_formal_charge(atom.charge);
                         idx++;
                     }
@@ -90,7 +89,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
          doc = gemmi::cif::read_file(filename);
     }
     catch (std::exception &){
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
+        fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
         exit(EXIT_FILE_ERROR);
     }
 

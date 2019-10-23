@@ -2,11 +2,9 @@
 // Created by krab1k on 24.1.19.
 //
 
-#include <fstream>
 #include <vector>
 #include <fmt/format.h>
-#include <filesystem>
-#include <boost/algorithm/string.hpp>
+#include <gemmi/pdb.hpp>
 
 #include "chargefw2.h"
 #include "../config.h"
@@ -15,80 +13,53 @@
 #include "bonds.h"
 #include "../periodic_table.h"
 
-namespace fs = std::filesystem;
-
 
 MoleculeSet PDB::read_file(const std::string &filename) {
-    std::ifstream file(filename);
-    if (!file) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
+    gemmi::Structure structure;
+    try {
+        structure = gemmi::read_pdb_file(filename);
+    }
+    catch (std::exception &){
+        fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
         exit(EXIT_FILE_ERROR);
     }
 
     auto molecules = std::make_unique<std::vector<Molecule> >();
+    auto atoms = std::make_unique<std::vector<Atom>>();
 
-    std::string line;
-    try {
+    /* Read first model only */
+    auto model = structure.models[0];
+    size_t idx = 0;
+    for (const auto &chain: model.chains) {
+        for (const auto &residue: chain.residues) {
+            bool hetatm = residue.het_flag == 'H';
+            for (const auto &atom: residue.atoms) {
+                double x = atom.pos.x;
+                double y = atom.pos.y;
+                double z = atom.pos.z;
+                int residue_id = residue.seqid.num.value;
+                auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
-        auto atoms = std::make_unique<std::vector<Atom>>();
-
-        std::string name = fs::path(filename).filename().replace_extension();
-
-        size_t idx = 0;
-        while (std::getline(file, line)) {
-            if (boost::starts_with(line, "HEADER")) {
-                name = line.substr(62, 4);
-                continue;
-            }
-
-            if (boost::starts_with(line, "ATOM") or (config::read_hetatm and boost::starts_with(line, "HETATM"))) {
-                std::string atom_name = line.substr(12, 4);
-                boost::trim(atom_name);
-                auto residue = line.substr(17, 3);
-                if (config::ignore_water and residue == "HOH") {
-                    continue;
+                if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue_id)) {
+                    if ((not hetatm) or
+                        (config::read_hetatm and residue.name != "HOH") or
+                        (config::read_hetatm and not config::ignore_water)) {
+                        atoms->emplace_back(idx, element, x, y, z, atom.name, residue_id, residue.name, chain.name, hetatm);
+                        atoms->back()._set_formal_charge(atom.charge);
+                        idx++;
+                    }
                 }
-
-                bool hetatm = false;
-                if (line[0] == 'H') {
-                    hetatm = true;
-                }
-
-                auto residue_id = std::stoi(line.substr(22, 4));
-                auto chain_id = line.substr(21, 1);
-                auto x = std::stod(line.substr(30, 8));
-                auto y = std::stod(line.substr(38, 8));
-                auto z = std::stod(line.substr(46, 8));
-                auto symbol = line.substr(76, 2);
-
-                auto alt_loc = line[16];
-                auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
-
-                if (alt_loc == ' ' or not is_already_loaded(*atoms, atom_name, residue_id)) {
-                    atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, chain_id, hetatm);
-                    idx++;
-
-                }
-            }
-
-            /* If they are multiple models present, end after the first one */
-            if (boost::starts_with(line, "ENDMDL")) {
-                break;
             }
         }
+    }
 
-        if (atoms->empty()) {
-            fmt::print(stderr, "No atoms were loaded from the input file.\n");
-            exit(EXIT_FILE_ERROR);
-        }
-
-        auto bonds = get_bonds(atoms);
-        molecules->emplace_back(sanitize_name(name), std::move(atoms), std::move(bonds));
-
-    } catch (const std::exception &) {
-        fmt::print(stderr, "Invalid PDB file\n");
+    if (atoms->empty()) {
+        fmt::print(stderr, "No atoms were loaded from the input file.\n");
         exit(EXIT_FILE_ERROR);
     }
+
+    auto bonds = get_bonds(atoms);
+    molecules->emplace_back(sanitize_name(structure.name), std::move(atoms), std::move(bonds));
 
     return MoleculeSet(std::move(molecules));
 }
