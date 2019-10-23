@@ -57,6 +57,8 @@ public:
 
     [[nodiscard]] bool hetatm() const { return hetatm_; }
 
+    void _set_formal_charge(int charge) { formal_charge_ = charge; }
+
     bool inline operator==(const Atom &other) const {
         return this->index_ == other.index_ and this->molecule_ == other.molecule_;
     }

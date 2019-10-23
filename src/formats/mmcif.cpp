@@ -50,6 +50,7 @@ void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<
                         (config::read_hetatm and residue.name != "HOH") or
                         (config::read_hetatm and not config::ignore_water)) {
                         atoms->emplace_back(idx, element, x, y, z, atom.name, residue_id, residue.name, chain.name, hetatm);
+                        atoms->back()._set_formal_charge(atom.charge);
                         idx++;
                     }
                 }
@@ -61,14 +62,14 @@ void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<
 
 void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
     auto table = data.find("_chem_comp_atom.", {"model_Cartn_x", "model_Cartn_y", "model_Cartn_z",
-                                                "type_symbol", "atom_id", "comp_id"});
+                                                "type_symbol", "atom_id", "comp_id", "charge"});
     size_t idx = 0;
     for (const auto row: table) {
         double x, y, z;
         try {
             x = std::stod(row[0]);
-            y = std::stod(row[0]);
-            z = std::stod(row[0]);
+            y = std::stod(row[1]);
+            z = std::stod(row[2]);
         } catch (std::exception &) {
             fmt::print(stderr, "Cannot load coordinates for {}\n", data.name);
             exit(EXIT_FILE_ERROR);
@@ -77,9 +78,11 @@ void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom
         auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(row[3]));
         auto atom_name = row[4];
         auto residue = row[5];
+        auto charge = std::stoi(row[6]);
         auto residue_id = 0;
 
         atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "0", false);
+        atoms->back()._set_formal_charge(charge);
         idx++;
     }
 }
@@ -113,8 +116,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
         }
 
         auto bonds = get_bonds(atoms);
-        std::map<size_t, int> charges;
-        molecules->emplace_back(data.name, std::move(atoms), std::move(bonds), charges);
+        molecules->emplace_back(data.name, std::move(atoms), std::move(bonds));
     }
     return MoleculeSet(std::move(molecules));
 }

@@ -119,8 +119,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
                 bonds->emplace_back(&((*atoms)[first - 1]), &((*atoms)[second - 1]), order);
             }
 
-            std::map<size_t, int> charges;
-            molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
+            molecules->emplace_back(name, std::move(atoms), std::move(bonds));
         }
     }
 

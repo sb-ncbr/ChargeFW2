@@ -81,7 +81,6 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                     bonds->emplace_back(&((*atoms)[first - 1]), &((*atoms)[second - 1]), order);
                 }
 
-                std::map<size_t, int> charges;
                 do {
                     std::getline(file, line);
                     if(line.substr(0, 6) == "M  CHG") {
@@ -90,12 +89,12 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                         for(size_t i = 0; i < count; i++) {
                             size_t atom_no = std::stoul(line.substr(base + i * 8, 4));
                             int charge = std::stoi(line.substr(base + i * 8 + 4, 4));
-                            charges[atom_no - 1] = charge;
+                            (*atoms)[atom_no - 1]._set_formal_charge(charge);
                         }
                     }
                 } while (line != "$$$$");
 
-                molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
+                molecules->emplace_back(name, std::move(atoms), std::move(bonds));
             }
             else if (version == "V3000") {
                 /* Skip 'M  V30 BEGIN CTAB' line */
@@ -110,8 +109,6 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
                 auto atoms = std::make_unique<std::vector<Atom> >();
                 atoms->reserve(n_atoms);
-
-                std::map<size_t, int> charges;
 
                 /* Skip 'M  V30 BEGIN ATOM' line */
                 std::getline(file, line);
@@ -147,12 +144,10 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                             ss >> formal_charge;
                         }
                     }
-
-                    charges[idx - 1] = formal_charge;
-
                     auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(symbol));
 
                     atoms->emplace_back(i, element, x, y, z, element->symbol(), 0, "UNL", "", false);
+                    atoms->back()._set_formal_charge(formal_charge);
                 }
 
                 /* Skip 'M  V30 END ATOM' line */
@@ -180,7 +175,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                     std::getline(file, line);
                 } while (line != "$$$$");
 
-                molecules->emplace_back(name, std::move(atoms), std::move(bonds), charges);
+                molecules->emplace_back(name, std::move(atoms), std::move(bonds));
 
             }
             else {

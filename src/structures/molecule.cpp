@@ -16,13 +16,10 @@
 
 
 Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
-                   std::unique_ptr<std::vector<Bond> > bonds, const std::map<size_t, int> &charges) {
+                   std::unique_ptr<std::vector<Bond> > bonds) {
     name_ = std::move(name);
     atoms_ = std::move(atoms);
     bonds_ = std::move(bonds);
-    for (auto &[atom_no, charge]: charges) {
-        (*atoms_)[atom_no].formal_charge_ = charge;
-    }
 }
 
 
