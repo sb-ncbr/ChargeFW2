@@ -83,9 +83,7 @@ void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, std::unique_ptr<std
             auto it2 = residue_atoms.find(atom2_name);
 
             if (it1 != residue_atoms.end() and it2 != residue_atoms.end()) {
-                auto atom1_idx = it1->second->index();
-                auto atom2_idx = it2->second->index();
-                bonds->emplace_back(&((*atoms)[atom1_idx]), &((*atoms)[atom2_idx]), order);
+                bonds->emplace_back(it1->second, it2->second, order);
             }
         }
     }
@@ -97,6 +95,11 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
     auto bonds = std::make_unique<std::vector<Bond>>();
 
     std::map<std::string, const Atom *> residue_atoms;
+
+    if (atoms->empty()) {
+        fmt::print(stderr, "No atoms were loaded from the input file.\n");
+        exit(EXIT_FILE_ERROR);
+    }
 
     auto current_residue_id = (*atoms)[0].residue_id();
     auto current_chain = (*atoms)[0].chain_id();
