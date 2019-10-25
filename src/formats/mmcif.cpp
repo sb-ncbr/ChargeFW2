@@ -3,9 +3,12 @@
 //
 
 #include <string>
+#include <stdexcept>
+#include <fstream>
 #include <fmt/format.h>
 #include <gemmi/cif.hpp>
 #include <gemmi/mmcif.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
 #include "../config.h"
@@ -16,6 +19,8 @@
 #include "../periodic_table.h"
 
 
+void process_record(const std::string &structure_data, std::unique_ptr<std::vector<Molecule>> &molecules);
+
 void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms);
 
 void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms, std::unique_ptr<std::vector<Bond>> &bonds);
@@ -24,8 +29,7 @@ void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom
 void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
     auto structure = gemmi::make_structure_from_block(data);
     if (structure.models.empty()) {
-        fmt::print(stderr, "Not enough information to create a structure from {}\n", data.name);
-        exit(EXIT_FILE_ERROR);
+        throw std::runtime_error("Not enough information to create a structure");
     }
 
     /* Read first model only */
@@ -68,14 +72,18 @@ void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom
             y = std::stod(row[1]);
             z = std::stod(row[2]);
         } catch (std::exception &) {
-            fmt::print(stderr, "Cannot load coordinates for {}\n", data.name);
-            exit(EXIT_FILE_ERROR);
+            throw std::runtime_error("Cannot load coordinates");
         }
 
         auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(row[3]));
         auto atom_name = row[4];
         auto residue = row[5];
-        auto charge = std::stoi(row[6]);
+        int charge  = 0;
+        try {
+            charge = std::stoi(row[6]);
+        } catch (std::exception &){
+
+        }
         auto residue_id = 0;
 
         atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "0", false);
@@ -106,24 +114,17 @@ void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom
     }
 }
 
+void process_record(const std::string &structure_data, std::unique_ptr<std::vector<Molecule>> &molecules) {
 
-MoleculeSet mmCIF::read_file(const std::string &filename) {
+    auto atoms = std::make_unique<std::vector<Atom>>();
+    auto bonds = std::make_unique<std::vector<Bond>>();
 
-    gemmi::cif::Document doc;
+    std::string name;
     try {
-         doc = gemmi::cif::read_file(filename);
-    }
-    catch (std::exception &){
-        fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
-    }
-
-    auto molecules = std::make_unique<std::vector<Molecule>>();
-    for (auto &data: doc.blocks) {
+        gemmi::cif::Document doc = gemmi::cif::read_string(structure_data);
+        auto data = doc.sole_block();
+        name = data.name;
         const auto names = data.get_mmcif_category_names();
-
-        auto atoms = std::make_unique<std::vector<Atom>>();
-        auto bonds = std::make_unique<std::vector<Bond>>();
 
         if (std::find(names.begin(), names.end(), "_atom_site.") != names.end()) {
             read_protein_molecule(data, atoms);
@@ -131,8 +132,40 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
         } else if (std::find(names.begin(), names.end(), "_chem_comp_atom.") != names.end()) {
             read_ccd_molecule(data, atoms, bonds);
         }
+    } catch (std::exception &e) {
+        fmt::print(stderr, "Error when reading {}: {}\n", name, e.what());
+    }
 
-        molecules->emplace_back(data.name, std::move(atoms), std::move(bonds));
+    molecules->emplace_back(name, std::move(atoms), std::move(bonds));
+}
+
+
+MoleculeSet mmCIF::read_file(const std::string &filename) {
+
+    std::string line;
+    std::string structure_data;
+
+    auto molecules = std::make_unique<std::vector<Molecule>>();
+    try {
+        std::ifstream file(filename);
+        while(std::getline(file, line)) {
+            if (boost::starts_with(line, "#") or line.empty()) {
+                continue;
+            }
+            if (boost::starts_with(line, "data_")) {
+                if (not structure_data.empty()) {
+                    process_record(structure_data, molecules);
+                }
+                structure_data = line;
+            } else {
+                structure_data += "\n" + line;
+            }
+        }
+        process_record(structure_data, molecules);
+    }
+    catch (std::exception &) {
+        fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
+        exit(EXIT_FILE_ERROR);
     }
     return MoleculeSet(std::move(molecules));
 }

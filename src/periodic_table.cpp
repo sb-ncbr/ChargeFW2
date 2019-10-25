@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <stdexcept>
 #include <fmt/format.h>
 
 #include "chargefw2.h"
@@ -73,8 +74,7 @@ const Element *PeriodicTable::get_element_by_symbol(const std::string &symbol) c
     }
 
     if (!symbol_Z_.count(symbol)) {
-        fmt::print(stderr, "No such element: {}\n", symbol);
-        exit(EXIT_INTERNAL_ERROR);
+        throw std::runtime_error(fmt::format("No such element: {}", symbol));
     }
     return get_element_by_Z(symbol_Z_.at(symbol) - 1);
 }
@@ -82,8 +82,7 @@ const Element *PeriodicTable::get_element_by_symbol(const std::string &symbol) c
 
 const Element *PeriodicTable::get_element_by_name(const std::string &name) const {
     if (!name_Z_.count(name)) {
-        fmt::print(stderr, "No such element: {}\n", name);
-        exit(EXIT_INTERNAL_ERROR);
+        throw std::runtime_error(fmt::format("No such element: {}", name));
     }
     return get_element_by_Z(name_Z_.at(name) - 1);
 }
