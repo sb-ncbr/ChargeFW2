@@ -50,7 +50,13 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
             std::getline(file, line); // Line with counts
 
-            std::string version = line.substr(34, 5);
+            std::string version;
+            try {
+                version = line.substr(34, 5);
+            }
+            catch (std::exception &) {
+                version = "";
+            }
             if (version == "V2000") {
                 size_t n_atoms = std::stoul(line.substr(0, 3));
                 size_t n_bonds = std::stoul(line.substr(3, 3));
@@ -179,7 +185,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
             }
             else {
-                fmt::print(stderr, "Invalid MOL version {} inside SDF file\n", version);
+                fmt::print(stderr, "Invalid MOL version \"{}\" inside SDF file\n", version);
                 exit(EXIT_FILE_ERROR);
             }
         }
