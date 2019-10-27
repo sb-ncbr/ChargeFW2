@@ -82,7 +82,7 @@ void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom
         try {
             charge = std::stoi(row[6]);
         } catch (std::exception &){
-
+            /* Keep default */
         }
         auto residue_id = 0;
 
@@ -126,17 +126,28 @@ void process_record(const std::string &structure_data, std::unique_ptr<std::vect
         name = data.name;
         const auto names = data.get_mmcif_category_names();
 
-        if (std::find(names.begin(), names.end(), "_atom_site.") != names.end()) {
+        bool has_atom_site = std::find(names.begin(), names.end(), "_atom_site.") != names.end();
+        bool has_chem_comp = std::find(names.begin(), names.end(), "_chem_comp_atom.") != names.end();
+
+        if (has_atom_site) {
             read_protein_molecule(data, atoms);
-            bonds = get_bonds(atoms);
-        } else if (std::find(names.begin(), names.end(), "_chem_comp_atom.") != names.end()) {
+        } else if (has_chem_comp) {
             read_ccd_molecule(data, atoms, bonds);
         }
+
+        if (atoms->empty()) {
+            throw std::runtime_error("No atoms were loaded.");
+        }
+
+        if (has_atom_site) {
+            bonds = get_bonds(atoms);
+        }
+
+        molecules->emplace_back(name, std::move(atoms), std::move(bonds));
+
     } catch (std::exception &e) {
         fmt::print(stderr, "Error when reading {}: {}\n", name, e.what());
     }
-
-    molecules->emplace_back(name, std::move(atoms), std::move(bonds));
 }
 
 

@@ -96,11 +96,6 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
 
     std::map<std::string, const Atom *> residue_atoms;
 
-    if (atoms->empty()) {
-        fmt::print(stderr, "No atoms were loaded from the input file.\n");
-        exit(EXIT_FILE_ERROR);
-    }
-
     auto current_residue_id = (*atoms)[0].residue_id();
     auto current_chain = (*atoms)[0].chain_id();
 
