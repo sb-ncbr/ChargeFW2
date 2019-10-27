@@ -20,20 +20,11 @@
 #include "sdf.h"
 
 
-void read_V2000(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
-                std::unique_ptr<std::vector<Bond>> &bonds);
-
-void read_V3000(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
-                std::unique_ptr<std::vector<Bond>> &bonds);
-
-void read_until_end_of_record(std::ifstream &file);
-
-
-void read_until_end_of_record(std::ifstream &file) {
+void SDF::read_until_end_of_record(std::ifstream &file) {
     std::string line;
     do {
         std::getline(file, line);
-    } while (line != "$$$$");
+    } while (line != "$$$$" and not file.eof());
 }
 
 
@@ -87,7 +78,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
                 throw std::runtime_error(fmt::format("Invalid MOL version \"{}\"", version));
             }
         } catch (std::exception &e) {
-            fmt::print(stderr, "Cannot load structure {} from SDF file: {}\n", name, e.what());
+            fmt::print(stderr, "Error when reading {}: {}\n", name, e.what());
             read_until_end_of_record(file);
         }
     }
@@ -97,7 +88,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 }
 
 
-void read_V2000(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
+void SDF::read_V2000(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
                 std::unique_ptr<std::vector<Bond>> &bonds) {
 
     size_t n_atoms = std::stoul(line.substr(0, 3));
@@ -138,11 +129,11 @@ void read_V2000(std::ifstream &file, std::string &line, std::unique_ptr<std::vec
                 (*atoms)[atom_no - 1]._set_formal_charge(charge);
             }
         }
-    } while (line != "$$$$");
+    } while (line != "$$$$" and not file.eof());
 }
 
 
-void read_V3000(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
+void SDF::read_V3000(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
                 std::unique_ptr<std::vector<Bond>> &bonds) {
     /* Skip 'M  V30 BEGIN CTAB' line */
     std::getline(file, line);
@@ -181,7 +172,7 @@ void read_V3000(std::ifstream &file, std::string &line, std::unique_ptr<std::vec
         }
 
         /* Should we continue to next line */
-        while (line.back() == '-') {
+        while (line.back() == '-' and not file.eof()) {
             std::getline(file, line);
             pos = line.find("CHG=");
             if (pos != std::string::npos) {

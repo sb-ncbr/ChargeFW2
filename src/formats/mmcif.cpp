@@ -19,14 +19,7 @@
 #include "../periodic_table.h"
 
 
-void process_record(const std::string &structure_data, std::unique_ptr<std::vector<Molecule>> &molecules);
-
-void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms);
-
-void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms, std::unique_ptr<std::vector<Bond>> &bonds);
-
-
-void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
+void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
     auto structure = gemmi::make_structure_from_block(data);
     if (structure.models.empty()) {
         throw std::runtime_error("Not enough information to create a structure");
@@ -59,7 +52,7 @@ void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<
 }
 
 
-void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms, std::unique_ptr<std::vector<Bond>> &bonds) {
+void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms, std::unique_ptr<std::vector<Bond>> &bonds) {
     auto atom_table = data.find("_chem_comp_atom.", {"model_Cartn_x", "model_Cartn_y", "model_Cartn_z",
                                                      "type_symbol", "atom_id", "comp_id", "charge"});
     size_t idx = 0;
@@ -114,7 +107,8 @@ void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom
     }
 }
 
-void process_record(const std::string &structure_data, std::unique_ptr<std::vector<Molecule>> &molecules) {
+
+void mmCIF::process_record(const std::string &structure_data, std::unique_ptr<std::vector<Molecule>> &molecules) {
 
     auto atoms = std::make_unique<std::vector<Atom>>();
     auto bonds = std::make_unique<std::vector<Bond>>();
