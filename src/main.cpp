@@ -38,6 +38,7 @@ int main(int argc, char **argv) {
 
     bool is_protein_structure = false;
     std::unique_ptr<Reader> reader;
+    ext = to_lowercase(ext);
     if (ext == ".sdf") {
         reader = std::make_unique<SDF>();
     } else if (ext == ".mol2") {
