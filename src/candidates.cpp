@@ -36,7 +36,7 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
     f >> j;
     f.close();
 
-    for (const auto &method_info: j) {
+    for (const auto &method_info: j["methods"]) {
         auto method_name = method_info["internal_name"].get<std::string>();
         auto method = load_method(method_name);
 
