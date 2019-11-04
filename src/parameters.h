@@ -88,7 +88,7 @@ class Parameters {
 public:
     explicit Parameters(const std::string &filename);
 
-    explicit Parameters(const MoleculeSet &ms, std::shared_ptr<Method> method);
+    explicit Parameters(const MoleculeSet &ms, const std::shared_ptr<Method>& method);
 
     void print() const;
 

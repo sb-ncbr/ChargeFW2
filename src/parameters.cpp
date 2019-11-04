@@ -210,7 +210,7 @@ void Parameters::set_from_vector(const std::vector<double> &parameters) {
 }
 
 
-Parameters::Parameters(const MoleculeSet &ms, std::shared_ptr<Method> method) {
+Parameters::Parameters(const MoleculeSet &ms, const std::shared_ptr<Method> &method) {
 
     method_name_ = method->name();
     name_ = "New parameters";
