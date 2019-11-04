@@ -21,8 +21,7 @@ void load_residues_info(const std::string &filename,
                         std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> &residues_data);
 
 
-void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, std::unique_ptr<std::vector<Atom>> &atoms,
-                  std::map<std::string, const Atom *> residue_atoms);
+void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, const std::map<std::string, const Atom *> &residue_atoms);
 
 
 void load_residues_info(const std::string &filename,
@@ -55,8 +54,7 @@ void load_residues_info(const std::string &filename,
 }
 
 
-void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, std::unique_ptr<std::vector<Atom>> &atoms,
-                  std::map<std::string, const Atom *> residue_atoms) {
+void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, const std::map<std::string, const Atom *> &residue_atoms) {
 
     static std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> residues_data;
     static bool basic_loaded = false;
@@ -108,7 +106,7 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
             residue_atoms[atom.name()] = &atom;
         } else {
             /* New residue found, process the old one */
-            update_bonds(bonds, atoms, residue_atoms);
+            update_bonds(bonds, residue_atoms);
 
             current_residue_id = id;
             current_chain = chain;
@@ -117,7 +115,7 @@ std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> 
         }
     }
 
-    update_bonds(bonds, atoms, residue_atoms);
+    update_bonds(bonds, residue_atoms);
 
     /* Add bonds on the protein backbone */
     std::map<int, const Atom *> N_backbone;
