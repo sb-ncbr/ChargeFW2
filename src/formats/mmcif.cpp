@@ -153,6 +153,10 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
     auto molecules = std::make_unique<std::vector<Molecule>>();
     try {
         std::ifstream file(filename);
+        if (!file) {
+            fmt::print(stderr, "Cannot open file: {}\n", filename);
+            exit(EXIT_FILE_ERROR);
+        }
         while(std::getline(file, line)) {
             if (boost::starts_with(line, "#") or line.empty()) {
                 continue;
@@ -166,10 +170,13 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
                 structure_data += "\n" + line;
             }
         }
+        if (structure_data.empty()) {
+            throw std::runtime_error("Empty record");
+        }
         process_record(structure_data, molecules);
     }
-    catch (std::exception &) {
-        fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
+    catch (std::exception &e) {
+        fmt::print(stderr, "Cannot load structure from file: {}: {}\n", filename, e.what());
         exit(EXIT_FILE_ERROR);
     }
     return MoleculeSet(std::move(molecules));
