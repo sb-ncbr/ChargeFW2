@@ -123,6 +123,11 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
             auto atoms = std::make_unique<std::vector<Atom>>();
             auto bonds = std::make_unique<std::vector<Bond>>();
             read_record(file, line, atoms, bonds);
+
+            if (atoms->empty()) {
+                throw std::runtime_error("No atoms were loaded");
+            }
+
             molecules->emplace_back(name, std::move(atoms), std::move(bonds));
         }
         catch (std::exception &e) {

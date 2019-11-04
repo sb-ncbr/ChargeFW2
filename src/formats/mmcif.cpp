@@ -79,7 +79,7 @@ void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vect
         }
         auto residue_id = 0;
 
-        atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "0", false);
+        atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "", false);
         atoms->back()._set_formal_charge(charge);
         idx++;
     }
@@ -130,7 +130,7 @@ void mmCIF::process_record(const std::string &structure_data, std::unique_ptr<st
         }
 
         if (atoms->empty()) {
-            throw std::runtime_error("No atoms were loaded.");
+            throw std::runtime_error("No atoms were loaded");
         }
 
         if (has_atom_site) {

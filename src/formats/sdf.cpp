@@ -70,13 +70,17 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
             if (version == "V2000") {
                 read_V2000(file, line, atoms, bonds);
-                molecules->emplace_back(name, std::move(atoms), std::move(bonds));
             } else if (version == "V3000") {
                 read_V3000(file, line, atoms, bonds);
-                molecules->emplace_back(name, std::move(atoms), std::move(bonds));
             } else {
                 throw std::runtime_error(fmt::format("Invalid MOL version \"{}\"", version));
             }
+
+            if (atoms->empty()) {
+                throw std::runtime_error("No atoms were loaded");
+            }
+
+            molecules->emplace_back(name, std::move(atoms), std::move(bonds));
         } catch (std::exception &e) {
             fmt::print(stderr, "Error when reading {}: {}\n", name, e.what());
             read_until_end_of_record(file);
