@@ -9,8 +9,21 @@
 #include "utility/utility.h"
 
 
-void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
+std::vector<std::string> get_parameter_files();
 
+
+std::vector<std::string> get_parameter_files() {
+    /* Get parameters sorted according to the names and priorities */
+    std::vector<std::string> files;
+    for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
+        files.emplace_back(set.path().string());
+    }
+    std::sort(files.begin(), files.end());
+    return files;
+}
+
+
+void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
     std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
     using json = nlohmann::json;
     json j;
@@ -48,12 +61,12 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
         }
 
         bool parameters_found = false;
-        for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
+        for (const auto &set: get_parameter_files()) {
             if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()), method_name)) {
                 continue;
             }
 
-            auto p = std::make_unique<Parameters>(set.path());
+            auto p = std::make_unique<Parameters>(set);
 
             if (method_name != p->method_name()) {
                 continue;
@@ -88,12 +101,12 @@ best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_
     size_t best_unclassified_permissive = ms.molecules().size();
 
     auto internal = method->internal_name();
-    for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
+    for (const auto &set: get_parameter_files()) {
         if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()), internal)) {
             continue;
         }
 
-        auto p = std::make_unique<Parameters>(set.path());
+        auto p = std::make_unique<Parameters>(set);
 
         if (internal != p->method_name()) {
             continue;
@@ -112,17 +125,17 @@ best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_
 
         // If all molecules are covered by the parameters, we found our best
         if (!unclassified) {
-            return set.path();
+            return set;
         }
 
         if (unclassified < best_unclassified) {
             best_unclassified = unclassified;
-            best_name = set.path();
+            best_name = set;
         }
 
         if (permissive_types and unclassified_permissive < best_unclassified_permissive) {
             best_unclassified_permissive = unclassified_permissive;
-            best_name_permissive = set.path();
+            best_name_permissive = set;
         }
     }
 
