@@ -52,6 +52,10 @@ int main(int argc, char **argv) {
     }
 
     MoleculeSet m = reader->read_file(config::input_file);
+    if (m.molecules().empty()) {
+        fmt::print(stderr, "No molecules were loaded from the input file\n");
+        exit(EXIT_FILE_ERROR);
+    }
 
     bool is_protein_structure = m.has_proteins();
 
