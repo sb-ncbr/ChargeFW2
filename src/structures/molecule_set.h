@@ -65,4 +65,6 @@ public:
     bond_types() const { return bond_types_; }
 
     void fulfill_requirements(const std::vector<RequiredFeatures> &features);
+
+    [[nodiscard]] bool has_proteins() const;
 };

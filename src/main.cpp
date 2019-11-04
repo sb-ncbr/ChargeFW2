@@ -36,7 +36,6 @@ int main(int argc, char **argv) {
 
     auto ext = std::filesystem::path(config::input_file).extension();
 
-    bool is_protein_structure = false;
     std::unique_ptr<Reader> reader;
     ext = to_lowercase(ext);
     if (ext == ".sdf") {
@@ -45,16 +44,16 @@ int main(int argc, char **argv) {
         reader = std::make_unique<Mol2>();
     } else if (ext == ".pdb" or ext == ".ent") {
         reader = std::make_unique<PDB>();
-        is_protein_structure = true;
     } else if (ext == ".cif") {
         reader = std::make_unique<mmCIF>();
-        is_protein_structure = true;
     } else {
         fmt::print(stderr, "Filetype {} not supported\n", ext);
         exit(EXIT_FILE_ERROR);
     }
 
     MoleculeSet m = reader->read_file(config::input_file);
+
+    bool is_protein_structure = m.has_proteins();
 
     if (config::mode == "info") {
         m.classify_atoms(AtomClassifier::HBO);

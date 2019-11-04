@@ -326,3 +326,8 @@ void MoleculeSet::fulfill_requirements(const std::vector<RequiredFeatures> &feat
         }
     }
 }
+
+
+bool MoleculeSet::has_proteins() const {
+    return std::any_of(molecules_->begin(), molecules_->end(), [](const Molecule &m) { return m.is_protein(); });
+}
