@@ -19,12 +19,12 @@ MoleculeSet PDB::read_file(const std::string &filename) {
     try {
         structure = gemmi::read_pdb_file(filename);
     }
-    catch (std::exception &){
+    catch (std::exception &) {
         fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
         exit(EXIT_FILE_ERROR);
     }
 
-    auto molecules = std::make_unique<std::vector<Molecule> >();
+    auto molecules = std::make_unique<std::vector<Molecule>>();
     auto atoms = std::make_unique<std::vector<Atom>>();
 
     /* Read first model only */
@@ -38,7 +38,15 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                 double y = atom.pos.y;
                 double z = atom.pos.z;
                 int residue_id = residue.seqid.num.value;
-                auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
+
+                const Element *element;
+                try {
+                    element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
+                } catch (std::exception &e) {
+                    fmt::print(stderr, "Error when reading {}: {}\n", structure.name, e.what());
+                    /* Return empty set */
+                    return MoleculeSet(std::move(molecules));
+                }
 
                 if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue_id)) {
                     if ((not hetatm) or
