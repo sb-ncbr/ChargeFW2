@@ -113,7 +113,12 @@ int main(int argc, char **argv) {
         charges.set_method_name(config::method_name);
 
         for (auto &mol: m.molecules()) {
-            charges.insert(mol.name(), method->calculate_charges(mol));
+            auto results = method->calculate_charges(mol);
+            if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
+                fmt::print(stderr, "Cannot compute charges for {}\n", mol.name());
+                continue;
+            }
+            charges.insert(mol.name(), results);
         }
 
         auto txt = TXT();
