@@ -8,6 +8,7 @@
 #include <ctime>
 #include <chrono>
 #include <unistd.h>
+#include <tuple>
 #include <algorithm>
 
 #include "chargefw2.h"
@@ -64,7 +65,17 @@ int main(int argc, char **argv) {
         m.info();
 
     } else if (config::mode == "charges") {
-        std::shared_ptr<Method> method = load_method(config::method_name);
+        std::string method_name;
+        if (config::method_name.empty()) {
+            auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+            method_name = std::get<0>(methods.front());
+            fmt::print("Autoselecting the best method.\n");
+        } else {
+            method_name = config::method_name;
+        }
+
+        std::shared_ptr<Method> method = load_method(method_name);
+        fmt::print("Method: {}\n", method->name());
 
         setup_method_options(method, parsed);
 
@@ -95,8 +106,6 @@ int main(int argc, char **argv) {
         }
 
         m.info();
-        fmt::print("\n");
-
         m.fulfill_requirements(method->get_requirements());
 
         auto charges = Charges();

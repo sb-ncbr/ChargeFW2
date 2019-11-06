@@ -84,7 +84,7 @@ void check_common_args() {
         exit(EXIT_PARAMETER_ERROR);
     }
 
-    if (config::mode == "charges" or config::mode == "parameters" or config::mode == "best-parameters") {
+    if (config::mode == "parameters" or config::mode == "best-parameters") {
         if (config::method_name.empty()) {
             fmt::print(stderr, "No method selected.\n");
             exit(EXIT_PARAMETER_ERROR);
