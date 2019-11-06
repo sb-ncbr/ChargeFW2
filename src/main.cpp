@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 
     auto start = std::chrono::system_clock::now();
 
-    auto ext = std::filesystem::path(config::input_file).extension();
+    auto ext = std::filesystem::path(config::input_file).extension().string();
 
     std::unique_ptr<Reader> reader;
     ext = to_lowercase(ext);
@@ -179,7 +179,14 @@ int main(int argc, char **argv) {
         p.parametrize();
 
     } else if (config::mode == "suitable-methods") {
-        get_suitable_methods(m, is_protein_structure, config::permissive_types);
+        auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+        for (const auto &[method, parameters]: methods) {
+            fmt::print("{}", method);
+            for (const auto &parameter_set: parameters) {
+                fmt::print(" {}", parameter_set);
+            }
+            fmt::print("\n");
+        }
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
         exit(EXIT_PARAMETER_ERROR);

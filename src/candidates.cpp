@@ -1,6 +1,9 @@
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <fstream>
+#include <tuple>
+#include <vector>
+#include <string>
 #include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
@@ -23,7 +26,8 @@ std::vector<std::string> get_parameter_files() {
 }
 
 
-void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
+std::vector<std::tuple<std::string, std::vector<std::string>>>
+get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
     std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
     using json = nlohmann::json;
     json j;
@@ -35,6 +39,8 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
 
     f >> j;
     f.close();
+
+    std::vector<std::tuple<std::string, std::vector<std::string>>> results;
 
     for (const auto &method_info: j["methods"]) {
         auto method_name = method_info["internal_name"].get<std::string>();
@@ -56,7 +62,7 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
 
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
-            fmt::print("{}\n", method_name);
+            results.emplace_back(std::tuple<std::string, std::vector<std::string>>(method_name, {}));
             continue;
         }
 
@@ -79,17 +85,18 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
             size_t unclassified = ms.classify_set_from_parameters(*p, false, permissive_types);
 
             if (!unclassified) {
+                auto parameters = std::filesystem::path(set).filename().string();
                 if (not parameters_found) {
-                    fmt::print("{} ", method_name);
+                    results.emplace_back(std::tuple<std::string, std::vector<std::string>>(method_name, {parameters}));
                     parameters_found = true;
+                } else {
+                    std::get<1>(results.back()).emplace_back(parameters);
                 }
-                fmt::print("{} ", std::filesystem::path(set).filename().string());
             }
         }
-        if (parameters_found) {
-            fmt::print("\n");
-        }
     }
+
+    return results;
 }
 
 
