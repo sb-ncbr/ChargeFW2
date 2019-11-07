@@ -66,7 +66,9 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
             continue;
         }
 
-        bool parameters_found = false;
+        std::vector<std::string> protein_parameters;
+        std::vector<std::string> ligand_parameters;
+
         for (const auto &set: get_parameter_files()) {
             if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()), method_name)) {
                 continue;
@@ -78,21 +80,29 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
                 continue;
             }
 
-            if ((is_protein and p->source() != "protein") or (not is_protein and p->source() == "protein")) {
-                continue;
-            }
-
             size_t unclassified = ms.classify_set_from_parameters(*p, false, permissive_types);
 
             if (!unclassified) {
                 auto parameters = std::filesystem::path(set).filename().string();
-                if (not parameters_found) {
-                    results.emplace_back(std::tuple<std::string, std::vector<std::string>>(method_name, {parameters}));
-                    parameters_found = true;
+                if (p->source() == "protein") {
+                    protein_parameters.emplace_back(parameters);
                 } else {
-                    std::get<1>(results.back()).emplace_back(parameters);
+                    ligand_parameters.emplace_back(parameters);
                 }
             }
+        }
+
+        /* Show protein parameters first if the proteins are in the set */
+        std::vector<std::string> all_parameters;
+        if (is_protein) {
+            all_parameters = protein_parameters;
+            all_parameters.insert(all_parameters.end(), ligand_parameters.begin(), ligand_parameters.end());
+        } else {
+            all_parameters = ligand_parameters;
+            all_parameters.insert(all_parameters.end(), protein_parameters.begin(), protein_parameters.end());
+        }
+        if (not all_parameters.empty()) {
+            results.emplace_back(std::make_tuple(method_name, all_parameters));
         }
     }
 
