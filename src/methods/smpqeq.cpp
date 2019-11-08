@@ -33,7 +33,9 @@ Eigen::VectorXd SMP_QEq::EE_system(const std::vector<const Atom *> &atoms, doubl
                 const auto &atom_j = *atoms[j];
                 auto gamma = 2 * std::sqrt(parameters_->atom()->parameter(atom::second)(atom_i) *
                                            parameters_->atom()->parameter(atom::second)(atom_j));
-                A(i, j) = 1 / std::cbrt(1 / std::pow(gamma, 3) + std::pow(distance(atom_i, atom_j), 3));
+                auto expr = 1 / std::cbrt(1 / std::pow(gamma, 3) + std::pow(distance(atom_i, atom_j), 3));
+                A(i, j) = expr;
+                A(j, i) = expr;
             }
         }
 
