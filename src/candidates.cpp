@@ -1,6 +1,9 @@
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <fstream>
+#include <tuple>
+#include <vector>
+#include <string>
 #include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
@@ -23,7 +26,8 @@ std::vector<std::string> get_parameter_files() {
 }
 
 
-void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
+std::vector<std::tuple<std::string, std::vector<std::string>>>
+get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
     std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
     using json = nlohmann::json;
     json j;
@@ -35,6 +39,8 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
 
     f >> j;
     f.close();
+
+    std::vector<std::tuple<std::string, std::vector<std::string>>> results;
 
     for (const auto &method_info: j["methods"]) {
         auto method_name = method_info["internal_name"].get<std::string>();
@@ -56,11 +62,13 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
 
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
-            fmt::print("{}\n", method_name);
+            results.emplace_back(std::tuple<std::string, std::vector<std::string>>(method_name, {}));
             continue;
         }
 
-        bool parameters_found = false;
+        std::vector<std::string> protein_parameters;
+        std::vector<std::string> ligand_parameters;
+
         for (const auto &set: get_parameter_files()) {
             if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()), method_name)) {
                 continue;
@@ -72,24 +80,33 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
                 continue;
             }
 
-            if ((is_protein and p->source() != "protein") or (not is_protein and p->source() == "protein")) {
-                continue;
-            }
-
             size_t unclassified = ms.classify_set_from_parameters(*p, false, permissive_types);
 
             if (!unclassified) {
-                if (not parameters_found) {
-                    fmt::print("{} ", method_name);
-                    parameters_found = true;
+                auto parameters = std::filesystem::path(set).filename().string();
+                if (p->source() == "protein") {
+                    protein_parameters.emplace_back(parameters);
+                } else {
+                    ligand_parameters.emplace_back(parameters);
                 }
-                fmt::print("{} ", std::filesystem::path(set).filename().string());
             }
         }
-        if (parameters_found) {
-            fmt::print("\n");
+
+        /* Show protein parameters first if the proteins are in the set */
+        std::vector<std::string> all_parameters;
+        if (is_protein) {
+            all_parameters = protein_parameters;
+            all_parameters.insert(all_parameters.end(), ligand_parameters.begin(), ligand_parameters.end());
+        } else {
+            all_parameters = ligand_parameters;
+            all_parameters.insert(all_parameters.end(), protein_parameters.begin(), protein_parameters.end());
+        }
+        if (not all_parameters.empty()) {
+            results.emplace_back(std::make_tuple(method_name, all_parameters));
         }
     }
+
+    return results;
 }
 
 

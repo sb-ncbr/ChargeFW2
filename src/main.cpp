@@ -8,6 +8,7 @@
 #include <ctime>
 #include <chrono>
 #include <unistd.h>
+#include <tuple>
 #include <algorithm>
 
 #include "chargefw2.h"
@@ -34,7 +35,7 @@ int main(int argc, char **argv) {
 
     auto start = std::chrono::system_clock::now();
 
-    auto ext = std::filesystem::path(config::input_file).extension();
+    auto ext = std::filesystem::path(config::input_file).extension().string();
 
     std::unique_ptr<Reader> reader;
     ext = to_lowercase(ext);
@@ -64,7 +65,17 @@ int main(int argc, char **argv) {
         m.info();
 
     } else if (config::mode == "charges") {
-        std::shared_ptr<Method> method = load_method(config::method_name);
+        std::string method_name;
+        if (config::method_name.empty()) {
+            auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+            method_name = std::get<0>(methods.front());
+            fmt::print("Autoselecting the best method.\n");
+        } else {
+            method_name = config::method_name;
+        }
+
+        std::shared_ptr<Method> method = load_method(method_name);
+        fmt::print("Method: {}\n", method->name());
 
         setup_method_options(method, parsed);
 
@@ -95,8 +106,6 @@ int main(int argc, char **argv) {
         }
 
         m.info();
-        fmt::print("\n");
-
         m.fulfill_requirements(method->get_requirements());
 
         auto charges = Charges();
@@ -104,7 +113,12 @@ int main(int argc, char **argv) {
         charges.set_method_name(config::method_name);
 
         for (auto &mol: m.molecules()) {
-            charges.insert(mol.name(), method->calculate_charges(mol));
+            auto results = method->calculate_charges(mol);
+            if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
+                fmt::print(stderr, "Cannot compute charges for {}\n", mol.name());
+                continue;
+            }
+            charges.insert(mol.name(), results);
         }
 
         auto txt = TXT();
@@ -179,7 +193,14 @@ int main(int argc, char **argv) {
         p.parametrize();
 
     } else if (config::mode == "suitable-methods") {
-        get_suitable_methods(m, is_protein_structure, config::permissive_types);
+        auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+        for (const auto &[method, parameters]: methods) {
+            fmt::print("{}", method);
+            for (const auto &parameter_set: parameters) {
+                fmt::print(" {}", parameter_set);
+            }
+            fmt::print("\n");
+        }
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
         exit(EXIT_PARAMETER_ERROR);
