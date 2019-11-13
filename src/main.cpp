@@ -1,5 +1,4 @@
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <nlohmann/json.hpp>
 #include <memory>
 #include <filesystem>
@@ -27,6 +26,9 @@
 #include "config.h"
 #include "parameterization.h"
 #include "utility/utility.h"
+
+
+namespace fs = std::filesystem;
 
 
 int main(int argc, char **argv) {
@@ -90,6 +92,7 @@ int main(int argc, char **argv) {
                     exit(EXIT_PARAMETER_ERROR);
                 }
                 fmt::print("Best parameters found: {}\n", par_name);
+                par_name = (fs::path(INSTALL_DIR) / "share/parameters" / par_name).string();
             } else {
                 par_name = config::par_file;
             }
