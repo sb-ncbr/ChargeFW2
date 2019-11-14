@@ -101,12 +101,12 @@ void check_common_args() {
     if (config::mode == "parameters") {
         if (config::par_file.empty()) {
             fmt::print(stderr, "File where to store parameters must be provided");
-            exit(EXIT_FAILURE);
+            exit(EXIT_PARAMETER_ERROR);
         }
 
         if (config::ref_chg_file.empty()) {
             fmt::print(stderr, "File with reference charges must be provided");
-            exit(EXIT_FAILURE);
+            exit(EXIT_PARAMETER_ERROR);
         }
     }
 
@@ -131,7 +131,12 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
 
     po::variables_map vm;
     std::vector<std::string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
-    po::store(po::command_line_parser(opts).options(method_options).run(), vm);
+    try {
+        po::store(po::command_line_parser(opts).options(method_options).run(), vm);
+    } catch (std::exception &e) {
+        fmt::print(stderr, "Incorrect arguments: {}\n", e.what());
+        exit(EXIT_PARAMETER_ERROR);
+    }
 
     for (const auto &[opt, info]: method->get_options()) {
         std::string opt_name = std::string("method-" + opt);
