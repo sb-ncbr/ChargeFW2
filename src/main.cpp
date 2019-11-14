@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
             method_name = config::method_name;
         }
 
-        std::shared_ptr<Method> method = load_method(method_name);
+        auto method = load_method(method_name);
         fmt::print("Method: {}\n", method->name());
 
         setup_method_options(method, parsed);
@@ -171,7 +171,7 @@ int main(int argc, char **argv) {
                        current_time, pid, walltime.count(), utime, stime, mem);
         }
     } else if (config::mode == "best-parameters") {
-        std::shared_ptr<Method> method = load_method(config::method_name);
+        const auto method = load_method(config::method_name);
 
         if (!method->has_parameters()) {
             fmt::print(stderr, "Method uses no parameters\n");
@@ -186,7 +186,7 @@ int main(int argc, char **argv) {
     } else if (config::mode == "parameters") {
         m.classify_atoms(AtomClassifier::PLAIN);
 
-        std::shared_ptr<Method> method = load_method(config::method_name);
+        auto method = load_method(config::method_name);
 
         setup_method_options(method, parsed);
 

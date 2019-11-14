@@ -3,14 +3,14 @@
 //
 
 #include <vector>
-#include <cmath>
 #include <functional>
-#include <string>
 #include <Eigen/LU>
 
 #include "eem.h"
 #include "../parameters.h"
 #include "../geometry.h"
+
+CHARGEFW2_METHOD(EEM)
 
 using namespace std::placeholders;
 

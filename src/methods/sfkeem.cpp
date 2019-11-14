@@ -11,6 +11,8 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
+CHARGEFW2_METHOD(SFKEEM)
+
 using namespace std::placeholders;
 
 

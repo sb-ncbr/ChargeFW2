@@ -10,6 +10,8 @@
 #include "../structures/molecule.h"
 #include "../parameters.h"
 
+CHARGEFW2_METHOD(KCM)
+
 
 std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
 

@@ -4,9 +4,7 @@
 
 #pragma once
 
-
 #include <vector>
-#include <boost/config.hpp>
 
 #include "../structures/molecule.h"
 #include "../method.h"
@@ -23,10 +21,5 @@ public:
             }
     ) {}
 
-    virtual ~MPEOE() = default;
-
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
-
-extern "C" BOOST_SYMBOL_EXPORT MPEOE method;
-MPEOE method;

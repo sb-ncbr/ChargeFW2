@@ -9,7 +9,7 @@
 #include <vector>
 #include <functional>
 #include <utility>
-#include <boost/dll/import.hpp>
+#include <memory>
 
 #include "structures/molecule.h"
 
@@ -45,8 +45,6 @@ protected:
 
     Parameters *parameters_{nullptr};
 
-    ~Method() = default;
-
 public:
     Method(std::string name, std::vector<std::string> common, std::vector<std::string> atom,
            std::vector<std::string> bond, std::map<std::string, MethodOption> options) :
@@ -56,11 +54,11 @@ public:
             bond_parameters_{std::move(bond)},
             options_{std::move(options)} {}
 
-    std::vector<std::string> common_parameters() { return common_parameters_; }
+    [[nodiscard]] const std::vector<std::string> &common_parameters() const { return common_parameters_; }
 
-    std::vector<std::string> atom_parameters() { return atom_parameters_; }
+    [[nodiscard]] const std::vector<std::string> &atom_parameters() const { return atom_parameters_; }
 
-    std::vector<std::string> bond_parameters() { return bond_parameters_; }
+    [[nodiscard]] const std::vector<std::string> &bond_parameters() const { return bond_parameters_; }
 
     Parameters *parameters() { return parameters_; }
 
@@ -110,9 +108,6 @@ class EEMethod : public Method {
         return options;
     }
 
-protected:
-    ~EEMethod() = default;
-
 public:
     EEMethod(std::string name, std::vector<std::string> common, std::vector<std::string> atom,
              std::vector<std::string> bond, std::map<std::string, MethodOption> options) :
@@ -130,4 +125,13 @@ public:
 };
 
 
-std::shared_ptr<Method> load_method(const std::string &method_name);
+Method* load_method(const std::string &method_name);
+
+
+#define CHARGEFW2_METHOD(name) extern "C" Method* get_method() {\
+ static name method;\
+ return &method;\
+}
+
+
+extern "C" Method* get_method();

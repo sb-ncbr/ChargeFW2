@@ -29,7 +29,7 @@ add_executable(chargefw2 ${SOURCES})
 add_dependencies(chargefw2 ${METHODS})
 
 target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs
-        Boost::program_options Boost::system Boost::filesystem dl stdc++fs nlopt fmt::fmt)
+                      Boost::program_options dl stdc++fs nlopt fmt::fmt)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 

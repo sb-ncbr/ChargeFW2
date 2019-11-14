@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <dlfcn.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <Eigen/Dense>
@@ -208,14 +209,16 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
 }
 
 
-std::shared_ptr<Method> load_method(const std::string &method_name) {
-    try {
-        auto ptr = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
-                                              boost::dll::load_mode::append_decorations);
-        /* Some magic from: https://stackoverflow.com/a/12315035/2693542 */
-        return std::shared_ptr<Method>(ptr.get(), [ptr](Method *) mutable { ptr.reset(); });
-    } catch (std::exception &e) {
-        fmt::print(stderr, "Unable to load method {}: {}\n", method_name, e.what());
-        exit(EXIT_PARAMETER_ERROR);
+Method* load_method(const std::string &method_name) {
+
+    auto file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
+    auto handle = dlopen(file.c_str(), RTLD_LAZY);
+
+    auto get_method_handle = (Method *(*)()) dlsym(handle, "get_method");
+    if (!get_method_handle) {
+        fmt::print(stderr, dlerror());
+        exit(EXIT_FILE_ERROR);
     }
+
+    return (*get_method_handle)();
 }

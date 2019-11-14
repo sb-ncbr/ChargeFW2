@@ -9,6 +9,8 @@
 #include "mgc.h"
 #include "../structures/molecule.h"
 
+CHARGEFW2_METHOD(MGC)
+
 
 std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
 

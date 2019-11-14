@@ -11,6 +11,8 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
+CHARGEFW2_METHOD(EQeqC)
+
 using namespace std::placeholders;
 
 

@@ -6,7 +6,6 @@
 #include <string>
 #include <map>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 #include <nlohmann/json.hpp>
 #include <fmt/format.h>
 
@@ -210,7 +209,7 @@ void Parameters::set_from_vector(const std::vector<double> &parameters) {
 }
 
 
-Parameters::Parameters(const MoleculeSet &ms, const std::shared_ptr<Method> &method) {
+Parameters::Parameters(const MoleculeSet &ms, const Method *method) {
 
     method_name_ = method->name();
     name_ = "New parameters";

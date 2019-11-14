@@ -10,6 +10,8 @@
 #include "../structures/bond.h"
 #include "../parameters.h"
 
+CHARGEFW2_METHOD(DelRe)
+
 
 std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {
 

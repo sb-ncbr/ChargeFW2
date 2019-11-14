@@ -91,7 +91,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
     for (const auto &method_info: j["methods"]) {
         auto method_name = method_info["internal_name"].get<std::string>();
-        auto method = load_method(method_name);
+        const auto method = load_method(method_name);
 
         bool suitable = true;
         for (const auto &molecule: ms.molecules()) {
@@ -124,7 +124,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
 
 std::string
-best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein, bool permissive_types) {
+best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types) {
     auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->internal_name());
     return parameters.empty() ? "" : parameters.front();
 }

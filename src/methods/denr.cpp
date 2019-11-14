@@ -10,6 +10,8 @@
 #include "../structures/molecule.h"
 #include "../parameters.h"
 
+CHARGEFW2_METHOD(DENR)
+
 
 std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
 

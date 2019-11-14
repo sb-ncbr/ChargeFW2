@@ -10,6 +10,8 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
+CHARGEFW2_METHOD(ABEEM)
+
 
 std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
 

@@ -5,7 +5,6 @@
 #pragma once
 
 #include <vector>
-#include <boost/config.hpp>
 
 #include "../structures/molecule.h"
 #include "../method.h"
@@ -16,12 +15,7 @@ class KCM : public Method {
 public:
     explicit KCM() : Method("KCM", {}, {"electronegativity", "hardness"}, {}, {}) {}
 
-    virtual ~KCM() = default;
-
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     [[nodiscard]] bool is_suitable_for_large_molecule() const override { return false; }
 };
-
-extern "C" BOOST_SYMBOL_EXPORT KCM method;
-KCM method;

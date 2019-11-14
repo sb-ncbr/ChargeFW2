@@ -16,21 +16,21 @@
 
 class Parameterization {
     const MoleculeSet &set_;
-    std::shared_ptr<Method> method_;
+    Method *method_;
     const Charges &reference_charges_;
     std::unique_ptr<Parameters> parameters_;
     std::string charge_output_dir_;
     std::string parameters_output_file_;
 
 public:
-    Parameterization(const MoleculeSet &ms, std::shared_ptr<Method> method, const Charges &reference_charges,
+    Parameterization(const MoleculeSet &ms, Method *method, const Charges &reference_charges,
                      const std::string &charge_output_file, const std::string &parameters_output_file);
 
     void parametrize();
 
     [[nodiscard]] const MoleculeSet &set() const { return set_; }
 
-    std::shared_ptr<Method> method() { return method_; }
+    [[nodiscard]] Method *method() const { return method_; }
 
     [[nodiscard]] const Charges &reference_charges() const { return reference_charges_; }
 };

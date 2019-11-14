@@ -6,7 +6,6 @@
 
 
 #include <vector>
-#include <boost/config.hpp>
 
 #include "../structures/molecule.h"
 #include "../method.h"
@@ -21,10 +20,5 @@ public:
                 {"iters", {"iters", "Number of iterations", "int", "7", {}}}
             }) {}
 
-    virtual ~PEOE() = default;
-
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
-
-extern "C" BOOST_SYMBOL_EXPORT PEOE method;
-PEOE method;

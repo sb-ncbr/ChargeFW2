@@ -8,6 +8,8 @@
 #include "tsef.h"
 #include "../parameters.h"
 
+CHARGEFW2_METHOD(TSEF)
+
 
 double K(int i);
 

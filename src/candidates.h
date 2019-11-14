@@ -12,4 +12,4 @@ std::vector<std::tuple<std::string, std::vector<std::string>>>
 get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types = false);
 
 std::string
-best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein, bool permissive_types = false);
+best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types = false);

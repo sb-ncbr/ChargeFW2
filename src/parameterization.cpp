@@ -99,7 +99,7 @@ void Parameterization::parametrize() {
 }
 
 
-Parameterization::Parameterization(const MoleculeSet &ms, std::shared_ptr<Method> method,
+Parameterization::Parameterization(const MoleculeSet &ms, Method *method,
                                    const Charges &reference_charges, const std::string &charge_output_file,
                                    const std::string &parameters_output_file) :
         set_{ms}, method_{method}, reference_charges_{reference_charges},

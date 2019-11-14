@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include <boost/config.hpp>
-
 #include "../method.h"
 
 
@@ -13,10 +11,5 @@ class Dummy : public Method {
 public:
     explicit Dummy() : Method("Dummy", {}, {}, {}, {}) {}
 
-    virtual ~Dummy() = default;
-
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
-
-extern "C" BOOST_SYMBOL_EXPORT Dummy method;
-Dummy method;
