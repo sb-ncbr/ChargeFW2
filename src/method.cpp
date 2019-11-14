@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 #include <set>
-#include <numeric>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <Eigen/Dense>
@@ -14,7 +13,7 @@
 #include "chargefw2.h"
 #include "method.h"
 #include "parameters.h"
-#include "utility/utility.h"
+#include "utility/strings.h"
 
 
 std::vector<RequiredFeatures> Method::get_requirements() const {

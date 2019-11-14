@@ -8,15 +8,15 @@
 #include <fmt/format.h>
 #include <gemmi/cif.hpp>
 #include <gemmi/mmcif.hpp>
-#include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
-#include "../config.h"
 #include "mmcif.h"
 #include "common.h"
 #include "bonds.h"
+#include "../config.h"
 #include "../structures/bond.h"
 #include "../periodic_table.h"
+#include "../utility/strings.h"
 
 
 void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
@@ -158,10 +158,10 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             exit(EXIT_FILE_ERROR);
         }
         while(std::getline(file, line)) {
-            if (boost::starts_with(line, "#") or line.empty()) {
+            if (starts_with(line, "#") or line.empty()) {
                 continue;
             }
-            if (boost::starts_with(line, "data_")) {
+            if (starts_with(line, "data_")) {
                 if (not structure_data.empty()) {
                     process_record(structure_data, molecules);
                 }

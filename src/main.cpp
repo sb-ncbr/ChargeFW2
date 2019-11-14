@@ -25,7 +25,7 @@
 #include "candidates.h"
 #include "config.h"
 #include "parameterization.h"
-#include "utility/utility.h"
+#include "utility/strings.h"
 
 
 namespace fs = std::filesystem;

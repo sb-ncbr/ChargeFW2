@@ -5,12 +5,11 @@
 #include <tuple>
 #include <vector>
 #include <string>
-#include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
 #include "candidates.h"
 #include "method.h"
-#include "utility/utility.h"
+#include "utility/strings.h"
 
 
 namespace fs = std::filesystem;
@@ -38,7 +37,7 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
     std::vector<std::string> ligand_parameters;
 
     for (const auto &parameter_file: get_parameter_files()) {
-        if (not boost::starts_with(to_lowercase(parameter_file.filename().string()), method_name)) {
+        if (not starts_with(to_lowercase(parameter_file.filename().string()), method_name)) {
             continue;
         }
 
