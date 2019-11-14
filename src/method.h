@@ -54,6 +54,8 @@ public:
             bond_parameters_{std::move(bond)},
             options_{std::move(options)} {}
 
+    virtual ~Method() = default;
+
     [[nodiscard]] const std::vector<std::string> &common_parameters() const { return common_parameters_; }
 
     [[nodiscard]] const std::vector<std::string> &atom_parameters() const { return atom_parameters_; }

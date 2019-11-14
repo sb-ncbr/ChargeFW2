@@ -214,7 +214,7 @@ Method* load_method(const std::string &method_name) {
     auto file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
     auto handle = dlopen(file.c_str(), RTLD_LAZY);
 
-    auto get_method_handle = (Method *(*)()) dlsym(handle, "get_method");
+    auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
     if (!get_method_handle) {
         fmt::print(stderr, dlerror());
         exit(EXIT_FILE_ERROR);
