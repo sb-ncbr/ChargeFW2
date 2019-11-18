@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
         for (auto &mol: m.molecules()) {
             auto results = method->calculate_charges(mol);
             if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
-                fmt::print(stderr, "Cannot compute charges for {}\n", mol.name());
+                fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n", mol.name());
                 continue;
             }
             charges.insert(mol.name(), results);
