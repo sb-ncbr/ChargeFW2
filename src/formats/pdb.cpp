@@ -65,7 +65,12 @@ MoleculeSet PDB::read_file(const std::string &filename) {
         fmt::print(stderr, "Error when reading {}: No atoms were loaded\n", structure.name);
     } else {
         auto bonds = get_bonds(atoms);
-        molecules->emplace_back(sanitize_name(structure.name), std::move(atoms), std::move(bonds));
+        std::string name = structure.name;
+        auto it = structure.info.find("_entry.id");
+        if (it != structure.info.end()) {
+            name = it->second;
+        }
+        molecules->emplace_back(sanitize_name(name), std::move(atoms), std::move(bonds));
     }
 
     return MoleculeSet(std::move(molecules));
