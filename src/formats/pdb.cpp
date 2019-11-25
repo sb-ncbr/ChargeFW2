@@ -48,7 +48,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                     return MoleculeSet(std::move(molecules));
                 }
 
-                if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue_id)) {
+                if (not atom.has_altloc() or atom.altloc == 'A') {
                     if ((not hetatm) or
                         (config::read_hetatm and residue.name != "HOH") or
                         (config::read_hetatm and not config::ignore_water)) {

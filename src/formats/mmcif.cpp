@@ -37,7 +37,7 @@ void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::
                 double z = atom.pos.z;
                 auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
-                if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue.seqid.num.value)) {
+                if (not atom.has_altloc() or atom.altloc == 'A') {
                     if ((not hetatm) or
                         (config::read_hetatm and residue.name != "HOH") or
                         (config::read_hetatm and not config::ignore_water)) {
