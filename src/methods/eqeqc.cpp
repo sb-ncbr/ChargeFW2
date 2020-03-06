@@ -78,7 +78,7 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
             const auto &atom_j = molecule.atoms()[j];
             double tkk = parameters_->atom()->parameter(atom::Dz)(atom_i) - parameters_->atom()->parameter(atom::Dz)(atom_j);
             double bkk = std::exp(-parameters_->common()->parameter(common::alpha) *
-                                  (distance(atom_i, atom_j) - atom_i.element().covalent_radius() +
+                                  (distance(atom_i, atom_j) - atom_i.element().covalent_radius() -
                                    atom_j.element().covalent_radius()));
             correction += tkk * bkk;
         }
