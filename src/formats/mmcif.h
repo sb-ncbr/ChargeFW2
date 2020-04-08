@@ -18,5 +18,7 @@ class mmCIF: public Reader {
     static void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms, std::unique_ptr<std::vector<Bond>> &bonds);
 
 public:
+    mmCIF();
+
     MoleculeSet read_file(const std::string &filename) override;
 };

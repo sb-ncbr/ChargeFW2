@@ -37,6 +37,10 @@ void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::
                 double z = atom.pos.z;
                 auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
+                if(atom.charge) {
+                    fmt::print("Got charge {} on{}\n", atom.charge, atom.element.name());
+                }
+
                 if (not atom.has_altloc() or atom.altloc == 'A') {
                     if ((not hetatm) or
                         (config::read_hetatm and residue.name != "HOH") or
@@ -78,6 +82,10 @@ void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vect
             /* Keep default */
         }
         auto residue_id = 0;
+
+        if (charge) {
+            fmt::print("Got charge {} on {}\n", charge, atom_name);
+        }
 
         atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "", false);
         atoms->back()._set_formal_charge(charge);
@@ -181,3 +189,5 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
     }
     return MoleculeSet(std::move(molecules));
 }
+
+mmCIF::mmCIF() = default;

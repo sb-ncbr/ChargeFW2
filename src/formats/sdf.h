@@ -19,5 +19,6 @@ class SDF: public Reader {
     static void read_until_end_of_record(std::ifstream &file);
 
 public:
+    SDF();
     MoleculeSet read_file(const std::string &filename) override;
 };

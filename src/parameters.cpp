@@ -148,15 +148,15 @@ void Parameters::print() const {
 }
 
 
-std::function<double(const Atom &)> AtomParameters::parameter(size_t idx) const {
+std::function<double(const Atom &)> AtomParameters::parameter(size_t idx) const noexcept {
 
-    return [this, idx](const Atom &atom) { return parameters_[atom.atom_type()][idx]; };
+    return [this, idx](const Atom &atom) noexcept { return parameters_[atom.atom_type()][idx]; };
 }
 
 
-std::function<double(const Bond &)> BondParameters::parameter(size_t idx) const {
+std::function<double(const Bond &)> BondParameters::parameter(size_t idx) const noexcept {
 
-    return [this, idx](const Bond &bond) { return parameters_[bond.bond_type()][idx]; };
+    return [this, idx](const Bond &bond) noexcept { return parameters_[bond.bond_type()][idx]; };
 }
 
 

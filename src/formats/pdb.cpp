@@ -75,3 +75,5 @@ MoleculeSet PDB::read_file(const std::string &filename) {
 
     return MoleculeSet(std::move(molecules));
 }
+
+PDB::PDB() = default;

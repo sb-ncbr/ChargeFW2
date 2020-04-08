@@ -213,3 +213,5 @@ void SDF::read_V3000(std::ifstream &file, std::string &line, std::unique_ptr<std
     /* Skip everything until the end of the record */
     read_until_end_of_record(file);
 }
+
+SDF::SDF() = default;

@@ -53,7 +53,7 @@ public:
 
     [[nodiscard]] const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    [[nodiscard]] std::function<double(const Atom &)> parameter(size_t idx) const;
+    [[nodiscard]] std::function<double(const Atom &)> parameter(size_t idx) const noexcept;
 };
 
 class BondParameters {
@@ -73,7 +73,7 @@ public:
 
     [[nodiscard]] const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
 
-    [[nodiscard]] std::function<double(const Bond &)> parameter(size_t idx) const;
+    [[nodiscard]] std::function<double(const Bond &)> parameter(size_t idx) const noexcept;
 };
 
 class Parameters {
