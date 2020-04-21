@@ -1,6 +1,7 @@
 find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
-find_package(fmt REQUIRED)
-find_package(nanoflann REQUIRED)
+find_package(fmt 5.3 REQUIRED)
+find_package(nlohmann_json REQUIRED)
+find_package(nanoflann 1.3 REQUIRED)
 
 include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
