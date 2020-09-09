@@ -41,35 +41,35 @@
     "names": ["eps", "gammaA", "gammaB"],
     "data": [
       {
-        "key": ["C", "H", "plain", "*"],
+        "key": ["C", "plain", "*", "H", "plain", "*", "plain", "*"],
         "value": [1.00, 0.3, 0.4]
       },
       {
-        "key": ["C", "C", "plain", "*"],
+        "key": ["C", "plain", "*", "C", "plain", "*", "plain", "*"],
         "value": [1.00, 0.1, 0.1]
       },
       {
-        "key": ["C", "N", "plain", "*"],
+        "key": ["C", "plain", "*", "N", "plain", "*", "plain", "*"],
         "value": [1.00, 0.1, 0.1]
       },
       {
-        "key": ["C", "O", "plain", "*"],
+        "key": ["C", "plain", "*", "O", "plain", "*", "plain", "*"],
         "value": [0.95, 0.1, 0.1]
       },
       {
-        "key": ["C", "F", "plain", "*"],
+        "key": ["C", "plain", "*", "F", "plain", "*", "plain", "*"],
         "value": [0.85, 0.1, 0.1]
       },
       {
-        "key": ["N", "H", "plain", "*"],
+        "key": ["N", "plain", "*", "H", "plain", "*", "plain", "*"],
         "value": [0.45, 0.3, 0.4]
       },
       {
-        "key": ["O", "H", "plain", "*"],
+        "key": ["O", "plain", "*", "H", "plain", "*", "plain", "*"],
         "value": [0.45, 0.3, 0.4]
       },
       {
-        "key": ["C", "Cl", "plain", "*"],
+        "key": ["C", "plain", "*", "Cl", "plain", "*", "plain", "*"],
         "value": [0.65, 0.2, 0.4]
       }
     ]

@@ -28,6 +28,8 @@ class Molecule {
     std::string name_;
     std::unique_ptr<std::vector<Atom> > atoms_;
     std::unique_ptr<std::vector<Bond> > bonds_;
+    std::vector<int> max_hbo_{};
+    std::vector<std::string> neighbour_elements_{};
     std::vector<char> bond_info_{};
     std::vector<int> bond_distances_{};
     std::unique_ptr<kdtree_t> index_{nullptr};
@@ -56,6 +58,10 @@ public:
 
     [[nodiscard]] int degree(const Atom &atom) const;
 
+    [[nodiscard]] const std::vector<int> &get_max_bond_orders() const { return max_hbo_; }
+
+    [[nodiscard]] const std::vector<std::string> &get_bonded_elements() const { return neighbour_elements_; }
+
     [[nodiscard]] std::vector<const Atom *> get_close_atoms(const Atom &atom, double cutoff) const;
 
     Molecule() = default;
@@ -68,7 +74,7 @@ public:
 
     [[nodiscard]] int total_charge() const;
 
-    [[nodiscard]] bool is_protein() const { return not (*atoms_)[0].chain_id().empty(); }
+    [[nodiscard]] bool is_protein() const { return not(*atoms_)[0].chain_id().empty(); }
 
     friend class MoleculeSet;
 };

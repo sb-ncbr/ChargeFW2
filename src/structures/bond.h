@@ -12,7 +12,7 @@ class Bond {
     const Atom *first_{};
     const Atom *second_{};
     int order_{};
-    size_t bond_type_{};
+    size_t type_{};
     const Molecule *molecule_{};
 public:
     Bond(const Atom *atom1, const Atom *atom2, int order) noexcept : first_{atom1}, second_{atom2}, order_{order} {}
@@ -25,7 +25,7 @@ public:
 
     [[nodiscard]] int order() const { return order_; }
 
-    [[nodiscard]] size_t bond_type() const { return bond_type_; }
+    [[nodiscard]] size_t type() const { return type_; }
 
     [[nodiscard]] std::array<double, 3> get_center(bool weighted=false) const;
 

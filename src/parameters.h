@@ -36,42 +36,48 @@ public:
     [[nodiscard]] double parameter(size_t idx) const { return parameters_[idx]; }
 };
 
+typedef std::tuple<std::string, std::string, std::string> atom_t; /* (element, cls, type) */
+
 class AtomParameters {
     friend class Parameters;
 
     std::vector<std::string> names_;
-    std::vector<std::tuple<std::string, std::string, std::string>> keys_;
+    std::vector<atom_t> keys_;
     std::vector<std::vector<double>> parameters_;
 public:
     explicit AtomParameters(std::vector<std::string> names,
                             std::vector<std::vector<double>> parameters,
-                            std::vector<std::tuple<std::string, std::string, std::string>> parameter_order)
+                            std::vector<atom_t> parameter_order)
             : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
     [[nodiscard]] const std::vector<std::string> &names() const { return names_; }
 
-    [[nodiscard]] const std::vector<std::tuple<std::string, std::string, std::string>> &keys() const { return keys_; }
+    [[nodiscard]] const std::vector<atom_t> &keys() const { return keys_; }
 
     [[nodiscard]] std::function<double(const Atom &)> parameter(size_t idx) const noexcept;
 };
+
+typedef std::tuple<std::string, std::string, std::string, /* First atom (element, cls, type) */
+                   std::string, std::string, std::string, /* Second atom (element, cls, type)*/
+                   std::string, std::string> bond_t;      /* Bond itself (cls, type) */
 
 class BondParameters {
     friend class Parameters;
 
     std::vector<std::string> names_;
-    std::vector<std::tuple<std::string, std::string, std::string, std::string>> keys_;
+    std::vector<bond_t> keys_;
     std::vector<std::vector<double>> parameters_;
 public:
     explicit BondParameters(std::vector<std::string> names,
                             std::vector<std::vector<double>> parameters,
-                            std::vector<std::tuple<std::string, std::string, std::string, std::string>> parameter_order)
+                            std::vector<bond_t> parameter_order)
             : names_{std::move(names)}, keys_{std::move(parameter_order)},
               parameters_{std::move(parameters)} {}
 
     [[nodiscard]] const std::vector<std::string> &names() const { return names_; }
 
-    [[nodiscard]] const std::vector<std::tuple<std::string, std::string, std::string, std::string>> &keys() const { return keys_; }
+    [[nodiscard]] const std::vector<bond_t> &keys() const { return keys_; }
 
     [[nodiscard]] std::function<double(const Bond &)> parameter(size_t idx) const noexcept;
 };

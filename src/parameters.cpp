@@ -45,7 +45,7 @@ Parameters::Parameters(const std::string &filename) {
 
         if (j.count("atom")) {
             auto names = j["atom"]["names"].get<std::vector<std::string>>();
-            std::vector<std::tuple<std::string, std::string, std::string>> keys;
+            std::vector<atom_t> keys;
             std::vector<std::vector<double>> parameters;
             for (const auto &obj: j["atom"]["data"]) {
                 auto key = obj["key"];
@@ -58,13 +58,14 @@ Parameters::Parameters(const std::string &filename) {
 
         if (j.count("bond")) {
             auto names = j["bond"]["names"].get<std::vector<std::string>>();
-            std::vector<std::tuple<std::string, std::string, std::string, std::string>> keys;
+            std::vector<bond_t> keys;
             std::vector<std::vector<double>> parameters;
             for (const auto &obj: j["bond"]["data"]) {
                 auto key = obj["key"];
                 keys.emplace_back(
                         std::make_tuple(key[0].get<std::string>(), key[1].get<std::string>(), key[2].get<std::string>(),
-                                        key[3].get<std::string>()));
+                                        key[3].get<std::string>(), key[4].get<std::string>(), key[5].get<std::string>(),
+                                        key[6].get<std::string>(), key[7].get<std::string>()));
                 parameters.emplace_back(obj["value"].get<std::vector<double>>());
             }
             bonds_ = std::make_unique<BondParameters>(names, parameters, keys);
@@ -137,8 +138,8 @@ void Parameters::print() const {
     if (bonds_) {
         fmt::print("Bond parameters\n");
         for (size_t i = 0; i < bonds_->parameters_.size(); i++) {
-            auto &[symbol1, symbol2, cls, type] = bonds_->keys()[i];
-            fmt::print("{:2s} {:2s} {} {}: ", symbol1, symbol2, cls, type);
+            auto &[symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b] = bonds_->keys()[i];
+            fmt::print("{} {} {} {} {} {} {} {}: ", symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b);
             for (double val: bonds_->parameters_[i]) {
                 fmt::print("{:>-6.3f} ", val);
             }
@@ -150,13 +151,13 @@ void Parameters::print() const {
 
 std::function<double(const Atom &)> AtomParameters::parameter(size_t idx) const noexcept {
 
-    return [this, idx](const Atom &atom) noexcept { return parameters_[atom.atom_type()][idx]; };
+    return [this, idx](const Atom &atom) noexcept { return parameters_[atom.type()][idx]; };
 }
 
 
 std::function<double(const Bond &)> BondParameters::parameter(size_t idx) const noexcept {
 
-    return [this, idx](const Bond &bond) noexcept { return parameters_[bond.bond_type()][idx]; };
+    return [this, idx](const Bond &bond) noexcept { return parameters_[bond.type()][idx]; };
 }
 
 
