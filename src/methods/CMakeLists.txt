@@ -1,6 +1,7 @@
 set(DEPS method parameters element geometry structures)
 
-SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre tsef charge2 qeq smpqeq eqeq eqeqc abeem)
+SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre
+            tsef charge2 qeq smpqeq eqeq eqeqc abeem sqe sqeqp)
 SET(METHODS ${METHODS} PARENT_SCOPE)
 
 foreach(method ${METHODS})
@@ -9,7 +10,7 @@ foreach(method ${METHODS})
     set_target_properties(${method} PROPERTIES LINK_FLAGS_RELEASE -s)
 endforeach(method)
 
-set(NEED_EIGEN eem sfkeem mgc kcm denr delre tsef qeq eqeq eqeqc abeem smpqeq)
+set(NEED_EIGEN eem sfkeem mgc kcm denr delre tsef qeq eqeq eqeqc abeem smpqeq sqe sqeqp)
 foreach(method ${NEED_EIGEN})
     target_link_libraries(${method} Eigen3::Eigen)
 endforeach(method)
