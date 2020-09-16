@@ -50,7 +50,7 @@ void MoleculeSet::info() const {
     fmt::print("Number of atoms: {}\n", n_atoms);
     for (auto &[key, val]: counts) {
         auto[symbol, cls, type] = atom_types_[key];
-        fmt::print("{:2s} {} {}: {}\n", symbol, cls, type, val);
+        fmt::print("{:2s} {:6s} {:4s}: {}\n", symbol, cls, type, val);
     }
 }
 

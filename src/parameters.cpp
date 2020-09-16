@@ -128,7 +128,7 @@ void Parameters::print() const {
         fmt::print("Atom parameters\n");
         for (size_t i = 0; i < atoms_->parameters_.size(); i++) {
             auto &[symbol, cls, type] = atoms_->keys()[i];
-            fmt::print("{:2s} {} {}: ", symbol, cls, type);
+            fmt::print("{:2s} {:6s} {:4s}: ", symbol, cls, type);
             for (double val: atoms_->parameters_[i]) {
                 fmt::print("{:>-6.3f} ", val);
             }
@@ -139,7 +139,7 @@ void Parameters::print() const {
         fmt::print("Bond parameters\n");
         for (size_t i = 0; i < bonds_->parameters_.size(); i++) {
             auto &[symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b] = bonds_->keys()[i];
-            fmt::print("{} {} {} {} {} {} {} {}: ", symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b);
+            fmt::print("{:2s} {:6s} {:4s} {:2s} {:6s} {:4s} {:2s} {:2s}: ", symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b);
             for (double val: bonds_->parameters_[i]) {
                 fmt::print("{:>-6.3f} ", val);
             }
