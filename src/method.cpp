@@ -211,12 +211,18 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
 
 Method* load_method(const std::string &method_name) {
 
-    auto file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
+    std::string file;
+    if (ends_with(method_name, ".so")) {
+        file = method_name;
+    } else {
+        file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
+    }
+
     auto handle = dlopen(file.c_str(), RTLD_LAZY);
 
     auto get_method_handle = (Method *(*)())(dlsym(handle, "get_method"));
     if (!get_method_handle) {
-        fmt::print(stderr, dlerror());
+        fmt::print(stderr, "{}\n", dlerror());
         exit(EXIT_FILE_ERROR);
     }
 

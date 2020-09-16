@@ -28,6 +28,15 @@ bool starts_with(const std::string &text, const std::string &prefix) {
 }
 
 
+bool ends_with(std::string const &fullString, std::string const &suffix) {
+    if (fullString.length() >= suffix.length()) {
+        return (0 == fullString.compare(fullString.length() - suffix.length(), suffix.length(), suffix));
+    } else {
+        return false;
+    }
+}
+
+
 std::string trim(const std::string &text) {
     auto start = text.begin();
     while (start != text.end() and isspace(*start)) {
