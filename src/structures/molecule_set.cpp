@@ -130,10 +130,11 @@ bool check_atom_type(const Molecule &molecule, const Atom &atom, const std::stri
     if (cls == "plain") {
         current_type = "*";
     } else if (cls == "hbo") {
+        auto actual_order = molecule.get_max_bond_orders()[atom.index()];
         if (permissive) {
-            current_type = std::to_string(molecule.get_max_bond_orders()[atom.index()] - 1);
+            current_type = actual_order == 0 ? std::string("1") : std::to_string(actual_order - 1);
         } else {
-            current_type = std::to_string(molecule.get_max_bond_orders()[atom.index()]);
+            current_type = std::to_string(actual_order);
         }
     } else if (cls == "bonded") {
         current_type = molecule.get_bonded_elements()[atom.index()];
