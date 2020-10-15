@@ -84,7 +84,7 @@ void check_common_args() {
         exit(EXIT_PARAMETER_ERROR);
     }
 
-    if (config::mode == "parameters" or config::mode == "best-parameters") {
+    if (config::mode == "parameters" or config::mode == "best-parameters" or config::mode == "evaluation") {
         if (config::method_name.empty()) {
             fmt::print(stderr, "No method selected.\n");
             exit(EXIT_PARAMETER_ERROR);
@@ -98,18 +98,18 @@ void check_common_args() {
         }
     }
 
-    if (config::mode == "parameters") {
-        if (config::par_file.empty()) {
-            fmt::print(stderr, "File where to store parameters must be provided");
-            exit(EXIT_PARAMETER_ERROR);
-        }
-
+    if (config::mode == "parameters" or config::mode == "evaluation") {
         if (config::ref_chg_file.empty()) {
-            fmt::print(stderr, "File with reference charges must be provided");
+            fmt::print(stderr, "File with reference charges must be provided\n");
             exit(EXIT_PARAMETER_ERROR);
         }
     }
-
+    if (config::mode == "parameters") {
+        if (config::par_file.empty()) {
+            fmt::print(stderr, "File where to store parameters must be provided\n");
+            exit(EXIT_PARAMETER_ERROR);
+        }
+    }
 }
 
 

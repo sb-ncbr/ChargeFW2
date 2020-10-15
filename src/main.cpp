@@ -23,6 +23,7 @@
 #include "charges.h"
 #include "method.h"
 #include "candidates.h"
+#include "statistics.h"
 #include "config.h"
 #include "parameterization.h"
 #include "utility/strings.h"
@@ -63,7 +64,7 @@ int main(int argc, char **argv) {
     bool is_protein_structure = m.has_proteins();
 
     if (config::mode == "info") {
-        m.classify_atoms(AtomClassifier::HBO);
+        m.classify_atoms(AtomClassifier::BONDED);
         m.info();
 
     } else if (config::mode == "charges") {
@@ -118,7 +119,8 @@ int main(int argc, char **argv) {
         for (auto &mol: m.molecules()) {
             auto results = method->calculate_charges(mol);
             if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
-                fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n", mol.name());
+                fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n",
+                           mol.name());
                 continue;
             }
             charges.insert(mol.name(), results);
@@ -204,6 +206,49 @@ int main(int argc, char **argv) {
             }
             fmt::print("\n");
         }
+    } else if (config::mode == "evaluation") {
+        Charges reference_charges(config::ref_chg_file);
+        auto method = load_method(config::method_name);
+        setup_method_options(method, parsed);
+
+        m.fulfill_requirements(method->get_requirements());
+        auto p = std::unique_ptr<Parameters>();
+
+        auto charges = Charges();
+        charges.set_method_name(config::method_name);
+
+        if (method->has_parameters()) {
+            if (config::par_file.empty()) {
+                fmt::print(stderr, "No parameters specified \n");
+                exit(EXIT_PARAMETER_ERROR);
+            }
+            p = std::make_unique<Parameters>(config::par_file);
+            m.classify_set_from_parameters(*p, true, config::permissive_types);
+        }
+
+        method->set_parameters(p.get());
+
+        for (auto &mol: m.molecules()) {
+            auto results = method->calculate_charges(mol);
+            if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
+                fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n",
+                           mol.name());
+                continue;
+            }
+            charges.insert(mol.name(), results);
+        }
+
+        if (not config::chg_out_dir.empty()) {
+            auto txt = TXT();
+            std::filesystem::path dir(config::chg_out_dir);
+            std::filesystem::path file(config::input_file);
+            auto txt_str = file.filename().string() + ".txt";
+            txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
+        }
+
+        auto rmsd = RMSD(reference_charges, charges);
+        fmt::print("{}\n", rmsd);
+
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
         exit(EXIT_PARAMETER_ERROR);
