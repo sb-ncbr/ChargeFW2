@@ -98,17 +98,11 @@ public:
 
     void print() const;
 
-    void save_to_file(const std::string &filename) const;
-
     [[nodiscard]] const std::string &name() const { return name_; }
 
     [[nodiscard]] const std::string &method_name() const { return method_name_; }
 
     [[nodiscard]] const std::string &source() const { return source_; }
-
-    [[nodiscard]] std::vector<double> get_vector() const;
-
-    void set_from_vector(const std::vector<double> &parameters);
 
     [[nodiscard]] const CommonParameters *common() const { return common_.get(); }
 

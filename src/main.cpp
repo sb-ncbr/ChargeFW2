@@ -25,7 +25,6 @@
 #include "candidates.h"
 #include "statistics.h"
 #include "config.h"
-#include "parameterization.h"
 #include "utility/strings.h"
 
 
@@ -185,18 +184,6 @@ int main(int argc, char **argv) {
         } else {
             fmt::print("Best parameters are: {}\n", best);
         }
-    } else if (config::mode == "parameters") {
-        m.classify_atoms(AtomClassifier::PLAIN);
-
-        auto method = load_method(config::method_name);
-
-        setup_method_options(method, parsed);
-
-        Charges reference_charges(config::ref_chg_file);
-
-        auto p = Parameterization(m, method, reference_charges, config::chg_out_dir, config::par_file);
-        p.parametrize();
-
     } else if (config::mode == "suitable-methods") {
         auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
         for (const auto &[method, parameters]: methods) {

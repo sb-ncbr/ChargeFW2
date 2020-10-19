@@ -61,6 +61,8 @@ class MoleculeSet {
                                             bool permissive_types);
 
 public:
+    explicit MoleculeSet() = default;
+
     explicit MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules);
 
     void info() const;

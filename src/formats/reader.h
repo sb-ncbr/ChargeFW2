@@ -14,3 +14,6 @@ public:
 
     virtual ~Reader();
 };
+
+
+MoleculeSet load_molecule_set(const std::string &filename);

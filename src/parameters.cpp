@@ -78,44 +78,6 @@ Parameters::Parameters(const std::string &filename) {
 }
 
 
-void Parameters::save_to_file(const std::string &filename) const {
-    using json = nlohmann::json;
-
-    json j;
-    j["metadata"]["name"] = name_;
-    j["metadata"]["method"] = method_name_;
-    j["metadata"]["publication"] = nullptr;
-
-    if (common_) {
-        j["common"]["names"] = common_->names_;
-        j["common"]["values"] = common_->parameters_;
-    }
-
-    if (atoms_) {
-        j["atom"]["names"] = atoms_->names_;
-        for (size_t i = 0; i < atoms_->keys_.size(); i++) {
-            auto obj = json::object();
-            obj["key"] = atoms_->keys_[i];
-            obj["value"] = atoms_->parameters_[i];
-            j["atom"]["data"].push_back(obj);
-        }
-    }
-
-    if (bonds_) {
-        j["bond"]["names"] = bonds_->names_;
-        for (size_t i = 0; i < bonds_->keys_.size(); i++) {
-            auto obj = json::object();
-            obj["key"] = bonds_->keys_[i];
-            obj["value"] = bonds_->parameters_[i];
-            j["atom"]["data"].push_back(obj);
-        }
-    }
-
-    std::ofstream f(filename);
-    f << j.dump(4) << std::endl;
-    f.close();
-}
-
 void Parameters::print() const {
     fmt::print("Parameters: {}\n", name_);
     if (common_) {
@@ -158,55 +120,6 @@ std::function<double(const Atom &)> AtomParameters::parameter(size_t idx) const 
 std::function<double(const Bond &)> BondParameters::parameter(size_t idx) const noexcept {
 
     return [this, idx](const Bond &bond) noexcept { return parameters_[bond.type()][idx]; };
-}
-
-
-std::vector<double> Parameters::get_vector() const {
-    std::vector<double> parameters;
-    if (common_) {
-        for (const auto &v: common_->parameters_) {
-            parameters.push_back(v);
-        }
-    }
-    if (atoms_) {
-        for (const auto &key: atoms_->parameters_) {
-            for (const auto &v: key) {
-                parameters.push_back(v);
-            }
-        }
-    }
-    if (bonds_) {
-        for (const auto &key: bonds_->parameters_) {
-            for (const auto &v: key) {
-                parameters.push_back(v);
-            }
-        }
-    }
-    return parameters;
-}
-
-
-void Parameters::set_from_vector(const std::vector<double> &parameters) {
-    size_t idx = 0;
-    if (common_) {
-        for (auto &v: common_->parameters_) {
-            v = parameters[idx++];
-        }
-    }
-    if (atoms_) {
-        for (auto &key: atoms_->parameters_) {
-            for (auto &v: key) {
-                v = parameters[idx++];
-            }
-        }
-    }
-    if (bonds_) {
-        for (auto &key: bonds_->parameters_) {
-            for (auto &v: key) {
-                v = parameters[idx++];
-            }
-        }
-    }
 }
 
 
