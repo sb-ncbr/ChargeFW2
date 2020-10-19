@@ -13,8 +13,6 @@
 
 CHARGEFW2_METHOD(EQeqC)
 
-using namespace std::placeholders;
-
 
 Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
@@ -67,7 +65,11 @@ Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double 
 std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();
 
-    Eigen::VectorXd q = solve_EE(molecule, std::bind(&EQeqC::EE_system, this, _1, _2));
+    auto f = [this](const std::vector<const Atom *> &atoms, double total_charge) -> Eigen::VectorXd {
+        return EE_system(atoms, total_charge);
+    };
+
+    Eigen::VectorXd q = solve_EE(molecule, f);
 
     for (size_t i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];

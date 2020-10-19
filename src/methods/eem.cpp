@@ -12,8 +12,6 @@
 
 CHARGEFW2_METHOD(EEM)
 
-using namespace std::placeholders;
-
 
 Eigen::VectorXd EEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
@@ -43,6 +41,10 @@ Eigen::VectorXd EEM::EE_system(const std::vector<const Atom *> &atoms, double to
 
 
 std::vector<double> EEM::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule, std::bind(&EEM::EE_system, this, _1, _2));
+    auto f = [this](const std::vector<const Atom *> &atoms, double total_charge) -> Eigen::VectorXd {
+        return EE_system(atoms, total_charge);
+    };
+
+    Eigen::VectorXd q = solve_EE(molecule, f);
     return std::vector<double>(q.data(), q.data() + q.size());
 }

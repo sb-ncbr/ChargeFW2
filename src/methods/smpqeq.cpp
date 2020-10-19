@@ -13,8 +13,6 @@
 
 CHARGEFW2_METHOD(SMP_QEq)
 
-using namespace std::placeholders;
-
 
 Eigen::VectorXd SMP_QEq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
@@ -54,6 +52,10 @@ Eigen::VectorXd SMP_QEq::EE_system(const std::vector<const Atom *> &atoms, doubl
 
 
 std::vector<double> SMP_QEq::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule, std::bind(&SMP_QEq::EE_system, this, _1, _2));
+    auto f = [this](const std::vector<const Atom *> &atoms, double total_charge) -> Eigen::VectorXd {
+        return EE_system(atoms, total_charge);
+    };
+
+    Eigen::VectorXd q = solve_EE(molecule, f);
     return std::vector<double>(q.data(), q.data() + q.size());
 }

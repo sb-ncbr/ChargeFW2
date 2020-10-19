@@ -14,8 +14,6 @@
 
 CHARGEFW2_METHOD(QEq)
 
-using namespace std::placeholders;
-
 
 double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::string &type) const {
     auto Ji = parameters_->atom()->parameter(atom::hardness)(atom_i);
@@ -71,6 +69,10 @@ Eigen::VectorXd QEq::EE_system(const std::vector<const Atom *> &atoms, double to
 
 
 std::vector<double> QEq::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule, std::bind(&QEq::EE_system, this, _1, _2));
+    auto f = [this](const std::vector<const Atom *> &atoms, double total_charge) -> Eigen::VectorXd {
+        return EE_system(atoms, total_charge);
+    };
+
+    Eigen::VectorXd q = solve_EE(molecule, f);
     return std::vector<double>(q.data(), q.data() + q.size());
 }
