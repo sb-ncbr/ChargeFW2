@@ -2,6 +2,7 @@ find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
 find_package(fmt 5.3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(nanoflann 1.3 REQUIRED)
+find_package(pybind11)
 
 include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
@@ -29,8 +30,7 @@ add_executable(chargefw2 ${SOURCES})
 
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs
-                      Boost::program_options dl stdc++fs  fmt::fmt)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl stdc++fs fmt::fmt)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 
@@ -45,3 +45,7 @@ set_target_properties(libchargefw2 PROPERTIES OUTPUT_NAME chargefw2)
 install(TARGETS libchargefw2 ARCHIVE DESTINATION lib)
 install(FILES structures/atom.h structures/bond.h structures/molecule.h DESTINATION include/structures)
 install(FILES element.h method.h parameters.h geometry.h periodic_table.h DESTINATION include)
+
+pybind11_add_module(chargefw2_python python.cpp ${SOURCES})
+target_link_libraries(chargefw2_python PRIVATE libchargefw2 formats ${COMMON_LIBS} utility Boost::program_options)
+install(TARGETS chargefw2_python DESTINATION lib)
