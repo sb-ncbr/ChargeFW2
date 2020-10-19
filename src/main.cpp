@@ -12,11 +12,8 @@
 
 #include "chargefw2.h"
 #include "formats/reader.h"
-#include "formats/sdf.h"
 #include "formats/mol2.h"
-#include "formats/pdb.h"
 #include "formats/pqr.h"
-#include "formats/mmcif.h"
 #include "formats/txt.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
@@ -39,22 +36,8 @@ int main(int argc, char **argv) {
 
     auto ext = std::filesystem::path(config::input_file).extension().string();
 
-    std::unique_ptr<Reader> reader;
-    ext = to_lowercase(ext);
-    if (ext == ".sdf") {
-        reader = std::make_unique<SDF>();
-    } else if (ext == ".mol2") {
-        reader = std::make_unique<Mol2>();
-    } else if (ext == ".pdb" or ext == ".ent") {
-        reader = std::make_unique<PDB>();
-    } else if (ext == ".cif") {
-        reader = std::make_unique<mmCIF>();
-    } else {
-        fmt::print(stderr, "Filetype {} not supported\n", ext);
-        exit(EXIT_FILE_ERROR);
-    }
+    MoleculeSet m = load_molecule_set(config::input_file);
 
-    MoleculeSet m = reader->read_file(config::input_file);
     if (m.molecules().empty()) {
         fmt::print(stderr, "No molecules were loaded from the input file\n");
         exit(EXIT_FILE_ERROR);
