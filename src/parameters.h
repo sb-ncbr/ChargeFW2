@@ -94,8 +94,6 @@ class Parameters {
 public:
     explicit Parameters(const std::string &filename);
 
-    explicit Parameters(const MoleculeSet &ms, const Method *method);
-
     void print() const;
 
     [[nodiscard]] const std::string &name() const { return name_; }

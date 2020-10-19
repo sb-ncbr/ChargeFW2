@@ -122,29 +122,3 @@ std::function<double(const Bond &)> BondParameters::parameter(size_t idx) const 
     return [this, idx](const Bond &bond) noexcept { return parameters_[bond.type()][idx]; };
 }
 
-
-Parameters::Parameters(const MoleculeSet &ms, const Method *method) {
-
-    method_name_ = method->name();
-    name_ = "New parameters";
-
-    auto common_names = method->common_parameters();
-    if (!common_names.empty()) {
-        std::vector<double> common_values(common_names.size(), 0.0);
-        common_ = std::make_unique<CommonParameters>(common_names, common_values);
-    }
-
-    auto atom_names = method->atom_parameters();
-    if (!atom_names.empty()) {
-        auto at = ms.atom_types();
-        std::vector<std::vector<double>> atom_values(at.size(), std::vector<double>(atom_names.size()));
-        atoms_ = std::make_unique<AtomParameters>(atom_names, atom_values, at);
-    }
-
-    auto bond_names = method->bond_parameters();
-    if (!bond_names.empty()) {
-        auto bt = ms.bond_types();
-        std::vector<std::vector<double>> bond_values(bt.size(), std::vector<double>(bond_names.size()));
-        bonds_ = std::make_unique<BondParameters>(bond_names, bond_values, bt);
-    }
-}
