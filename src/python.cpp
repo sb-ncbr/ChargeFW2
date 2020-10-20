@@ -18,7 +18,6 @@ struct Data {
     Charges reference_charges;
     std::unique_ptr<Parameters> parameters;
 
-
     Data(const std::string &input_file, const std::string &ref_chg_file, const std::string &parameter_file);
 };
 
@@ -34,8 +33,9 @@ Data::Data(const std::string &input_file, const std::string &ref_chg_file, const
         throw std::runtime_error("No molecules were loaded from the input file");
     }
 
+    /* Require all features since we can't know at this stage what will be needed later */
     ms.fulfill_requirements(
-            {RequiredFeatures::BOND_DISTANCES, RequiredFeatures::DISTANCE_TREE, RequiredFeatures::BOND_INFO});
+            {RequiredFeatures::DISTANCE_TREE, RequiredFeatures::BOND_DISTANCES});
 
     if (not parameter_file.empty()) {
         parameters = std::make_unique<Parameters>(parameter_file);
@@ -62,6 +62,11 @@ double evaluate(const Data &data, const std::string &method_name) {
         method->set_parameters(data.parameters.get());
     }
 
+    /* Use only default values */
+    for (const auto &[opt, info]: method->get_options()) {
+        method->set_option_value(opt, info.default_value);
+    }
+
     Charges charges;
     for (auto &mol: data.ms.molecules()) {
         auto results = method->calculate_charges(mol);
@@ -81,6 +86,5 @@ PYBIND11_MODULE(chargefw2_python, m) {
     m.doc() = "Python binding to ChargeFW2";
     py::class_<Data>(m, "Data")
             .def(py::init<const std::string &, const std::string &, const std::string &>());
-
     m.def("evaluate", &evaluate, "data"_a, "method"_a, "Evaluate method against reference");
 }
