@@ -19,6 +19,10 @@ void Charges::insert(const std::string &name, std::vector<double> charges) {
 Charges::Charges(const std::string &filename) {
     std::ifstream f(filename);
 
+    if (not f.is_open()) {
+        throw std::runtime_error("Cannot open file with charges");
+    }
+
     std::string line;
     while (std::getline(f, line)) {
         std::string name = line;
