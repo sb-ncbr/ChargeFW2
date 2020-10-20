@@ -215,8 +215,14 @@ int main(int argc, char **argv) {
             auto txt_str = file.filename().string() + ".txt";
             txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
         }
+        double rmsd;
+        try {
+            rmsd = RMSD(reference_charges, charges);
+        } catch (std::runtime_error &e) {
+            fmt::print(stderr, e.what());
+            exit(EXIT_INTERNAL_ERROR);
+        }
 
-        auto rmsd = RMSD(reference_charges, charges);
         fmt::print("{}\n", rmsd);
 
     } else {
