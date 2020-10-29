@@ -8,3 +8,5 @@
 
 
 double RMSD(const Charges &charges1, const Charges &charges2);
+
+double Pearson2(const Charges &charges1, const Charges &charges2);

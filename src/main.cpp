@@ -216,14 +216,17 @@ int main(int argc, char **argv) {
             txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
         }
         double rmsd;
+        double R2;
         try {
             rmsd = RMSD(reference_charges, charges);
+            R2 = Pearson2(reference_charges, charges);
         } catch (std::runtime_error &e) {
             fmt::print(stderr, e.what());
             exit(EXIT_INTERNAL_ERROR);
         }
 
-        fmt::print("{}\n", rmsd);
+        fmt::print("RMSD = {:.3f}\n", rmsd);
+        fmt::print("R2 = {:.3f}\n", R2);
 
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
