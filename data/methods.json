@@ -1,22 +1,6 @@
 {
   "methods": [
     {
-      "name": "SQE",
-      "internal_name": "sqe",
-      "full_name": "Split-charge equilibration",
-      "publication": "10.1063/1.2346671",
-      "type": "3D",
-      "has_parameters": true
-    },
-    {
-      "name": "SQE+qp",
-      "internal_name": "sqeqp",
-      "full_name": "Split-charge equilibration with parametrized initial charges",
-      "publication": null,
-      "type": "3D",
-      "has_parameters": true
-    },
-    {
       "name": "EEM",
       "internal_name": "eem",
       "full_name": "Electronegativity Equalization Method",
@@ -101,6 +85,22 @@
       "internal_name": "gdac",
       "full_name": "Geometry-Dependent Net Atomic Charges",
       "publication": "10.1021/jp0023213",
+      "type": "3D",
+      "has_parameters": true
+    },
+    {
+      "name": "SQE",
+      "internal_name": "sqe",
+      "full_name": "Split-charge equilibration",
+      "publication": "10.1063/1.2346671",
+      "type": "3D",
+      "has_parameters": true
+    },
+    {
+      "name": "SQE+qp",
+      "internal_name": "sqeqp",
+      "full_name": "Split-charge equilibration with parametrized initial charges",
+      "publication": null,
       "type": "3D",
       "has_parameters": true
     },
