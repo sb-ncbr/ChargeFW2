@@ -23,7 +23,7 @@ struct Data {
 };
 
 
-std::tuple<double, double> evaluate(const Data &data, const std::string &method);
+std::tuple<double, double, double, double> evaluate(const Data &data, const std::string &method);
 
 
 Data::Data(const std::string &input_file, const std::string &ref_chg_file, const std::string &parameter_file)
@@ -48,7 +48,7 @@ Data::Data(const std::string &input_file, const std::string &ref_chg_file, const
 }
 
 
-std::tuple<double, double> evaluate(const Data &data, const std::string &method_name) {
+std::tuple<double, double, double, double> evaluate(const Data &data, const std::string &method_name) {
 
     auto handle = dlopen(method_name.c_str(), RTLD_LAZY);
 
@@ -72,7 +72,7 @@ std::tuple<double, double> evaluate(const Data &data, const std::string &method_
     for (auto &mol: data.ms.molecules()) {
         auto results = method->calculate_charges(mol);
         if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
-            return std::make_tuple(-1, -1);
+            return std::make_tuple(-1, -1, -1, -1);
         }
         charges.insert(mol.name(), results);
     }
@@ -81,8 +81,10 @@ std::tuple<double, double> evaluate(const Data &data, const std::string &method_
 
     auto rmsd = RMSD(data.reference_charges, charges);
     auto r2 = Pearson2(data.reference_charges, charges);
+    auto dmax = D_max(data.reference_charges, charges);
+    auto davg = D_avg(data.reference_charges, charges);
 
-    return std::make_tuple(rmsd, r2);
+    return std::make_tuple(rmsd, r2, dmax, davg);
 }
 
 

@@ -69,3 +69,41 @@ double Pearson2(const Charges &charges1, const Charges &charges2) {
 
     return (num * num) / (den1 * den2);
 }
+
+
+double D_max(const Charges &charges1, const Charges &charges2) {
+    if (charges1.names() != charges2.names()) {
+        throw std::runtime_error("Trying to compare two different sets of charges");
+    }
+    double dmax = -1;
+    for (const auto &name: charges1.names()) {
+        std::vector<double> q1 = charges1[name];
+        std::vector<double> q2 = charges2[name];
+        for (size_t i = 0; i < q1.size(); i++) {
+            if (fabs(q1[i] - q2[i]) > dmax) {
+                dmax = fabs(q1[i] - q2[i]);
+            }
+        }
+    }
+    return dmax;
+}
+
+
+double D_avg(const Charges &charges1, const Charges &charges2) {
+    if (charges1.names() != charges2.names()) {
+        throw std::runtime_error("Trying to compare two different sets of charges");
+    }
+
+    double sum = 0;
+    size_t n  = 0;
+    for (const auto &name: charges1.names()) {
+        std::vector<double> q1 = charges1[name];
+        std::vector<double> q2 = charges2[name];
+        n += q1.size();
+        for (size_t i = 0; i < q1.size(); i++) {
+            sum += fabs(q1[i] - q2[i]);
+
+        }
+    }
+    return sum / n;
+}
