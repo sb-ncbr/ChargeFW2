@@ -40,7 +40,7 @@ install(TARGETS chargefw2 DESTINATION bin)
 add_library(libchargefw2 STATIC element.h element.cpp method.cpp method.h parameters.h parameters.cpp
         structures/molecule.h structures/molecule.cpp geometry.h geometry.cpp periodic_table.h periodic_table.cpp)
 
-set_target_properties(libchargefw2 PROPERTIES OUTPUT_NAME chargefw2)
+set_target_properties(libchargefw2 PROPERTIES OUTPUT_NAME chargefw2 INTERPROCEDURAL_OPTIMIZATION FALSE)
 
 install(TARGETS libchargefw2 ARCHIVE DESTINATION lib)
 install(FILES structures/atom.h structures/bond.h structures/molecule.h DESTINATION include/structures)
