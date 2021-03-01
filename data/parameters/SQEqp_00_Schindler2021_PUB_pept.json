@@ -1,7 +1,7 @@
 {
   "metadata": {
     "method": "sqeqp",
-    "name": "Schindler 2020 (PUB_pept)",
+    "name": "Schindler 2021 (PUB_pept)",
     "publication": null,
     "source": "protein"
   },
@@ -10,135 +10,135 @@
     "data": [
       {
         "key": ["C", "bonded", "CCC"],
-        "value": [2.6354, 1.8922, 0.0848, 0.009]
+        "value": [4.781, 2.0151, 0.065, 1.229]
       },
       {
         "key": ["C", "bonded", "CCCH"],
-        "value": [2.4799, 4.4851, -0.5679, -0.0959]
+        "value": [2.1044, 2.0696, -0.5567, -0.2005]
       },
       {
         "key": ["C", "bonded", "CCH"],
-        "value": [2.7682, 2.8247, 0.6657, -0.0109]
+        "value": [1.3963, 2.6641, 0.4903, -0.3861]
       },
       {
         "key": ["C", "bonded", "CCHH"],
-        "value": [2.4036, 1.0194, -0.7297, -0.245]
+        "value": [2.1751, 0.4106, 1.2566, -0.4302]
       },
       {
         "key": ["C", "bonded", "CCHN"],
-        "value": [2.7838, 0.6626, 1.2014, 0.2424]
+        "value": [2.4787, 1.0976, 1.3008, 0.0852]
       },
       {
         "key": ["C", "bonded", "CCHO"],
-        "value": [3.1844, 2.7093, -0.196, 0.4427]
+        "value": [-0.0208, 2.9207, -0.8462, -0.6251]
       },
       {
         "key": ["C", "bonded", "CCN"],
-        "value": [2.2912, 1.7949, -0.5138, 0.0506]
+        "value": [3.3777, 1.5865, -0.0351, 0.7706]
       },
       {
         "key": ["C", "bonded", "CCO"],
-        "value": [3.5096, 2.504, -0.0149, 0.6614]
+        "value": [0.4229, 2.0589, 0.0005, -0.6097]
       },
       {
         "key": ["C", "bonded", "CHHH"],
-        "value": [2.2914, 1.0938, -0.9528, -0.4405]
+        "value": [2.029, 0.465, 1.2904, -0.7198]
       },
       {
         "key": ["C", "bonded", "CHHN"],
-        "value": [2.5745, 0.6187, 1.1887, -0.0007]
+        "value": [2.2709, 0.2742, 1.262, -0.1988]
       },
       {
         "key": ["C", "bonded", "CHHO"],
-        "value": [2.751, 1.6272, 0.3751, 0.2458]
+        "value": [0.7215, 1.5549, 0.0007, -0.9426]
       },
       {
         "key": ["C", "bonded", "CHHS"],
-        "value": [2.3381, 1.1993, -1.0047, -0.4055]
+        "value": [2.0548, 0.4452, 1.4026, -0.7912]
       },
       {
         "key": ["C", "bonded", "CHN"],
-        "value": [2.6849, 1.3276, 0.0966, 0.1929]
+        "value": [-0.8427, 1.628, -0.2962, -1.9208]
       },
       {
         "key": ["C", "bonded", "CNO"],
-        "value": [2.3897, 0.6883, -1.3676, 0.5071]
+        "value": [2.6846, 1.571, 0.5771, 0.8167]
       },
       {
         "key": ["C", "bonded", "COO"],
-        "value": [1.7398, 3.6462, 1.7268, 0.7167]
+        "value": [0.7187, 7.9257, 2.12, 0.7094]
       },
       {
         "key": ["C", "bonded", "HHHS"],
-        "value": [3.2431, 4.2896, 2.1502, -0.4941]
+        "value": [-0.6364, 4.0089, 1.8131, -1.3758]
       },
       {
         "key": ["C", "bonded", "HNN"],
-        "value": [2.7154, -0.0868, -0.7066, 0.4023]
+        "value": [2.2521, 0.426, 0.2317, -0.422]
       },
       {
         "key": ["C", "bonded", "NNN"],
-        "value": [-0.997, 3.947, 2.4625, 0.0343]
+        "value": [2.7538, 2.3901, 1.4266, 0.9095]
       },
       {
         "key": ["H", "bonded", "C"],
-        "value": [2.6599, -0.145, 0.892, 0.3721]
+        "value": [2.6847, 1.0434, 1.0371, 0.4252]
       },
       {
         "key": ["H", "bonded", "N"],
-        "value": [3.1063, 3.209, 0.0411, 0.6529]
+        "value": [2.5288, 2.3631, 0.0002, 0.5609]
       },
       {
         "key": ["H", "bonded", "O"],
-        "value": [0.6819, 3.88, 0.9458, 0.3448]
+        "value": [2.8604, -0.1263, 0.8933, 0.1085]
       },
       {
         "key": ["H", "bonded", "S"],
-        "value": [3.7659, 4.2803, 3.4275, 0.4629]
+        "value": [3.6758, -0.253, 0.0337, 0.5463]
       },
       {
         "key": ["N", "bonded", "CC"],
-        "value": [1.9469, 1.1815, 1.2463, -0.5105]
+        "value": [5.7787, 1.3867, 0.9983, 1.6708]
       },
       {
         "key": ["N", "bonded", "CCC"],
-        "value": [3.8452, 6.3488, 2.7779, -0.0512]
+        "value": [2.1788, 3.4061, 2.5338, -0.3346]
       },
       {
         "key": ["N", "bonded", "CCH"],
-        "value": [2.6487, 1.7939, 1.3605, -0.2503]
+        "value": [1.9967, 0.9689, 1.5008, -0.4992]
       },
       {
         "key": ["N", "bonded", "CCHH"],
-        "value": [2.2768, 5.6271, 1.7972, -0.471]
+        "value": [2.398, 1.7233, 2.2212, -0.4188]
       },
       {
         "key": ["N", "bonded", "CHH"],
-        "value": [3.9102, 5.0244, 2.9571, -0.4305]
+        "value": [1.9393, 2.6448, 1.3523, -0.6853]
       },
       {
         "key": ["N", "bonded", "CHHH"],
-        "value": [3.2343, 8.7085, 5.9221, -0.5916]
+        "value": [4.4071, 11.0963, 4.7214, -0.4859]
       },
       {
         "key": ["O", "bonded", "C"],
-        "value": [1.9178, -1.0747, 1.2411, -0.5748]
+        "value": [1.6121, 0.7818, -0.8406, -0.6166]
       },
       {
         "key": ["O", "bonded", "CH"],
-        "value": [1.5256, 0.8631, 1.265, -0.5116]
+        "value": [5.0683, 0.7845, 0.9497, 0.6253]
       },
       {
         "key": ["S", "bonded", "CC"],
-        "value": [2.75, 2.5358, 5.7491, 0.3695]
+        "value": [3.0978, -0.2351, 2.0983, 1.1216]
       },
       {
         "key": ["S", "bonded", "CH"],
-        "value": [2.3673, 2.4392, 3.2403, 0.0072]
+        "value": [2.7556, 0.5264, 1.7378, 0.0459]
       },
       {
         "key": ["S", "bonded", "CS"],
-        "value": [2.6715, 0.6762, 0.0069, 0.3085]
+        "value": [3.0787, 2.1212, 0.8123, 0.4625]
       }
     ]
   },
@@ -147,331 +147,331 @@
     "data": [
       {
         "key": ["C", "bonded", "CCC", "C", "bonded", "CCC", "bo", "1"],
-        "value": [0.5134]
+        "value": [-0.0515]
       },
       {
         "key": ["C", "bonded", "CCC", "C", "bonded", "CCH", "bo", "1"],
-        "value": [0.0378]
+        "value": [0.1724]
       },
       {
         "key": ["C", "bonded", "CCC", "C", "bonded", "CCH", "bo", "2"],
-        "value": [-0.0346]
+        "value": [0.2116]
       },
       {
         "key": ["C", "bonded", "CCC", "C", "bonded", "CCHH", "bo", "1"],
-        "value": [3.9623]
+        "value": [3.89]
       },
       {
         "key": ["C", "bonded", "CCC", "C", "bonded", "CCN", "bo", "1"],
-        "value": [2.8996]
+        "value": [4.2271]
       },
       {
         "key": ["C", "bonded", "CCC", "C", "bonded", "CCN", "bo", "2"],
-        "value": [2.063]
+        "value": [1.7833]
       },
       {
         "key": ["C", "bonded", "CCC", "C", "bonded", "CHN", "bo", "2"],
-        "value": [-0.1156]
+        "value": [-0.0829]
       },
       {
         "key": ["C", "bonded", "CCCH", "C", "bonded", "CCHH", "bo", "1"],
-        "value": [3.7404]
+        "value": [3.412]
       },
       {
         "key": ["C", "bonded", "CCCH", "C", "bonded", "CCHN", "bo", "1"],
-        "value": [3.6938]
+        "value": [3.5161]
       },
       {
         "key": ["C", "bonded", "CCCH", "C", "bonded", "CHHH", "bo", "1"],
-        "value": [2.7683]
+        "value": [4.0979]
       },
       {
         "key": ["C", "bonded", "CCCH", "H", "bonded", "C", "bo", "1"],
-        "value": [2.3679]
+        "value": [1.9041]
       },
       {
         "key": ["C", "bonded", "CCH", "C", "bonded", "CCH", "bo", "1"],
-        "value": [0.0552]
+        "value": [0.1968]
       },
       {
         "key": ["C", "bonded", "CCH", "C", "bonded", "CCH", "bo", "2"],
-        "value": [-0.0537]
+        "value": [0.1208]
       },
       {
         "key": ["C", "bonded", "CCH", "C", "bonded", "CCN", "bo", "1"],
-        "value": [4.1041]
+        "value": [0.4344]
       },
       {
         "key": ["C", "bonded", "CCH", "C", "bonded", "CCN", "bo", "2"],
-        "value": [1.3819]
+        "value": [0.4151]
       },
       {
         "key": ["C", "bonded", "CCH", "C", "bonded", "CCO", "bo", "1"],
-        "value": [0.0592]
+        "value": [-0.0832]
       },
       {
         "key": ["C", "bonded", "CCH", "C", "bonded", "CCO", "bo", "2"],
-        "value": [-0.0588]
+        "value": [-0.1985]
       },
       {
         "key": ["C", "bonded", "CCH", "H", "bonded", "C", "bo", "1"],
-        "value": [5.6202]
+        "value": [5.0761]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "CCHH", "bo", "1"],
-        "value": [4.4762]
+        "value": [3.2218]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "CCHN", "bo", "1"],
-        "value": [3.6452]
+        "value": [3.3879]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "CCN", "bo", "1"],
-        "value": [5.5868]
+        "value": [3.4577]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "CHHH", "bo", "1"],
-        "value": [2.86]
+        "value": [4.1127]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "CHHN", "bo", "1"],
-        "value": [3.1563]
+        "value": [3.6453]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "CHHS", "bo", "1"],
-        "value": [5.0623]
+        "value": [4.8351]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "CNO", "bo", "1"],
-        "value": [3.4855]
+        "value": [3.513]
       },
       {
         "key": ["C", "bonded", "CCHH", "C", "bonded", "COO", "bo", "1"],
-        "value": [2.3982]
+        "value": [3.6352]
       },
       {
         "key": ["C", "bonded", "CCHH", "H", "bonded", "C", "bo", "1"],
-        "value": [3.1865]
+        "value": [1.6857]
       },
       {
         "key": ["C", "bonded", "CCHN", "C", "bonded", "CCHO", "bo", "1"],
-        "value": [4.1421]
+        "value": [4.8633]
       },
       {
         "key": ["C", "bonded", "CCHN", "C", "bonded", "CHHH", "bo", "1"],
-        "value": [4.0332]
+        "value": [3.6837]
       },
       {
         "key": ["C", "bonded", "CCHN", "C", "bonded", "CHHO", "bo", "1"],
-        "value": [3.4038]
+        "value": [2.778]
       },
       {
         "key": ["C", "bonded", "CCHN", "C", "bonded", "CHHS", "bo", "1"],
-        "value": [3.1148]
+        "value": [2.315]
       },
       {
         "key": ["C", "bonded", "CCHN", "C", "bonded", "CNO", "bo", "1"],
-        "value": [3.562]
+        "value": [4.8362]
       },
       {
         "key": ["C", "bonded", "CCHN", "C", "bonded", "COO", "bo", "1"],
-        "value": [3.202]
+        "value": [3.6401]
       },
       {
         "key": ["C", "bonded", "CCHN", "H", "bonded", "C", "bo", "1"],
-        "value": [3.3513]
+        "value": [3.7957]
       },
       {
         "key": ["C", "bonded", "CCHN", "N", "bonded", "CCC", "bo", "1"],
-        "value": [3.3619]
+        "value": [4.9005]
       },
       {
         "key": ["C", "bonded", "CCHN", "N", "bonded", "CCH", "bo", "1"],
-        "value": [4.9406]
+        "value": [5.9089]
       },
       {
         "key": ["C", "bonded", "CCHN", "N", "bonded", "CCHH", "bo", "1"],
-        "value": [2.8819]
+        "value": [2.1682]
       },
       {
         "key": ["C", "bonded", "CCHN", "N", "bonded", "CHHH", "bo", "1"],
-        "value": [3.1055]
+        "value": [4.7226]
       },
       {
         "key": ["C", "bonded", "CCHO", "C", "bonded", "CHHH", "bo", "1"],
-        "value": [3.0578]
+        "value": [2.4606]
       },
       {
         "key": ["C", "bonded", "CCHO", "H", "bonded", "C", "bo", "1"],
-        "value": [2.5503]
+        "value": [1.9044]
       },
       {
         "key": ["C", "bonded", "CCHO", "O", "bonded", "CH", "bo", "1"],
-        "value": [3.6245]
+        "value": [2.7623]
       },
       {
         "key": ["C", "bonded", "CCN", "C", "bonded", "CHN", "bo", "2"],
-        "value": [0.1568]
+        "value": [0.1746]
       },
       {
         "key": ["C", "bonded", "CCN", "N", "bonded", "CCH", "bo", "1"],
-        "value": [0.7802]
+        "value": [1.5026]
       },
       {
         "key": ["C", "bonded", "CCO", "O", "bonded", "CH", "bo", "1"],
-        "value": [2.9491]
+        "value": [3.5152]
       },
       {
         "key": ["C", "bonded", "CHHH", "H", "bonded", "C", "bo", "1"],
-        "value": [2.8503]
+        "value": [1.6269]
       },
       {
         "key": ["C", "bonded", "CHHN", "C", "bonded", "CNO", "bo", "1"],
-        "value": [3.2729]
+        "value": [4.4803]
       },
       {
         "key": ["C", "bonded", "CHHN", "C", "bonded", "COO", "bo", "1"],
-        "value": [3.4079]
+        "value": [4.4914]
       },
       {
         "key": ["C", "bonded", "CHHN", "H", "bonded", "C", "bo", "1"],
-        "value": [3.1691]
+        "value": [1.7279]
       },
       {
         "key": ["C", "bonded", "CHHN", "N", "bonded", "CCC", "bo", "1"],
-        "value": [4.8027]
+        "value": [2.1568]
       },
       {
         "key": ["C", "bonded", "CHHN", "N", "bonded", "CCH", "bo", "1"],
-        "value": [4.7135]
+        "value": [3.6222]
       },
       {
         "key": ["C", "bonded", "CHHN", "N", "bonded", "CCHH", "bo", "1"],
-        "value": [3.5184]
+        "value": [3.4935]
       },
       {
         "key": ["C", "bonded", "CHHN", "N", "bonded", "CHHH", "bo", "1"],
-        "value": [3.3087]
+        "value": [4.4384]
       },
       {
         "key": ["C", "bonded", "CHHO", "H", "bonded", "C", "bo", "1"],
-        "value": [2.7783]
+        "value": [2.5069]
       },
       {
         "key": ["C", "bonded", "CHHO", "O", "bonded", "CH", "bo", "1"],
-        "value": [3.6329]
+        "value": [2.8915]
       },
       {
         "key": ["C", "bonded", "CHHS", "H", "bonded", "C", "bo", "1"],
-        "value": [2.6238]
+        "value": [1.5231]
       },
       {
         "key": ["C", "bonded", "CHHS", "S", "bonded", "CC", "bo", "1"],
-        "value": [6.6214]
+        "value": [3.2373]
       },
       {
         "key": ["C", "bonded", "CHHS", "S", "bonded", "CH", "bo", "1"],
-        "value": [0.1061]
+        "value": [1.2578]
       },
       {
         "key": ["C", "bonded", "CHHS", "S", "bonded", "CS", "bo", "1"],
-        "value": [4.2468]
+        "value": [0.6318]
       },
       {
         "key": ["C", "bonded", "CHN", "H", "bonded", "C", "bo", "1"],
-        "value": [2.2228]
+        "value": [1.6807]
       },
       {
         "key": ["C", "bonded", "CHN", "N", "bonded", "CC", "bo", "1"],
-        "value": [1.7425]
+        "value": [0.6169]
       },
       {
         "key": ["C", "bonded", "CHN", "N", "bonded", "CCH", "bo", "1"],
-        "value": [4.0554]
+        "value": [3.3796]
       },
       {
         "key": ["C", "bonded", "CNO", "N", "bonded", "CCC", "bo", "1"],
-        "value": [0.3806]
+        "value": [2.6593]
       },
       {
         "key": ["C", "bonded", "CNO", "N", "bonded", "CCH", "bo", "1"],
-        "value": [0.5694]
+        "value": [0.8421]
       },
       {
         "key": ["C", "bonded", "CNO", "N", "bonded", "CHH", "bo", "1"],
-        "value": [0.6909]
+        "value": [0.9358]
       },
       {
         "key": ["C", "bonded", "CNO", "O", "bonded", "C", "bo", "2"],
-        "value": [2.8193]
+        "value": [1.1705]
       },
       {
         "key": ["C", "bonded", "COO", "O", "bonded", "C", "bo", "1"],
-        "value": [3.4172]
+        "value": [1.4228]
       },
       {
         "key": ["C", "bonded", "COO", "O", "bonded", "C", "bo", "2"],
-        "value": [1.9369]
+        "value": [-0.0745]
       },
       {
         "key": ["C", "bonded", "HHHS", "H", "bonded", "C", "bo", "1"],
-        "value": [3.8554]
+        "value": [3.7719]
       },
       {
         "key": ["C", "bonded", "HHHS", "S", "bonded", "CC", "bo", "1"],
-        "value": [-0.9902]
+        "value": [1.6123]
       },
       {
         "key": ["C", "bonded", "HNN", "H", "bonded", "C", "bo", "1"],
-        "value": [5.2168]
+        "value": [1.72]
       },
       {
         "key": ["C", "bonded", "HNN", "N", "bonded", "CC", "bo", "2"],
-        "value": [3.3979]
+        "value": [1.1377]
       },
       {
         "key": ["C", "bonded", "HNN", "N", "bonded", "CCH", "bo", "1"],
-        "value": [3.1161]
+        "value": [2.5075]
       },
       {
         "key": ["C", "bonded", "NNN", "N", "bonded", "CCH", "bo", "1"],
-        "value": [2.7204]
+        "value": [2.3584]
       },
       {
         "key": ["C", "bonded", "NNN", "N", "bonded", "CHH", "bo", "1"],
-        "value": [2.3517]
+        "value": [0.7785]
       },
       {
         "key": ["C", "bonded", "NNN", "N", "bonded", "CHH", "bo", "2"],
-        "value": [2.2845]
+        "value": [0.7924]
       },
       {
         "key": ["H", "bonded", "N", "N", "bonded", "CCH", "bo", "1"],
-        "value": [0.7509]
+        "value": [0.5593]
       },
       {
         "key": ["H", "bonded", "N", "N", "bonded", "CCHH", "bo", "1"],
-        "value": [3.7709]
+        "value": [0.2319]
       },
       {
         "key": ["H", "bonded", "N", "N", "bonded", "CHH", "bo", "1"],
-        "value": [2.1533]
+        "value": [2.3625]
       },
       {
         "key": ["H", "bonded", "N", "N", "bonded", "CHHH", "bo", "1"],
-        "value": [2.2714]
+        "value": [1.5039]
       },
       {
         "key": ["H", "bonded", "O", "O", "bonded", "CH", "bo", "1"],
-        "value": [0.6856]
+        "value": [3.9689]
       },
       {
         "key": ["H", "bonded", "S", "S", "bonded", "CH", "bo", "1"],
-        "value": [2.5332]
+        "value": [3.1267]
       },
       {
         "key": ["S", "bonded", "CS", "S", "bonded", "CS", "bo", "1"],
-        "value": [0.3158]
+        "value": [0.1426]
       }
     ]
   }

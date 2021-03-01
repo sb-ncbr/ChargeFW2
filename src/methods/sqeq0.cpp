@@ -6,22 +6,24 @@
 #include <cmath>
 #include <Eigen/LU>
 
-#include "sqe.h"
+#include "sqeq0.h"
 #include "../parameters.h"
 #include "../geometry.h"
 
-CHARGEFW2_METHOD(SQE)
+CHARGEFW2_METHOD(SQEq0)
 
 
-std::vector<double> SQE::calculate_charges(const Molecule &molecule) const {
+std::vector<double> SQEq0::calculate_charges(const Molecule &molecule) const {
 
     size_t n = molecule.atoms().size();
     size_t m = molecule.bonds().size();
 
+    Eigen::VectorXd q0 = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd hardness = Eigen::VectorXd::Zero(n);
 
     for (size_t i = 0; i < n; i++) {
         const auto &atom = molecule.atoms()[i];
+        q0(i) = atom.formal_charge();
         hardness(i) = parameters_->atom()->parameter(atom::hardness)(atom);
     }
 
@@ -54,6 +56,9 @@ std::vector<double> SQE::calculate_charges(const Molecule &molecule) const {
         }
     }
 
+    b = b - A * q0;
+    b = b + hardness.cwiseProduct(q0);
+
     Eigen::MatrixXd split_A = T * A * T.transpose();
     Eigen::VectorXd split_b = T * b;
 
@@ -63,7 +68,7 @@ std::vector<double> SQE::calculate_charges(const Molecule &molecule) const {
     }
 
     Eigen::VectorXd split_q = split_A.partialPivLu().solve(split_b);
-    Eigen::VectorXd q = T.transpose() * split_q;
+    Eigen::VectorXd q = T.transpose() * split_q + q0;
 
     return std::vector<double>(q.data(), q.data() + n);
 }
