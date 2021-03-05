@@ -21,7 +21,7 @@ After downloading and unpacking the sources, run the following in the ChargeFW2 
 ```shell script
 $ mkdir build
 $ cd build
-$ cmake .. -DCMAKE_INSTALL_PREFIX=<WHERE-TO-INSTALL>
+$ cmake .. -DCMAKE_INSTALL_PREFIX=<WHERE-TO-INSTALL> -DCMAKE_BUILD_TYPE=Release
 $ make
 $ make install
 ```
