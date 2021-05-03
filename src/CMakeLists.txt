@@ -30,7 +30,7 @@ add_executable(chargefw2 ${SOURCES})
 
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl stdc++fs fmt::fmt)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl Boost::filesystem fmt::fmt)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 
