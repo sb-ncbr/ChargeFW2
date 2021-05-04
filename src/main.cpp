@@ -14,6 +14,7 @@
 #include "formats/reader.h"
 #include "formats/mol2.h"
 #include "formats/pqr.h"
+#include "formats/cif.h"
 #include "formats/txt.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
 
     auto ext = std::filesystem::path(config::input_file).extension().string();
 
+    // Reads in file (cif) and generates a set of molecule object. 
     MoleculeSet m = load_molecule_set(config::input_file);
 
     if (m.molecules().empty()) {
@@ -118,6 +120,7 @@ int main(int argc, char **argv) {
             auto pqr = PQR();
             auto pqr_str = file.filename().string() + ".pqr";
             pqr.save_charges(m, charges, dir / std::filesystem::path(pqr_str));
+            CIF().save_charges(m, charges, config::input_file);
         } else {
             auto mol2 = Mol2();
             auto mol2_str = file.filename().string() + ".mol2";
