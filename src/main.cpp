@@ -120,7 +120,9 @@ int main(int argc, char **argv) {
             auto pqr = PQR();
             auto pqr_str = file.filename().string() + ".pqr";
             pqr.save_charges(m, charges, dir / std::filesystem::path(pqr_str));
-            CIF().save_charges(m, charges, config::input_file);
+
+            if (ext == ".cif")
+                CIF().save_charges(m, charges, config::input_file);
         } else {
             auto mol2 = Mol2();
             auto mol2_str = file.filename().string() + ".mol2";
