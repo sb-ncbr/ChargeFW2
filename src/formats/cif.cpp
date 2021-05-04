@@ -46,11 +46,9 @@ public:
          const std::string &residue,
          const std::string &atom)
         : _model(model), _chain(chain), _res_num(res_num), _residue(residue), _atom(atom)
-    {
-    }
+        {}
 
-    int find_row(gemmi::cif::Table &table, size_t start_idx = 0) const
-    {
+    int find_row(gemmi::cif::Table &table, size_t start_idx = 0) const {
         size_t idx = start_idx, total_rows = table.length();
 
         assert(idx < total_rows);
@@ -76,15 +74,13 @@ public:
         return -1;
     }
 
-    friend std::ostream &operator<<(std::ostream &os, const MCRA &mcra)
-    {
+    friend std::ostream &operator<<(std::ostream &os, const MCRA &mcra) {
         os << "Atom(" << mcra._model << " " << mcra._chain << " " << mcra._res_num << " [" << mcra._residue << "] " << mcra._atom << ")";
         return os;
     }
 
 private:
-    bool is_row(const gemmi::cif::Table::Row &row) const
-    {
+    bool is_row(const gemmi::cif::Table::Row &row) const {
         int model = std::stoul(row[11]);
         const std::string &chain = row[1];
         const std::string &residue = row[4];
@@ -108,7 +104,9 @@ private:
 };
 
 
-void CIF::write_cif_block(gemmi::cif::Table &table, std::vector<std::string> &p_charge, std::vector<std::string> &vdw_radii) {
+void CIF::write_cif_block(gemmi::cif::Table &table, 
+                          std::vector<std::string> &p_charge, 
+                          std::vector<std::string> &vdw_radii) {
 
     auto &loop = *table.get_loop();
 
@@ -167,7 +165,13 @@ void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
         for (size_t i = 0; i < molecule.atoms().size(); i++) {
             const auto &atom = molecule.atoms()[i];
 
-            MCRA mcra{model, atom.chain_id(), std::to_string(atom.residue_id()), atom.residue(), atom.name()};
+            MCRA mcra{
+                model, 
+                atom.chain_id(), 
+                std::to_string(atom.residue_id()), 
+                atom.residue(), 
+                atom.name()
+            };
 
             row_num = mcra.find_row(table, row_num);
 
