@@ -7,6 +7,7 @@
 #include <vector>
 #include <stdexcept>
 #include <fstream>
+#include <filesystem>
 
 #include <gemmi/cif.hpp>
 #include <gemmi/mmcif.hpp>
@@ -19,8 +20,10 @@
 #include "cif.h"
 #include "../structures/molecule_set.h"
 #include "../charges.h"
+#include "../config.h"
 
 
+namespace fs = std::filesystem;
 
 static const std::vector<std::string> atom_site_columns{
         "group_PDB",
@@ -104,7 +107,8 @@ private:
 };
 
 
-void CIF::write_cif_block(gemmi::cif::Table &table, 
+void CIF::write_cif_block(std::ostream &out,
+                          gemmi::cif::Table &table, 
                           std::vector<std::string> &p_charge, 
                           std::vector<std::string> &vdw_radii) {
 
@@ -135,11 +139,16 @@ void CIF::write_cif_block(gemmi::cif::Table &table,
 
     loop.set_all_values(newCols);
 
-    gemmi::cif::write_cif_block_to_stream(std::cout, table.bloc);
+    gemmi::cif::write_cif_block_to_stream(out, table.bloc);
 }
 
 
 void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
+
+    fs::path out_dir{config::chg_out_dir};
+    std::string out_filename = fs::path(filename).filename().replace_extension(".pqr.cif").string();
+    std::string out_file{(out_dir / out_filename).string()};
+    std::ofstream out_stream{out_file};
 
     auto doc = gemmi::cif::read_file(filename);
     auto& block = doc.sole_block();
@@ -184,7 +193,7 @@ void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
             vdw_radii[row_num] = std::to_string(atom.element().vdw_radius());
         }
 
-        write_cif_block(table, p_charge, vdw_radii);
+        write_cif_block(out_stream, table, p_charge, vdw_radii);
     }
     catch (std::out_of_range &) {
         /* Do nothing */
