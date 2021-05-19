@@ -10,6 +10,7 @@
 #include "../charges.h"
 #include "txt.h"
 #include "../utility/utility.h"
+#include "../utility/strings.h"
 
 
 void TXT::save_charges(const MoleculeSet &, const Charges &charges, const std::string &filename) {
@@ -20,7 +21,7 @@ void TXT::save_charges(const MoleculeSet &, const Charges &charges, const std::s
     }
 
     for (const auto &name: charges.names()) {
-        file << name << std::endl;
+        file << to_uppercase(name) << std::endl;
         file << charges[name] << std::endl;
     }
 

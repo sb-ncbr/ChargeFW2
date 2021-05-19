@@ -6,7 +6,6 @@
 
 #include <Eigen/Core>
 #include <vector>
-#include <boost/config.hpp>
 
 #include "../structures/molecule.h"
 #include "../method.h"
@@ -15,12 +14,8 @@
 class EQeq : public EEMethod {
     [[nodiscard]] Eigen::VectorXd EE_system(const std::vector<const Atom *> &atoms, double total_charge) const;
 
-    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 public:
     explicit EQeq() : EEMethod("EQeq", {}, {}, {}, {}) {}
 
-    virtual ~EQeq() = default;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
-
-extern "C" BOOST_SYMBOL_EXPORT EQeq method;
-EQeq method;

@@ -4,6 +4,9 @@
 
 #include "veem.h"
 
+CHARGEFW2_METHOD(VEEM)
+
+
 std::vector<double> VEEM::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();
     std::vector<double> q(n, 0);

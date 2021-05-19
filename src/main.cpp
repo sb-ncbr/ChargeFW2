@@ -1,5 +1,4 @@
 #include <fmt/format.h>
-#include <fmt/ostream.h>
 #include <nlohmann/json.hpp>
 #include <memory>
 #include <filesystem>
@@ -8,24 +7,25 @@
 #include <ctime>
 #include <chrono>
 #include <unistd.h>
+#include <tuple>
 #include <algorithm>
 
 #include "chargefw2.h"
 #include "formats/reader.h"
-#include "formats/sdf.h"
 #include "formats/mol2.h"
-#include "formats/pdb.h"
 #include "formats/pqr.h"
-#include "formats/mmcif.h"
 #include "formats/txt.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
 #include "charges.h"
 #include "method.h"
 #include "candidates.h"
+#include "statistics.h"
 #include "config.h"
-#include "parameterization.h"
-#include "utility/utility.h"
+#include "utility/strings.h"
+
+
+namespace fs = std::filesystem;
 
 
 int main(int argc, char **argv) {
@@ -34,33 +34,33 @@ int main(int argc, char **argv) {
 
     auto start = std::chrono::system_clock::now();
 
-    auto ext = std::filesystem::path(config::input_file).extension();
+    auto ext = std::filesystem::path(config::input_file).extension().string();
 
-    bool is_protein_structure = false;
-    std::unique_ptr<Reader> reader;
-    if (ext == ".sdf") {
-        reader = std::make_unique<SDF>();
-    } else if (ext == ".mol2") {
-        reader = std::make_unique<Mol2>();
-    } else if (ext == ".pdb" or ext == ".ent") {
-        reader = std::make_unique<PDB>();
-        is_protein_structure = true;
-    } else if (ext == ".cif") {
-        reader = std::make_unique<mmCIF>();
-        is_protein_structure = true;
-    } else {
-        fmt::print(stderr, "Filetype {} not supported\n", ext);
+    MoleculeSet m = load_molecule_set(config::input_file);
+
+    if (m.molecules().empty()) {
+        fmt::print(stderr, "No molecules were loaded from the input file\n");
         exit(EXIT_FILE_ERROR);
     }
 
-    MoleculeSet m = reader->read_file(config::input_file);
+    bool is_protein_structure = m.has_proteins();
 
     if (config::mode == "info") {
-        m.classify_atoms(AtomClassifier::HBO);
+        m.classify_atoms(AtomClassifier::BONDED);
         m.info();
 
     } else if (config::mode == "charges") {
-        std::shared_ptr<Method> method = load_method(config::method_name);
+        std::string method_name;
+        if (config::method_name.empty()) {
+            auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+            method_name = std::get<0>(methods.front());
+            fmt::print("Autoselecting the best method.\n");
+        } else {
+            method_name = config::method_name;
+        }
+
+        auto method = load_method(method_name);
+        fmt::print("Method: {}\n", method->name());
 
         setup_method_options(method, parsed);
 
@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
                     exit(EXIT_PARAMETER_ERROR);
                 }
                 fmt::print("Best parameters found: {}\n", par_name);
+                par_name = (fs::path(INSTALL_DIR) / "share/parameters" / par_name).string();
             } else {
                 par_name = config::par_file;
             }
@@ -91,8 +92,6 @@ int main(int argc, char **argv) {
         }
 
         m.info();
-        fmt::print("\n");
-
         m.fulfill_requirements(method->get_requirements());
 
         auto charges = Charges();
@@ -100,7 +99,13 @@ int main(int argc, char **argv) {
         charges.set_method_name(config::method_name);
 
         for (auto &mol: m.molecules()) {
-            charges.insert(mol.name(), method->calculate_charges(mol));
+            auto results = method->calculate_charges(mol);
+            if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
+                fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n",
+                           mol.name());
+                continue;
+            }
+            charges.insert(mol.name(), results);
         }
 
         auto txt = TXT();
@@ -150,7 +155,7 @@ int main(int argc, char **argv) {
                        current_time, pid, walltime.count(), utime, stime, mem);
         }
     } else if (config::mode == "best-parameters") {
-        std::shared_ptr<Method> method = load_method(config::method_name);
+        const auto method = load_method(config::method_name);
 
         if (!method->has_parameters()) {
             fmt::print(stderr, "Method uses no parameters\n");
@@ -162,20 +167,67 @@ int main(int argc, char **argv) {
         } else {
             fmt::print("Best parameters are: {}\n", best);
         }
-    } else if (config::mode == "parameters") {
-        m.classify_atoms(AtomClassifier::PLAIN);
-
-        std::shared_ptr<Method> method = load_method(config::method_name);
-
+    } else if (config::mode == "suitable-methods") {
+        auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+        for (const auto &[method, parameters]: methods) {
+            fmt::print("{}", method);
+            for (const auto &parameter_set: parameters) {
+                fmt::print(" {}", parameter_set);
+            }
+            fmt::print("\n");
+        }
+    } else if (config::mode == "evaluation") {
+        Charges reference_charges(config::ref_chg_file);
+        auto method = load_method(config::method_name);
         setup_method_options(method, parsed);
 
-        Charges reference_charges(config::ref_chg_file);
+        m.fulfill_requirements(method->get_requirements());
+        auto p = std::unique_ptr<Parameters>();
 
-        auto p = Parameterization(m, method, reference_charges, config::chg_out_dir, config::par_file);
-        p.parametrize();
+        auto charges = Charges();
+        charges.set_method_name(config::method_name);
 
-    } else if (config::mode == "suitable-methods") {
-        get_suitable_methods(m, is_protein_structure, config::permissive_types);
+        if (method->has_parameters()) {
+            if (config::par_file.empty()) {
+                fmt::print(stderr, "No parameters specified \n");
+                exit(EXIT_PARAMETER_ERROR);
+            }
+            p = std::make_unique<Parameters>(config::par_file);
+            m.classify_set_from_parameters(*p, true, config::permissive_types);
+        }
+
+        method->set_parameters(p.get());
+
+        for (auto &mol: m.molecules()) {
+            auto results = method->calculate_charges(mol);
+            if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
+                fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n",
+                           mol.name());
+                continue;
+            }
+            charges.insert(mol.name(), results);
+        }
+
+        if (not config::chg_out_dir.empty()) {
+            auto txt = TXT();
+            std::filesystem::path dir(config::chg_out_dir);
+            std::filesystem::path file(config::input_file);
+            auto txt_str = file.filename().string() + ".txt";
+            txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
+        }
+        double rmsd;
+        double R2;
+        try {
+            rmsd = RMSD(reference_charges, charges);
+            R2 = Pearson2(reference_charges, charges);
+        } catch (std::runtime_error &e) {
+            fmt::print(stderr, e.what());
+            exit(EXIT_INTERNAL_ERROR);
+        }
+
+        fmt::print("RMSD = {:.3f}\n", rmsd);
+        fmt::print("R2 = {:.3f}\n", R2);
+
     } else {
         fmt::print(stderr, "Unknown mode {}\n", config::mode);
         exit(EXIT_PARAMETER_ERROR);

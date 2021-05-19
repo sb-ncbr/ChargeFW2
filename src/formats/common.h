@@ -18,5 +18,3 @@ std::string get_unique_name(const std::string &name, const std::set<std::string>
 std::string get_element_symbol(const std::string &substring);
 
 std::string fix_atom_name(std::string &atom_name);
-
-bool is_already_loaded(const std::vector<Atom> &atoms, const std::string &atom_name, int residue_id);

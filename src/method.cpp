@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <set>
-#include <numeric>
+#include <dlfcn.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
 #include <Eigen/Dense>
@@ -14,7 +14,7 @@
 #include "chargefw2.h"
 #include "method.h"
 #include "parameters.h"
-#include "utility/utility.h"
+#include "utility/strings.h"
 
 
 std::vector<RequiredFeatures> Method::get_requirements() const {
@@ -91,12 +91,12 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
     auto radius = get_option_value<double>("radius");
 
     if (method != "cover" and molecule.atoms().size() > 80000) {
-        fmt::print(stderr, "Switching to cover as the molecule is too big\n");
-        fmt::print(stderr, "Using radius {}\n", radius);
+        fmt::print("Switching to cover as the molecule is too big\n");
+        fmt::print("Using radius {}\n", radius);
         method = "cover";
     } else if (method == "full" and molecule.atoms().size() > 20000) {
-        fmt::print(stderr, "Switching to cutoff as the molecule is too big\n");
-        fmt::print(stderr, "Using radius {}\n", radius);
+        fmt::print("Switching to cutoff as the molecule is too big\n");
+        fmt::print("Using radius {}\n", radius);
         method = "cutoff";
     }
 
@@ -209,14 +209,22 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
 }
 
 
-std::shared_ptr<Method> load_method(const std::string &method_name) {
-    try {
-        auto ptr = boost::dll::import<Method>(std::string(INSTALL_DIR) + "/lib/" + method_name, "method",
-                                              boost::dll::load_mode::append_decorations);
-        /* Some magic from: https://stackoverflow.com/a/12315035/2693542 */
-        return std::shared_ptr<Method>(ptr.get(), [ptr](Method *) mutable { ptr.reset(); });
-    } catch (std::exception &e) {
-        fmt::print(stderr, "Unable to load method {}: {}\n", method_name, e.what());
-        exit(EXIT_PARAMETER_ERROR);
+Method* load_method(const std::string &method_name) {
+
+    std::string file;
+    if (ends_with(method_name, ".so")) {
+        file = method_name;
+    } else {
+        file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
     }
+
+    auto handle = dlopen(file.c_str(), RTLD_LAZY);
+
+    auto get_method_handle = (Method *(*)())(dlsym(handle, "get_method"));
+    if (!get_method_handle) {
+        fmt::print(stderr, "{}\n", dlerror());
+        exit(EXIT_FILE_ERROR);
+    }
+
+    return (*get_method_handle)();
 }

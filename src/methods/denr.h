@@ -5,7 +5,6 @@
 #pragma once
 
 #include <vector>
-#include <boost/config.hpp>
 
 #include "../structures/molecule.h"
 #include "../method.h"
@@ -17,12 +16,7 @@ class DENR : public Method {
 public:
     explicit DENR() : Method("DENR", {"step", "iterations"}, {"electronegativity", "hardness"}, {}, {}) {}
 
-    virtual ~DENR() = default;
-
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     [[nodiscard]] bool is_suitable_for_large_molecule() const override { return false; }
 };
-
-extern "C" BOOST_SYMBOL_EXPORT DENR method;
-DENR method;

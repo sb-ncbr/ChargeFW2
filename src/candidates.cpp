@@ -1,17 +1,81 @@
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <fstream>
-#include <boost/algorithm/string.hpp>
+#include <fmt/format.h>
+#include <tuple>
+#include <vector>
+#include <string>
 
 #include "chargefw2.h"
 #include "candidates.h"
 #include "method.h"
-#include "utility/utility.h"
+#include "utility/strings.h"
 
 
-void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
+namespace fs = std::filesystem;
 
-    std::string filename = std::string(INSTALL_DIR) + "/share/methods.json";
+std::vector<fs::path> get_parameter_files();
+
+std::vector<std::string>
+get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, const std::string &method_name);
+
+
+std::vector<fs::path> get_parameter_files() {
+    /* Get parameters sorted according to the names and priorities */
+    std::vector<fs::path> files;
+    for (const auto &set: fs::directory_iterator(fs::path(INSTALL_DIR) / "share/parameters")) {
+        files.emplace_back(set.path());
+    }
+    std::sort(files.begin(), files.end());
+    return files;
+}
+
+
+std::vector<std::string>
+get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, const std::string &method_name) {
+    std::vector<std::string> protein_parameters;
+    std::vector<std::string> ligand_parameters;
+
+    for (const auto &parameter_file: get_parameter_files()) {
+        if (not starts_with(to_lowercase(parameter_file.filename().string()), method_name)) {
+            continue;
+        }
+
+        auto p = std::make_unique<Parameters>(parameter_file);
+
+        if (method_name != p->method_name()) {
+            continue;
+        }
+
+        size_t unclassified = ms.classify_set_from_parameters(*p, false, permissive_types);
+
+        auto parameters = parameter_file.filename().string();
+        if (!unclassified) {
+            if (p->source() == "protein") {
+                protein_parameters.emplace_back(parameters);
+            } else {
+                ligand_parameters.emplace_back(parameters);
+            }
+        }
+    }
+
+    /* Show protein parameters first if the proteins are in the set */
+    std::vector<std::string> all_parameters;
+    if (is_protein) {
+        all_parameters = protein_parameters;
+        all_parameters.insert(all_parameters.end(), ligand_parameters.begin(), ligand_parameters.end());
+    } else {
+        all_parameters = ligand_parameters;
+        all_parameters.insert(all_parameters.end(), protein_parameters.begin(), protein_parameters.end());
+    }
+
+    return all_parameters;
+}
+
+
+std::vector<std::tuple<std::string, std::vector<std::string>>>
+get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
+    std::string filename = (fs::path(INSTALL_DIR) / "share/methods.json").string();
     using json = nlohmann::json;
     json j;
     std::ifstream f(filename);
@@ -23,9 +87,11 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
     f >> j;
     f.close();
 
-    for (const auto &method_info: j) {
+    std::vector<std::tuple<std::string, std::vector<std::string>>> results;
+
+    for (const auto &method_info: j["methods"]) {
         auto method_name = method_info["internal_name"].get<std::string>();
-        auto method = load_method(method_name);
+        const auto method = load_method(method_name);
 
         bool suitable = true;
         for (const auto &molecule: ms.molecules()) {
@@ -43,92 +109,22 @@ void get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_type
 
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
-            fmt::print("{}\n", method_name);
+            results.emplace_back(std::tuple<std::string, std::vector<std::string>>(method_name, {}));
             continue;
         }
 
-        bool parameters_found = false;
-        for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
-            if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()), method_name)) {
-                continue;
-            }
-
-            auto p = std::make_unique<Parameters>(set.path());
-
-            if (method_name != p->method_name()) {
-                continue;
-            }
-
-            if ((is_protein and p->source() != "protein") or (not is_protein and p->source() == "protein")) {
-                continue;
-            }
-
-            size_t unclassified = ms.classify_set_from_parameters(*p, false, permissive_types);
-
-            if (!unclassified) {
-                if (not parameters_found) {
-                    fmt::print("{} ", method_name);
-                    parameters_found = true;
-                }
-                fmt::print("{} ", std::filesystem::path(set).filename().string());
-            }
-        }
-        if (parameters_found) {
-            fmt::print("\n");
+        auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method_name);
+        if (not parameters.empty()) {
+            results.emplace_back(std::make_tuple(method_name, parameters));
         }
     }
+
+    return results;
 }
 
 
 std::string
-best_parameters(MoleculeSet &ms, const std::shared_ptr<Method> &method, bool is_protein, bool permissive_types) {
-    std::string best_name;
-    std::string best_name_permissive;
-    size_t best_unclassified = ms.molecules().size();
-    size_t best_unclassified_permissive = ms.molecules().size();
-
-    auto internal = method->internal_name();
-    for (const auto &set: std::filesystem::directory_iterator(std::string(INSTALL_DIR) + "/share/parameters")) {
-        if (not boost::starts_with(to_lowercase(std::filesystem::path(set).filename().string()), internal)) {
-            continue;
-        }
-
-        auto p = std::make_unique<Parameters>(set.path());
-
-        if (internal != p->method_name()) {
-            continue;
-        }
-
-        if ((is_protein and p->source() != "protein") or (not is_protein and p->source() == "protein")) {
-            continue;
-        }
-
-        size_t unclassified = ms.classify_set_from_parameters(*p, false);
-        size_t unclassified_permissive = ms.molecules().size();
-
-        if (unclassified != 0 and permissive_types) {
-            unclassified_permissive = ms.classify_set_from_parameters(*p, false, permissive_types);
-        }
-
-        // If all molecules are covered by the parameters, we found our best
-        if (!unclassified) {
-            return set.path();
-        }
-
-        if (unclassified < best_unclassified) {
-            best_unclassified = unclassified;
-            best_name = set.path();
-        }
-
-        if (permissive_types and unclassified_permissive < best_unclassified_permissive) {
-            best_unclassified_permissive = unclassified_permissive;
-            best_name_permissive = set.path();
-        }
-    }
-
-    if (permissive_types and best_unclassified_permissive < best_unclassified) {
-        return best_name_permissive;
-    } else {
-        return best_name;
-    }
+best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types) {
+    auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->internal_name());
+    return parameters.empty() ? "" : parameters.front();
 }

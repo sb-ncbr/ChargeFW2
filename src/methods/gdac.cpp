@@ -10,6 +10,8 @@
 #include "../geometry.h"
 #include "../parameters.h"
 
+CHARGEFW2_METHOD(GDAC)
+
 
 std::vector<double> GDAC::calculate_charges(const Molecule &molecule) const {
 

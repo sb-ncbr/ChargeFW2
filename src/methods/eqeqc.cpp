@@ -11,7 +11,7 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
-using namespace std::placeholders;
+CHARGEFW2_METHOD(EQeqC)
 
 
 Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
@@ -65,7 +65,11 @@ Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double 
 std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();
 
-    Eigen::VectorXd q = solve_EE(molecule, std::bind(&EQeqC::EE_system, this, _1, _2));
+    auto f = [this](const std::vector<const Atom *> &atoms, double total_charge) -> Eigen::VectorXd {
+        return EE_system(atoms, total_charge);
+    };
+
+    Eigen::VectorXd q = solve_EE(molecule, f);
 
     for (size_t i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];
@@ -76,7 +80,7 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
             const auto &atom_j = molecule.atoms()[j];
             double tkk = parameters_->atom()->parameter(atom::Dz)(atom_i) - parameters_->atom()->parameter(atom::Dz)(atom_j);
             double bkk = std::exp(-parameters_->common()->parameter(common::alpha) *
-                                  (distance(atom_i, atom_j) - atom_i.element().covalent_radius() +
+                                  (distance(atom_i, atom_j) - atom_i.element().covalent_radius() -
                                    atom_j.element().covalent_radius()));
             correction += tkk * bkk;
         }

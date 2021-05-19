@@ -42,15 +42,15 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
             ("permissive-types", po::bool_switch()->default_value(false), "Use similar parameters for similar atom/bond types if no exact match is found")
             ("method", po::value<std::string>()->default_value(""), "Method");
 
-    po::variables_map vm;
-    po::parsed_options parsed = po::command_line_parser(argc, argv)
-            .options(desc)
-            .style(po::command_line_style::unix_style ^ po::command_line_style::allow_guessing)
-            .allow_unregistered()
-            .run();
     try {
-        po::store(parsed, vm);
+        po::variables_map vm;
+        po::parsed_options parsed = po::command_line_parser(argc, argv)
+                .options(desc)
+                .style(po::command_line_style::unix_style ^ po::command_line_style::allow_guessing)
+                .allow_unregistered()
+                .run();
 
+        po::store(parsed, vm);
         if (vm.count("help")) {
             fmt::print("ChargeFW2 (version {})\n", VERSION);
             fmt::print("by Tomáš Raček (2018, 2019)\n");
@@ -58,23 +58,23 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
             exit(EXIT_SUCCESS);
         }
         po::notify(vm);
+
+        config::mode = vm["mode"].as<std::string>();
+        config::input_file = vm["input-file"].as<std::string>();
+        config::par_file = vm["par-file"].as<std::string>();
+        config::chg_out_dir = vm["chg-out-dir"].as<std::string>();
+        config::ref_chg_file = vm["ref-chg-file"].as<std::string>();
+        config::log_file = vm["log-file"].as<std::string>();
+        config::method_name = vm["method"].as<std::string>();
+        config::read_hetatm = vm["read-hetatm"].as<bool>();
+        config::ignore_water = vm["ignore-water"].as<bool>();
+        config::permissive_types = vm["permissive-types"].as<bool>();
+
+        return parsed;
     } catch (const std::exception &e) {
-        fmt::print(stderr, "{}\n", e.what());
+        fmt::print(stderr, "Incorrect arguments: {}\n", e.what());
         exit(EXIT_PARAMETER_ERROR);
     }
-
-    config::mode = vm["mode"].as<std::string>();
-    config::input_file = vm["input-file"].as<std::string>();
-    config::par_file = vm["par-file"].as<std::string>();
-    config::chg_out_dir = vm["chg-out-dir"].as<std::string>();
-    config::ref_chg_file = vm["ref-chg-file"].as<std::string>();
-    config::log_file = vm["log-file"].as<std::string>();
-    config::method_name = vm["method"].as<std::string>();
-    config::read_hetatm = vm["read-hetatm"].as<bool>();
-    config::ignore_water = vm["ignore-water"].as<bool>();
-    config::permissive_types = vm["permissive-types"].as<bool>();
-
-    return parsed;
 }
 
 
@@ -84,7 +84,7 @@ void check_common_args() {
         exit(EXIT_PARAMETER_ERROR);
     }
 
-    if (config::mode == "charges" or config::mode == "parameters" or config::mode == "best-parameters") {
+    if (config::mode == "parameters" or config::mode == "best-parameters" or config::mode == "evaluation") {
         if (config::method_name.empty()) {
             fmt::print(stderr, "No method selected.\n");
             exit(EXIT_PARAMETER_ERROR);
@@ -98,22 +98,22 @@ void check_common_args() {
         }
     }
 
-    if (config::mode == "parameters") {
-        if (config::par_file.empty()) {
-            fmt::print(stderr, "File where to store parameters must be provided");
-            exit(EXIT_FAILURE);
-        }
-
+    if (config::mode == "parameters" or config::mode == "evaluation") {
         if (config::ref_chg_file.empty()) {
-            fmt::print(stderr, "File with reference charges must be provided");
-            exit(EXIT_FAILURE);
+            fmt::print(stderr, "File with reference charges must be provided\n");
+            exit(EXIT_PARAMETER_ERROR);
         }
     }
-
+    if (config::mode == "parameters") {
+        if (config::par_file.empty()) {
+            fmt::print(stderr, "File where to store parameters must be provided\n");
+            exit(EXIT_PARAMETER_ERROR);
+        }
+    }
 }
 
 
-void setup_method_options(const std::shared_ptr<Method>& method, const boost::program_options::parsed_options& parsed) {
+void setup_method_options(Method *method, const boost::program_options::parsed_options &parsed) {
     namespace po = boost::program_options;
 
     po::options_description method_options("Method options");
@@ -131,7 +131,12 @@ void setup_method_options(const std::shared_ptr<Method>& method, const boost::pr
 
     po::variables_map vm;
     std::vector<std::string> opts = po::collect_unrecognized(parsed.options, po::include_positional);
-    po::store(po::command_line_parser(opts).options(method_options).run(), vm);
+    try {
+        po::store(po::command_line_parser(opts).options(method_options).run(), vm);
+    } catch (std::exception &e) {
+        fmt::print(stderr, "Incorrect arguments: {}\n", e.what());
+        exit(EXIT_PARAMETER_ERROR);
+    }
 
     for (const auto &[opt, info]: method->get_options()) {
         std::string opt_name = std::string("method-" + opt);

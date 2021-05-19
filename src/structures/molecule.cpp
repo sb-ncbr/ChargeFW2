@@ -20,6 +20,39 @@ Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
     name_ = std::move(name);
     atoms_ = std::move(atoms);
     bonds_ = std::move(bonds);
+
+    /* Calculate max bond orders */
+    const size_t n = atoms_->size();
+    max_hbo_.resize(n, 0);
+
+    for (const auto &bond: *bonds_) {
+        size_t i1 = bond.first().index_;
+        size_t i2 = bond.second().index_;
+        int bo = bond.order();
+        max_hbo_[i1] = std::max(max_hbo_[i1], bo);
+        max_hbo_[i2] = std::max(max_hbo_[i2], bo);
+    }
+
+    /* Calculate bonded elements */
+    std::vector<std::vector<std::string>> neighbours;
+    neighbours.resize(atoms_->size());
+    for (const auto &bond: *bonds_) {
+        const auto &atom1 = bond.first();
+        const auto &atom2 = bond.second();
+        neighbours[atom1.index()].emplace_back(atom2.element().symbol());
+        neighbours[atom2.index()].emplace_back(atom1.element().symbol());
+    }
+
+    for (size_t i = 0; i < atoms_->size(); i++) {
+        auto &bonded = neighbours[i];
+        std::sort(bonded.begin(), bonded.end());
+
+        std::string atom_type;
+        for (const auto &symbol: bonded) {
+            atom_type += symbol;
+        }
+        neighbour_elements_.push_back(atom_type);
+    }
 }
 
 

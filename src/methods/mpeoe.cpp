@@ -9,6 +9,8 @@
 #include "../structures/bond.h"
 #include "../parameters.h"
 
+CHARGEFW2_METHOD(MPEOE)
+
 
 std::vector<double> MPEOE::calculate_charges(const Molecule &molecule) const {
 

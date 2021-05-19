@@ -6,7 +6,6 @@
 
 #include <Eigen/Core>
 #include <vector>
-#include <boost/config.hpp>
 
 #include "../structures/molecule.h"
 #include "../method.h"
@@ -15,15 +14,11 @@
 class EEM : public EEMethod {
     enum common {kappa};
     enum atom {A, B};
-    [[nodiscard]] Eigen::VectorXd EE_system(const std::vector<const Atom *> &atoms, double total_charge) const;
 
-    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
+    [[nodiscard]] Eigen::VectorXd EE_system(const std::vector<const Atom *> &atoms, double total_charge) const;
 
 public:
     explicit EEM() : EEMethod("EEM", {"kappa"}, {"A", "B"}, {}, {}) {}
 
-    virtual ~EEM() = default;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
-
-extern "C" BOOST_SYMBOL_EXPORT EEM method;
-EEM method;

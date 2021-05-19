@@ -8,15 +8,15 @@
 #include <fmt/format.h>
 #include <gemmi/cif.hpp>
 #include <gemmi/mmcif.hpp>
-#include <boost/algorithm/string.hpp>
 
 #include "chargefw2.h"
-#include "../config.h"
 #include "mmcif.h"
 #include "common.h"
 #include "bonds.h"
+#include "../config.h"
 #include "../structures/bond.h"
 #include "../periodic_table.h"
+#include "../utility/strings.h"
 
 
 void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
@@ -37,7 +37,11 @@ void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::
                 double z = atom.pos.z;
                 auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
-                if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue.seqid.num.value)) {
+                if(atom.charge) {
+                    fmt::print("Got charge {} on{}\n", atom.charge, atom.element.name());
+                }
+
+                if (not atom.has_altloc() or atom.altloc == 'A') {
                     if ((not hetatm) or
                         (config::read_hetatm and residue.name != "HOH") or
                         (config::read_hetatm and not config::ignore_water)) {
@@ -79,7 +83,11 @@ void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vect
         }
         auto residue_id = 0;
 
-        atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "0", false);
+        if (charge) {
+            fmt::print("Got charge {} on {}\n", charge, atom_name);
+        }
+
+        atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "", false);
         atoms->back()._set_formal_charge(charge);
         idx++;
     }
@@ -130,7 +138,7 @@ void mmCIF::process_record(const std::string &structure_data, std::unique_ptr<st
         }
 
         if (atoms->empty()) {
-            throw std::runtime_error("No atoms were loaded.");
+            throw std::runtime_error("No atoms were loaded");
         }
 
         if (has_atom_site) {
@@ -153,11 +161,15 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
     auto molecules = std::make_unique<std::vector<Molecule>>();
     try {
         std::ifstream file(filename);
+        if (!file) {
+            fmt::print(stderr, "Cannot open file: {}\n", filename);
+            exit(EXIT_FILE_ERROR);
+        }
         while(std::getline(file, line)) {
-            if (boost::starts_with(line, "#") or line.empty()) {
+            if (starts_with(line, "#") or line.empty()) {
                 continue;
             }
-            if (boost::starts_with(line, "data_")) {
+            if (starts_with(line, "data_")) {
                 if (not structure_data.empty()) {
                     process_record(structure_data, molecules);
                 }
@@ -166,11 +178,16 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
                 structure_data += "\n" + line;
             }
         }
+        if (structure_data.empty()) {
+            throw std::runtime_error("Empty record");
+        }
         process_record(structure_data, molecules);
     }
-    catch (std::exception &) {
-        fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
+    catch (std::exception &e) {
+        fmt::print(stderr, "Cannot load structure from file: {}: {}\n", filename, e.what());
         exit(EXIT_FILE_ERROR);
     }
     return MoleculeSet(std::move(molecules));
 }
+
+mmCIF::mmCIF() = default;

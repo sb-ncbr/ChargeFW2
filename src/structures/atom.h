@@ -19,7 +19,7 @@ class Atom {
     const Element *element_{};
     std::array<double, 3> pos_{};
     const Molecule *molecule_{};
-    size_t atom_type_{};
+    size_t type_{};
     int formal_charge_{};
     std::string atom_name_{};
     int residue_id_{};
@@ -45,7 +45,7 @@ public:
 
     [[nodiscard]] const std::array<double, 3> &pos() const { return pos_; }
 
-    [[nodiscard]] size_t atom_type() const { return atom_type_; }
+    [[nodiscard]] size_t type() const { return type_; }
 
     [[nodiscard]] int residue_id() const { return residue_id_; }
 

@@ -11,7 +11,7 @@
 #include "../parameters.h"
 #include "../geometry.h"
 
-using namespace std::placeholders;
+CHARGEFW2_METHOD(SFKEEM)
 
 
 Eigen::VectorXd SFKEEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
@@ -45,6 +45,10 @@ Eigen::VectorXd SFKEEM::EE_system(const std::vector<const Atom *> &atoms, double
 
 
 std::vector<double> SFKEEM::calculate_charges(const Molecule &molecule) const {
-    Eigen::VectorXd q = solve_EE(molecule, std::bind(&SFKEEM::EE_system, this, _1, _2));
+    auto f = [this](const std::vector<const Atom *> &atoms, double total_charge) -> Eigen::VectorXd {
+        return EE_system(atoms, total_charge);
+    };
+
+    Eigen::VectorXd q = solve_EE(molecule, f);
     return std::vector<double>(q.data(), q.data() + q.size());
 }

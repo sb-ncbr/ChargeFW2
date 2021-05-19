@@ -20,7 +20,6 @@ class QEq : public EEMethod {
 
     [[nodiscard]] Eigen::VectorXd EE_system(const std::vector<const Atom *> &atoms, double total_charge) const;
 
-    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 public:
     explicit QEq() : EEMethod("QEq", {}, {"electronegativity", "hardness"}, {},
             {
@@ -33,8 +32,5 @@ public:
                                               "Louwen-Vogt"}}}
             }) {}
 
-    virtual ~QEq() = default;
+    [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
-
-extern "C" BOOST_SYMBOL_EXPORT QEq method;
-QEq method;

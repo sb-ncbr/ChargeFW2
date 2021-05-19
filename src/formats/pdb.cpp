@@ -19,12 +19,12 @@ MoleculeSet PDB::read_file(const std::string &filename) {
     try {
         structure = gemmi::read_pdb_file(filename);
     }
-    catch (std::exception &){
+    catch (std::exception &) {
         fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
         exit(EXIT_FILE_ERROR);
     }
 
-    auto molecules = std::make_unique<std::vector<Molecule> >();
+    auto molecules = std::make_unique<std::vector<Molecule>>();
     auto atoms = std::make_unique<std::vector<Atom>>();
 
     /* Read first model only */
@@ -38,9 +38,17 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                 double y = atom.pos.y;
                 double z = atom.pos.z;
                 int residue_id = residue.seqid.num.value;
-                auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
-                if (not atom.has_altloc() or not is_already_loaded(*atoms, atom.name, residue_id)) {
+                const Element *element;
+                try {
+                    element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
+                } catch (std::exception &e) {
+                    fmt::print(stderr, "Error when reading {}: {}\n", structure.name, e.what());
+                    /* Return empty set */
+                    return MoleculeSet(std::move(molecules));
+                }
+
+                if (not atom.has_altloc() or atom.altloc == 'A') {
                     if ((not hetatm) or
                         (config::read_hetatm and residue.name != "HOH") or
                         (config::read_hetatm and not config::ignore_water)) {
@@ -54,11 +62,18 @@ MoleculeSet PDB::read_file(const std::string &filename) {
     }
 
     if (atoms->empty()) {
-        fmt::print(stderr, "Error when reading {}: No atoms were loaded.\n", structure.name);
+        fmt::print(stderr, "Error when reading {}: No atoms were loaded\n", structure.name);
     } else {
         auto bonds = get_bonds(atoms);
-        molecules->emplace_back(sanitize_name(structure.name), std::move(atoms), std::move(bonds));
+        std::string name = structure.name;
+        auto it = structure.info.find("_entry.id");
+        if (it != structure.info.end()) {
+            name = it->second;
+        }
+        molecules->emplace_back(sanitize_name(name), std::move(atoms), std::move(bonds));
     }
 
     return MoleculeSet(std::move(molecules));
 }
+
+PDB::PDB() = default;

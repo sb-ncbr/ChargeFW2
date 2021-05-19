@@ -9,6 +9,7 @@
 #include "../structures/bond.h"
 #include "../parameters.h"
 
+CHARGEFW2_METHOD(Charge2)
 
 const int n_iters = 10;
 
