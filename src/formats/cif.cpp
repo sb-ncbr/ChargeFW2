@@ -1,5 +1,5 @@
 //
-// Created by danny305 on 3.5.21.
+// Created by danny305 on May 3rd, 2021.
 //
 
 #include <iostream>
@@ -131,9 +131,13 @@ void CIF::write_cif_block(std::ostream &out,
     newCols[new_tag_size - 2] = std::move(p_charge);
     newCols[new_tag_size - 1] = std::move(vdw_radii);
 
+    // TODO get this info into the column name
+    fs::path params{config::par_file};
+    std::cout << "Method name: " << config::method_name << " Parameter Name: " << params.stem() << std::endl;
+
     std::vector<std::string> new_tags{
-        "_atom_site.partial_charge",
-        "_atom_site.vdw_radius"};
+        "_atom_site.fw2_charge",
+        "_atom_site.fw2_vdw_radius"};
     for (auto tag : new_tags)
         loop.tags.push_back(tag);
 
@@ -146,7 +150,7 @@ void CIF::write_cif_block(std::ostream &out,
 void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
 
     fs::path out_dir{config::chg_out_dir};
-    std::string out_filename = fs::path(filename).filename().replace_extension(".pqr.cif").string();
+    std::string out_filename = fs::path(filename).filename().replace_extension(".fw2.cif").string();
     std::string out_file{(out_dir / out_filename).string()};
     std::ofstream out_stream{out_file};
 
