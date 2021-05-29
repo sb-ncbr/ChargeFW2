@@ -27,24 +27,24 @@ void Method::set_parameters(Parameters *parameters) {
         return;
     }
     if (parameters->common() != nullptr and parameters->common()->names() != common_parameters_) {
-        fmt::print(stderr, "Invalid common parameters provided\n");
+        fmt::print(stderr, "Parameters don't match\n");
         fmt::print(stderr, "Expected: {}\n", common_parameters_);
         fmt::print(stderr, "Got: {}\n", parameters->common()->names());
-        exit(EXIT_FILE_ERROR);
+        throw std::runtime_error("Invalid common parameters provided");
     }
 
     if (parameters->atom() != nullptr and parameters->atom()->names() != atom_parameters_) {
-        fmt::print(stderr, "Invalid atom parameters provided\n");
+        fmt::print(stderr, "Parameters don't match\n");
         fmt::print(stderr, "Expected: {}\n", atom_parameters_);
         fmt::print(stderr, "Got: {}\n", parameters->atom()->names());
-        exit(EXIT_FILE_ERROR);
+        throw std::runtime_error("Invalid atom parameters provided");
     }
 
     if (parameters->bond() != nullptr and parameters->bond()->names() != bond_parameters_) {
-        fmt::print(stderr, "Invalid bond parameters provided\n");
+        fmt::print(stderr, "Parameters don't match\n");
         fmt::print(stderr, "Expected: {}\n", bond_parameters_);
         fmt::print(stderr, "Got: {}\n", parameters->bond()->names());
-        exit(EXIT_FILE_ERROR);
+        throw std::runtime_error("Invalid bond parameters provided");
     }
     parameters_ = parameters;
 }
