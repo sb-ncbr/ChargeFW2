@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     bool is_protein_structure = m.has_proteins();
 
     if (config::mode == "info") {
-        m.classify_atoms(AtomClassifier::BONDED);
+        m.classify_atoms(AtomClassifier::PLAIN);
         m.info();
 
     } else if (config::mode == "charges") {
