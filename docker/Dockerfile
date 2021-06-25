@@ -21,7 +21,7 @@ RUN git clone https://github.com/project-gemmi/gemmi.git && \
     cp -r gemmi/include/gemmi /usr/include
 
 RUN git clone https://github.com/danny305/ChargeFW2.git && \
-    cd ChargeFW2 && git checkout master && mkdir build && cd build && \
+    cd ChargeFW2 && git checkout feature/cif-write && mkdir build && cd build && \
     cmake .. -GNinja \
         -DCMAKE_CXX_COMPILER=clang++ \
         -DCMAKE_BUILD_TYPE=Release && \
