@@ -1,56 +1,121 @@
+//
+// Created by krab1k on 19.05.21.
+//
+
+#include <fmt/format.h>
+#include <dlfcn.h>
+#include <filesystem>
+#include <fstream>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include <filesystem>
-#include <memory>
-#include <dlfcn.h>
-#include <tuple>
+#include <nlohmann/json.hpp>
 
 #include "structures/molecule_set.h"
 #include "formats/reader.h"
-#include "method.h"
-#include "statistics.h"
+#include "config.h"
+#include "charges.h"
+#include "candidates.h"
+#include "utility/strings.h"
 
+
+namespace fs = std::filesystem;
 namespace py = pybind11;
 using namespace pybind11::literals;
 
 
-struct Data {
-    MoleculeSet ms;
-    Charges reference_charges;
-    std::unique_ptr<Parameters> parameters;
+std::map<std::string, std::vector<double>>
+calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name);
 
-    Data(const std::string &input_file, const std::string &ref_chg_file, const std::string &parameter_file);
+std::vector<std::string> get_available_methods();
+
+std::vector<std::string> get_available_parameters(const std::string &method_name);
+
+std::map<std::string, std::vector<std::string>> get_sutaible_methods_python(struct Molecules &molecules);
+
+
+struct Molecules {
+    MoleculeSet ms;
+
+    Molecules(const std::string &filename, bool read_hetatm, bool ignore_water);
+
+    [[nodiscard]] size_t length() const;
 };
 
 
-std::tuple<double, double, double, double> evaluate(const Data &data, const std::string &method);
-
-
-Data::Data(const std::string &input_file, const std::string &ref_chg_file, const std::string &parameter_file)
-        : reference_charges(Charges(ref_chg_file)) {
-
-    ms = load_molecule_set(input_file);
+Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool ignore_water = true) {
+    config::read_hetatm = read_hetatm;
+    config::ignore_water = ignore_water;
+    ms = load_molecule_set(filename);
     if (ms.molecules().empty()) {
         throw std::runtime_error("No molecules were loaded from the input file");
     }
 
-    /* Require all features since we can't know at this stage what will be needed later */
-    ms.fulfill_requirements(
-            {RequiredFeatures::DISTANCE_TREE, RequiredFeatures::BOND_DISTANCES});
-
-    if (not parameter_file.empty()) {
-        parameters = std::make_unique<Parameters>(parameter_file);
-        auto unclassified = ms.classify_set_from_parameters(*parameters, false, true);
-        if (unclassified) {
-            throw std::runtime_error("Selected parameters doesn't cover the whole molecule set");
-        }
-    }
+    ms.fulfill_requirements({RequiredFeatures::DISTANCE_TREE, RequiredFeatures::BOND_DISTANCES});
 }
 
 
-std::tuple<double, double, double, double> evaluate(const Data &data, const std::string &method_name) {
+size_t Molecules::length() const {
+    return ms.molecules().size();
+}
 
-    auto handle = dlopen(method_name.c_str(), RTLD_LAZY);
+
+std::vector<std::string> get_available_methods() {
+    std::vector<std::string> results;
+    std::string filename = (fs::path(INSTALL_DIR) / "share/methods.json").string();
+    using json = nlohmann::json;
+    json j;
+    std::ifstream f(filename);
+    if (!f) {
+        fmt::print(stderr, "Cannot open file: {}\n", filename);
+        exit(EXIT_FILE_ERROR);
+    }
+
+    f >> j;
+    f.close();
+
+    for (const auto &method_info: j["methods"]) {
+        auto method_name = method_info["internal_name"].get<std::string>();
+        results.emplace_back(method_name);
+    }
+
+    return results;
+}
+
+
+std::vector<std::string> get_available_parameters(const std::string &method_name) {
+    std::vector<std::string> parameters;
+    for (const auto &parameter_file: get_parameter_files()) {
+        if (not starts_with(to_lowercase(parameter_file.filename().string()), method_name)) {
+            continue;
+        }
+
+        auto p = std::make_unique<Parameters>(parameter_file);
+        if (method_name == p->method_name()) {
+            parameters.emplace_back(parameter_file.stem().string());
+        }
+    }
+    return parameters;
+}
+
+
+std::map<std::string, std::vector<std::string>> get_sutaible_methods_python(struct Molecules &molecules) {
+    std::map<std::string, std::vector<std::string>> results;
+    const auto res = get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
+    for (const auto &[method_name, parameters]: res) {
+        results[method_name] = {};
+        for (const auto &parameter_file: parameters) {
+            results[method_name].emplace_back(fs::path(parameter_file).stem().string());
+        }
+    }
+    return results;
+}
+
+
+std::map<std::string, std::vector<double>>
+calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
+
+    std::string method_file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
+    auto handle = dlopen(method_file.c_str(), RTLD_LAZY);
 
     auto get_method_handle = (Method *(*)()) (dlsym(handle, "get_method"));
     if (!get_method_handle) {
@@ -58,39 +123,55 @@ std::tuple<double, double, double, double> evaluate(const Data &data, const std:
     }
 
     auto method = (*get_method_handle)();
-
+    std::unique_ptr<Parameters> parameters;
     if (method->has_parameters()) {
-        method->set_parameters(data.parameters.get());
+        if (!parameters_name.has_value()) {
+            throw std::runtime_error(std::string("Method ") + method_name + std::string(" requires parameters"));
+        }
+
+        std::string parameter_file = (std::string(INSTALL_DIR) + "/share/parameters/" + parameters_name.value() + ".json");
+        if (not parameter_file.empty()) {
+            parameters = std::make_unique<Parameters>(parameter_file);
+            auto unclassified = molecules.ms.classify_set_from_parameters(*parameters, false, true);
+            if (unclassified) {
+                throw std::runtime_error("Selected parameters doesn't cover the whole molecule set");
+            }
+        }
     }
+
+    method->set_parameters(parameters.get());
 
     /* Use only default values */
     for (const auto &[opt, info]: method->get_options()) {
         method->set_option_value(opt, info.default_value);
     }
 
-    Charges charges;
-    for (auto &mol: data.ms.molecules()) {
+    std::map<std::string, std::vector<double>> charges;
+    for (auto &mol: molecules.ms.molecules()) {
+
         auto results = method->calculate_charges(mol);
         if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
-            return std::make_tuple(-1, -1, -1, -1);
+            fmt::print("Incorrect values encoutened for: {}. Skipping molecule.\n", mol.name());
+        } else {
+            charges[mol.name()] = results;
         }
-        charges.insert(mol.name(), results);
     }
 
     dlclose(handle);
-
-    auto rmsd = RMSD(data.reference_charges, charges);
-    auto r2 = Pearson2(data.reference_charges, charges);
-    auto dmax = D_max(data.reference_charges, charges);
-    auto davg = D_avg(data.reference_charges, charges);
-
-    return std::make_tuple(rmsd, r2, dmax, davg);
+    return charges;
 }
 
 
 PYBIND11_MODULE(chargefw2_python, m) {
-    m.doc() = "Python binding to ChargeFW2";
-    py::class_<Data>(m, "Data")
-            .def(py::init<const std::string &, const std::string &, const std::string &>());
-    m.def("evaluate", &evaluate, "data"_a, "method"_a, "Evaluate method against reference");
+    m.doc() = "Python bindings to ChargeFW2";
+    py::class_<Molecules>(m, "Molecules")
+            .def(py::init<const std::string &, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
+                 py::arg("ignore_water") = false)
+            .def("__len__", &Molecules::length);
+    m.def("get_available_methods", &get_available_methods, "Return the list of all available methods");
+    m.def("get_available_parameters", &get_available_parameters, "method_name"_a,
+          "Return the list of all parameters of a given method");
+    m.def("get_suitable_methods", &get_sutaible_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
+    m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
+          "Calculate partial atomic charges for a given molecules and method");
 }

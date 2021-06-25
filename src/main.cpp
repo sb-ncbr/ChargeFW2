@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     bool is_protein_structure = m.has_proteins();
 
     if (config::mode == "info") {
-        m.classify_atoms(AtomClassifier::BONDED);
+        m.classify_atoms(AtomClassifier::PLAIN);
         m.info();
 
     } else if (config::mode == "charges") {
@@ -82,13 +82,25 @@ int main(int argc, char **argv) {
                 par_name = config::par_file;
             }
 
-            p = std::make_unique<Parameters>(par_name);
+            try {
+                p = std::make_unique<Parameters>(par_name);
+            } catch (std::runtime_error &e) {
+                fmt::print(stderr, "{}\n", e.what());
+                exit(EXIT_FILE_ERROR);
+            }
+
             p->print();
 
             size_t unclassified = m.classify_set_from_parameters(*p, true, config::permissive_types);
             fmt::print("\nNumber of unclassified molecules: {}\n\n", unclassified);
 
-            method->set_parameters(p.get());
+            try {
+                method->set_parameters(p.get());
+            } catch (std::runtime_error &e) {
+                fmt::print(stderr, "{}\n", e.what());
+                exit(EXIT_FILE_ERROR);
+            }
+
         } else {
             m.classify_atoms(AtomClassifier::PLAIN);
         }
@@ -197,11 +209,21 @@ int main(int argc, char **argv) {
                 fmt::print(stderr, "No parameters specified \n");
                 exit(EXIT_PARAMETER_ERROR);
             }
-            p = std::make_unique<Parameters>(config::par_file);
+            try {
+                p = std::make_unique<Parameters>(config::par_file);
+            } catch (std::runtime_error &e) {
+                fmt::print(stderr, "{}\n", e.what());
+                exit(EXIT_FILE_ERROR);
+            }
             m.classify_set_from_parameters(*p, true, config::permissive_types);
         }
 
-        method->set_parameters(p.get());
+        try {
+            method->set_parameters(p.get());
+        } catch (std::runtime_error &e) {
+            fmt::print(stderr, "{}\n", e.what());
+            exit(EXIT_FILE_ERROR);
+        }
 
         for (auto &mol: m.molecules()) {
             auto results = method->calculate_charges(mol);

@@ -54,6 +54,10 @@ install(TARGETS libchargefw2 ARCHIVE DESTINATION lib)
 install(FILES structures/atom.h structures/bond.h structures/molecule.h DESTINATION include/structures)
 install(FILES element.h method.h parameters.h geometry.h periodic_table.h DESTINATION include)
 
+pybind11_add_module(chargefw2_gp python_gp.cpp ${SOURCES})
+target_link_libraries(chargefw2_gp PRIVATE libchargefw2 formats ${COMMON_LIBS} utility Boost::program_options)
+install(TARGETS chargefw2_gp DESTINATION lib)
+
 pybind11_add_module(chargefw2_python python.cpp ${SOURCES})
 target_link_libraries(chargefw2_python PRIVATE libchargefw2 formats ${COMMON_LIBS} utility Boost::program_options)
 install(TARGETS chargefw2_python DESTINATION lib)

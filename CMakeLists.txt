@@ -15,7 +15,7 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
         -Woverloaded-virtual -Wsign-promo -Wstrict-null-sentinel -Wundef -Werror -Wno-unused -Wno-format-y2k")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -fPIC -march=native -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -fPIC -march=native -fopenmp -fsized-deallocation")
 
 # Remove executable permission on shared libraries
 set(CMAKE_INSTALL_SO_NO_EXE 1)
