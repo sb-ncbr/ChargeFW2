@@ -29,4 +29,6 @@ RUN git clone https://github.com/danny305/ChargeFW2.git && \
 
 ENV PYTHONPATH=/usr/local/lib
 
+WORKDIR /root
+
 ENTRYPOINT [ "bash" ]
