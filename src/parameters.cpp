@@ -20,8 +20,7 @@ Parameters::Parameters(const std::string &filename) {
     json j;
     std::ifstream f(filename);
     if (!f) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw std::runtime_error("Cannot open file: " + filename);
     }
 
     f >> j;
@@ -72,8 +71,7 @@ Parameters::Parameters(const std::string &filename) {
         }
     }
     catch (std::exception &) {
-        fmt::print(stderr, "Incorrect file with parameters\n");
-        exit(EXIT_FILE_ERROR);
+        throw std::runtime_error("Incorrect file with parameters: " + filename);
     }
 }
 

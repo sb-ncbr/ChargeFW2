@@ -30,7 +30,7 @@ add_executable(chargefw2 ${SOURCES})
 
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl stdc++fs fmt::fmt)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl Boost::filesystem fmt::fmt)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 
@@ -45,6 +45,10 @@ set_target_properties(libchargefw2 PROPERTIES OUTPUT_NAME chargefw2 INTERPROCEDU
 install(TARGETS libchargefw2 ARCHIVE DESTINATION lib)
 install(FILES structures/atom.h structures/bond.h structures/molecule.h DESTINATION include/structures)
 install(FILES element.h method.h parameters.h geometry.h periodic_table.h DESTINATION include)
+
+pybind11_add_module(chargefw2_gp python_gp.cpp ${SOURCES})
+target_link_libraries(chargefw2_gp PRIVATE libchargefw2 formats ${COMMON_LIBS} utility Boost::program_options)
+install(TARGETS chargefw2_gp DESTINATION lib)
 
 pybind11_add_module(chargefw2_python python.cpp ${SOURCES})
 target_link_libraries(chargefw2_python PRIVATE libchargefw2 formats ${COMMON_LIBS} utility Boost::program_options)

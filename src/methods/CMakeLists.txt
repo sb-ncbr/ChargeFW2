@@ -7,7 +7,7 @@ SET(METHODS ${METHODS} PARENT_SCOPE)
 foreach(method ${METHODS})
     add_library(${method} SHARED ${method}.cpp ${method}.h)
     target_link_libraries(${method} ${DEPS})
-    set_target_properties(${method} PROPERTIES LINK_FLAGS_RELEASE -s)
+    set_target_properties(${method} PROPERTIES LINK_FLAGS_RELEASE -s SUFFIX ".so")
 endforeach(method)
 
 set(NEED_EIGEN eem sfkeem mgc kcm denr delre tsef qeq eqeq eqeqc abeem smpqeq sqe sqeq0 sqeqp)

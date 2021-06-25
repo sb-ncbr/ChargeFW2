@@ -14,7 +14,6 @@
 
 namespace fs = std::filesystem;
 
-std::vector<fs::path> get_parameter_files();
 
 std::vector<std::string>
 get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, const std::string &method_name);
