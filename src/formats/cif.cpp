@@ -103,7 +103,7 @@ private:
     }
 
     const int _model;
-    const std::string &_chain, &_residue, &_res_num, &_atom;
+    const std::string _chain, _residue, _res_num, _atom;
 };
 
 
