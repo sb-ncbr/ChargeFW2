@@ -9,18 +9,10 @@ include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
 configure_file(chargefw2.h.in chargefw2.h)
 
-# # Apple Clang does not support -fopenmp; must use llvm clang
-# # $ brew install llvm libomp
-# set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
-# set(OpenMP_CXX_LIB_NAMES "omp")
-# set(OpenMP_omp_LIBRARY omp)
-# find_package(OpenMP REQUIRED)
-
 SET(COMMON_LIBS parameters geometry element method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
     target_link_libraries(${lib} structures fmt::fmt)
-    # target_link_libraries(${lib} structures fmt::fmt OpenMP::OpenMP_CXX)
 endforeach ()
 
 target_link_libraries(method Eigen3::Eigen)
@@ -39,7 +31,6 @@ add_executable(chargefw2 ${SOURCES})
 add_dependencies(chargefw2 ${METHODS})
 
 target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl Boost::filesystem fmt::fmt)
-# target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl Boost::filesystem fmt::fmt OpenMP::OpenMP_CXX)
 
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
