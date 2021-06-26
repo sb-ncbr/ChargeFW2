@@ -29,6 +29,14 @@ $ make
 $ make install
 ```
 
+## Docker
+Rather than installing all dependencies, you can run ChargeFW2 directly in a docker container:
+```shell script
+$ cd docker  
+$ docker build -t chargefw2 .
+$ docker run -it chargefw2
+```
+
 ## Usage
 
 The [documentation](doc/documentation.md) for the application and its [Python bindings](doc/ChargeFW2%20-%20tutorial.pdf) is located in the [doc](doc) folder.
