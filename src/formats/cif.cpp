@@ -42,6 +42,12 @@ static const std::vector<std::string> atom_site_columns{
 
 
 class MCRA {
+    const int _model;
+    const std::string _chain;
+    const std::string _res_num;
+    const std::string _residue;
+    const std::string _atom;
+
 public:
     MCRA(const int model,
          const std::string &chain,
@@ -51,8 +57,9 @@ public:
         : _model(model), _chain(chain), _res_num(res_num), _residue(residue), _atom(atom)
         {}
 
-    int find_row(gemmi::cif::Table &table, size_t start_idx = 0) const {
-        size_t idx = start_idx, total_rows = table.length();
+    int find_row(gemmi::cif::Table &table, int start_idx = 0) const {
+        int idx = start_idx; 
+        int total_rows = table.length();
 
         assert(idx < total_rows);
 
@@ -101,9 +108,6 @@ private:
         }
         return false;
     }
-
-    const int _model;
-    const std::string _chain, _residue, _res_num, _atom;
 };
 
 
@@ -131,14 +135,10 @@ void CIF::write_cif_block(std::ostream &out,
     newCols[new_tag_size - 2] = std::move(p_charge);
     newCols[new_tag_size - 1] = std::move(vdw_radii);
 
-    // TODO get this info into the column name
-    fs::path params{config::par_file};
-    std::cout << "Method name: " << config::method_name << " Parameter Name: " << params.stem() << std::endl;
-
     std::vector<std::string> new_tags{
         "_atom_site.fw2_charge",
         "_atom_site.fw2_vdw_radius"};
-    for (auto tag : new_tags)
+    for (const auto &tag : new_tags)
         loop.tags.push_back(tag);
 
     loop.set_all_values(newCols);
