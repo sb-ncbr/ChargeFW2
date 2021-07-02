@@ -59,7 +59,7 @@ public:
 
     int find_row(gemmi::cif::Table &table, int start_idx = 0) const {
         int idx = start_idx; 
-        int total_rows = table.length();
+        int total_rows = static_cast<int>(table.length());
 
         assert(idx < total_rows);
 
@@ -91,7 +91,7 @@ public:
 
 private:
     bool is_row(const gemmi::cif::Table::Row &row) const {
-        int model = std::stoul(row[11]);
+        int model = static_cast<int>(std::stoul(row[11]));
         const std::string &chain = row[1];
         const std::string &residue = row[4];
         const std::string &res_num = row[2];
@@ -123,17 +123,17 @@ void CIF::write_cif_block(std::ostream &out,
 
     // Creates a new table full of empty strings with the correct number of dimensions
     // Outside vector size is the # of columns, inside vector size is the # of rows.
-    std::vector<std::vector<std::string>> newCols(new_tag_size, {loop.length(), {"Empty"}});
+    std::vector<std::vector<std::string>> new_columns(new_tag_size, {loop.length(), {"Empty"}});
 
     // Copies data from original columns to their respecitve column in the new table filled with empty strings.
     // Leaving only the new appended columns as empty strings
     for (unsigned int i = 0; i != orig_tag_size; ++i) {
-        auto iCol = table.bloc.find_loop(loop.tags[i]);
-        std::copy(iCol.begin(), iCol.end(), newCols[i].begin());
+        auto column = table.bloc.find_loop(loop.tags[i]);
+        std::copy(column.begin(), column.end(), new_columns[i].begin());
     }
 
-    newCols[new_tag_size - 2] = std::move(p_charge);
-    newCols[new_tag_size - 1] = std::move(vdw_radii);
+    new_columns[new_tag_size - 2] = std::move(p_charge);
+    new_columns[new_tag_size - 1] = std::move(vdw_radii);
 
     std::vector<std::string> new_tags{
         "_atom_site.fw2_charge",
@@ -141,7 +141,7 @@ void CIF::write_cif_block(std::ostream &out,
     for (const auto &tag : new_tags)
         loop.tags.push_back(tag);
 
-    loop.set_all_values(newCols);
+    loop.set_all_values(new_columns);
 
     gemmi::cif::write_cif_block_to_stream(out, table.bloc);
 }
@@ -170,8 +170,8 @@ void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
 
 
     // ChargeFW2 is hardcoded to only read first model.
-    const int model{1};
-    int row_num{0};
+    const int model = 1;
+    int row_num = 0;
 
     try {
         auto chg = charges[molecule.name()];
