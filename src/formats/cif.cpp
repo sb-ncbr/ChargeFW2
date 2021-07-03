@@ -111,10 +111,26 @@ private:
 };
 
 
-void CIF::write_cif_block(std::ostream &out,
-                          gemmi::cif::Table &table, 
-                          std::vector<std::string> &p_charge, 
-                          std::vector<std::string> &vdw_radii) {
+void CIF::replace_fw2_columns(gemmi::cif::Table &table, 
+                              std::vector<std::string> &p_charge, 
+                              std::vector<std::string> &vdw_radii,
+                              const std::vector<std::string> &fw2_tags) {
+
+    std::vector<std::vector<std::string>> fw2_columns = {p_charge, vdw_radii};
+
+    assert(fw2_columns.size() == fw2_tags.size());
+
+    for (unsigned i = 0; i != fw2_tags.size(); ++i){
+        auto column = table.bloc.find_loop(fw2_tags[i]);
+        std::copy(fw2_columns[i].begin(), fw2_columns[i].end(), column.begin());
+    }
+}
+
+
+void CIF::append_fw2_columns(gemmi::cif::Table &table,
+                             std::vector<std::string> &p_charge, 
+                             std::vector<std::string> &vdw_radii,
+                             const std::vector<std::string> &fw2_tags) {
 
     auto &loop = *table.get_loop();
 
@@ -127,7 +143,7 @@ void CIF::write_cif_block(std::ostream &out,
 
     // Copies data from original columns to their respecitve column in the new table filled with empty strings.
     // Leaving only the new appended columns as empty strings
-    for (unsigned int i = 0; i != orig_tag_size; ++i) {
+    for (unsigned i = 0; i != orig_tag_size; ++i) {
         auto column = table.bloc.find_loop(loop.tags[i]);
         std::copy(column.begin(), column.end(), new_columns[i].begin());
     }
@@ -135,13 +151,29 @@ void CIF::write_cif_block(std::ostream &out,
     new_columns[new_tag_size - 2] = std::move(p_charge);
     new_columns[new_tag_size - 1] = std::move(vdw_radii);
 
-    std::vector<std::string> new_tags{
-        "_atom_site.fw2_charge",
-        "_atom_site.fw2_vdw_radius"};
-    for (const auto &tag : new_tags)
+    for (const auto &tag : fw2_tags)
         loop.tags.push_back(tag);
 
     loop.set_all_values(new_columns);
+}                                
+
+
+void CIF::write_cif_block(std::ostream &out,
+                          gemmi::cif::Table &table, 
+                          std::vector<std::string> &p_charge, 
+                          std::vector<std::string> &vdw_radii) {
+
+    std::vector<std::string> fw2_tags{
+        "_atom_site.fw2_charge",
+        "_atom_site.fw2_vdw_radius"};
+
+    auto &loop = *table.get_loop();
+
+    if (loop.has_tag(fw2_tags[0]) && loop.has_tag(fw2_tags[1])){
+        replace_fw2_columns(table, p_charge, vdw_radii, fw2_tags);
+    } else {
+        append_fw2_columns(table, p_charge, vdw_radii, fw2_tags);
+    }
 
     gemmi::cif::write_cif_block_to_stream(out, table.bloc);
 }
@@ -167,7 +199,6 @@ void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
     auto vdw_radii = std::vector<std::string>{table.length(), "?"};
 
     const auto &molecule = ms.molecules()[0];
-
 
     // ChargeFW2 is hardcoded to only read first model.
     const int model = 1;
