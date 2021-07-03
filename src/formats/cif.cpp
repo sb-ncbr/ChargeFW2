@@ -111,6 +111,42 @@ private:
 };
 
 
+void CIF::append_fw2_config(gemmi::cif::Block &block) {
+
+    std::string config_prefix = "_chargeFW2_config.";
+
+    std::vector<std::string> config_tags{
+        "method", "parameter_set", 
+        "read_hetam", "ignore_waters", 
+        "permissive_types", "ref_charge_file"
+    };
+
+    std::string method = "?";
+    std::string param_file = "?";
+    std::string read_hetatm = "False";
+    std::string ignore_water = "False";
+    std::string permissive_types = "False";
+    std::string ref_chg_file = "?";
+
+    if (!config::method_name.empty()) method = config::method_name;
+    if (!config::par_file.empty()) param_file = fs::path(config::par_file).stem().string();
+    if (config::read_hetatm) read_hetatm = "True";
+    if (config::ignore_water) ignore_water = "True";
+    if (config::permissive_types) permissive_types = "True";
+    if (!config::ref_chg_file.empty()) ref_chg_file = fs::path(config::ref_chg_file).filename().string();
+
+    std::vector<std::string> config_data{
+        method, param_file,
+        read_hetatm, ignore_water,
+        permissive_types, ref_chg_file
+    };
+
+    for (unsigned i = 0; i != config_tags.size(); ++i) {
+            block.set_pair(config_prefix + config_tags[i], config_data[i]);
+    }
+}
+
+
 void CIF::replace_fw2_columns(gemmi::cif::Table &table, 
                               std::vector<std::string> &p_charge, 
                               std::vector<std::string> &vdw_radii,
@@ -162,6 +198,8 @@ void CIF::write_cif_block(std::ostream &out,
                           gemmi::cif::Table &table, 
                           std::vector<std::string> &p_charge, 
                           std::vector<std::string> &vdw_radii) {
+
+    append_fw2_config(table.bloc);
 
     std::vector<std::string> fw2_tags{
         "_atom_site.fw2_charge",
@@ -227,7 +265,6 @@ void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
             p_charge[row_num]  = std::to_string(chg[i]);
             vdw_radii[row_num] = std::to_string(atom.element().vdw_radius());
         }
-
         write_cif_block(out_stream, table, p_charge, vdw_radii);
     }
     catch (std::out_of_range &) {
