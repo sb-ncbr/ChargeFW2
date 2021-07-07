@@ -13,7 +13,7 @@ See the [short description](https://acc2.ncbr.muni.cz/static/methods.pdf) of imp
 - [fmt](https://fmt.dev) 6.2.1
 - [nanoflann](https://github.com/jlblancoc/nanoflann) 1.3.0
 - [JSON for Modern C++](https://github.com/nlohmann/json) 3.7.3
-- [GEMMI](https://github.com/project-gemmi/gemmi) 0.3.6
+- [GEMMI](https://github.com/project-gemmi/gemmi) 0.4.7
 - [pybind11](https://github.com/pybind/pybind11) 2.5.0
 
 Tested on Fedora 32-34 and Ubuntu 20.04. Other version of the libraries might work too however this was not tested.
