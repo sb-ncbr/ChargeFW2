@@ -97,21 +97,12 @@ private:
         const std::string &res_num = row[2];
         const std::string atom = row[5][0] != '"' ? row[5] : row[5].substr(1, row[5].size() - 2);
 
-        if (_model == model) {
-            if (_chain == chain) {
-                if (_res_num == res_num && _residue == residue) {
-                    if (_atom == atom) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return _model == model && _chain == chain && _res_num == res_num && _residue == residue && _atom == atom;
     }
 };
 
 
-void CIF::append_fw2_config(gemmi::cif::Block &block) {
+void CIF::append_fw2_config(gemmi::cif::Block &block, const std::string &method, const std::string &parameters) {
 
     std::string config_prefix = "_chargeFW2_config.";
 
@@ -121,20 +112,12 @@ void CIF::append_fw2_config(gemmi::cif::Block &block) {
         "permissive_types"
     };
 
-    std::string method = "?";
-    std::string param_file = "?";
-    std::string read_hetatm = "False";
-    std::string ignore_water = "False";
-    std::string permissive_types = "False";
-
-    if (!config::method_name.empty()) method = fmt::format("\"{}\"", config::method_name);
-    if (!config::par_file.empty()) param_file = fmt::format("\"{}\"", fs::path(config::par_file).stem().string());
-    if (config::read_hetatm) read_hetatm = "True";
-    if (config::ignore_water) ignore_water = "True";
-    if (config::permissive_types) permissive_types = "True";
+    std::string read_hetatm = config::read_hetatm ? "True": "False";
+    std::string ignore_water = config::ignore_water ? "True": "False";
+    std::string permissive_types = config::permissive_types ? "True": "False";
 
     std::vector<std::string> config_data{
-        method, param_file,
+        fmt::format("\"{}\"", method), fmt::format("\"{}\"", parameters),
         read_hetatm, ignore_water,
         permissive_types
     };
@@ -146,8 +129,8 @@ void CIF::append_fw2_config(gemmi::cif::Block &block) {
 
 
 void CIF::replace_fw2_columns(gemmi::cif::Table &table, 
-                              std::vector<std::string> &p_charge, 
-                              std::vector<std::string> &vdw_radii,
+                              const std::vector<std::string> &p_charge,
+                              const std::vector<std::string> &vdw_radii,
                               const std::vector<std::string> &fw2_tags) {
 
     std::vector<std::vector<std::string>> fw2_columns = {p_charge, vdw_radii};
@@ -162,8 +145,8 @@ void CIF::replace_fw2_columns(gemmi::cif::Table &table,
 
 
 void CIF::append_fw2_columns(gemmi::cif::Table &table,
-                             std::vector<std::string> &p_charge, 
-                             std::vector<std::string> &vdw_radii,
+                             const std::vector<std::string> &p_charge,
+                             const std::vector<std::string> &vdw_radii,
                              const std::vector<std::string> &fw2_tags) {
 
     auto &loop = *table.get_loop();
@@ -182,8 +165,8 @@ void CIF::append_fw2_columns(gemmi::cif::Table &table,
         std::copy(column.begin(), column.end(), new_columns[i].begin());
     }
 
-    new_columns[new_tag_size - 2] = std::move(p_charge);
-    new_columns[new_tag_size - 1] = std::move(vdw_radii);
+    new_columns[new_tag_size - 2] = p_charge;
+    new_columns[new_tag_size - 1] = vdw_radii;
 
     for (const auto &tag : fw2_tags)
         loop.tags.push_back(tag);
@@ -194,10 +177,12 @@ void CIF::append_fw2_columns(gemmi::cif::Table &table,
 
 void CIF::write_cif_block(std::ostream &out,
                           gemmi::cif::Table &table, 
-                          std::vector<std::string> &p_charge, 
-                          std::vector<std::string> &vdw_radii) {
+                          const std::vector<std::string> &p_charge,
+                          const std::vector<std::string> &vdw_radii,
+                          const std::string &method,
+                          const std::string &parameters) {
 
-    append_fw2_config(table.bloc);
+    append_fw2_config(table.bloc, method, parameters);
 
     std::vector<std::string> fw2_tags{
         "_atom_site.fw2_charge",
@@ -263,7 +248,7 @@ void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
             p_charge[row_num]  = fmt::format("{:.3f}", chg[i]);
             vdw_radii[row_num] = fmt::format("{:.3f}", atom.element().vdw_radius());
         }
-        write_cif_block(out_stream, table, p_charge, vdw_radii);
+        write_cif_block(out_stream, table, p_charge, vdw_radii, charges.method_name(), charges.parameters_name());
     }
     catch (std::out_of_range &) {
         /* Do nothing */

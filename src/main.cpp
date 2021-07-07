@@ -109,7 +109,10 @@ int main(int argc, char **argv) {
 
         auto charges = Charges();
 
-        charges.set_method_name(config::method_name);
+        charges.set_method_name(method->name());
+        if (method->has_parameters()) {
+            charges.set_parameters_name(method->parameters()->name());
+        }
 
         for (auto &mol: m.molecules()) {
             auto results = method->calculate_charges(mol);
@@ -156,17 +159,10 @@ int main(int argc, char **argv) {
             std::chrono::duration<double> walltime = end - start;
 
             auto pid = getpid();
-            std::string parameters;
-            if (method->parameters()) {
-                parameters = method->parameters()->name();
-            } else {
-                parameters = std::string("None");
-            }
-
             auto log_file = std::fopen(config::log_file.c_str(), "a");
 
             fmt::print(log_file, "{} [{}]; File: {}; Processed molecules: {}; Method: {}; Parameters: {}\n",
-                       current_time, pid, config::input_file, m.molecules().size(), method->name(), parameters);
+                       current_time, pid, config::input_file, m.molecules().size(), method->name(), charges.parameters_name());
 
             fmt::print(log_file,
                        "{} [{}]; Walltime: {:.2f} s; User time: {:.2f} s; System time: {:.2f} s; Peak memory: {:.1f} MB \n",
