@@ -49,8 +49,6 @@ Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool 
     if (ms.molecules().empty()) {
         throw std::runtime_error("No molecules were loaded from the input file");
     }
-
-    ms.fulfill_requirements({RequiredFeatures::DISTANCE_TREE, RequiredFeatures::BOND_DISTANCES});
 }
 
 
@@ -130,7 +128,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         }
 
         std::string parameter_file = (std::string(INSTALL_DIR) + "/share/parameters/" + parameters_name.value() + ".json");
-        if (not parameter_file.empty()) {
+        if (!parameter_file.empty()) {
             parameters = std::make_unique<Parameters>(parameter_file);
             auto unclassified = molecules.ms.classify_set_from_parameters(*parameters, false, true);
             if (unclassified) {
@@ -141,6 +139,8 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
     method->set_parameters(parameters.get());
 
+    molecules.ms.fulfill_requirements(method->get_requirements());
+
     /* Use only default values */
     for (const auto &[opt, info]: method->get_options()) {
         method->set_option_value(opt, info.default_value);
@@ -148,7 +148,6 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
     std::map<std::string, std::vector<double>> charges;
     for (auto &mol: molecules.ms.molecules()) {
-
         auto results = method->calculate_charges(mol);
         if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
             fmt::print("Incorrect values encoutened for: {}. Skipping molecule.\n", mol.name());
