@@ -12,6 +12,7 @@
 
 #include "structures/molecule_set.h"
 #include "formats/reader.h"
+#include "formats/cif.h"
 #include "config.h"
 #include "charges.h"
 #include "candidates.h"
@@ -32,6 +33,8 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 
 std::map<std::string, std::vector<std::string>> get_sutaible_methods_python(struct Molecules &molecules);
 
+void 
+write_cif(const Molecules &molecules, const std::map<std::string, std::vector<double>> &charges, const std::string &inp_cif, std::optional<const std::string> &out_dir);
 
 struct Molecules {
     MoleculeSet ms;
@@ -127,6 +130,9 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
             throw std::runtime_error(std::string("Method ") + method_name + std::string(" requires parameters"));
         }
 
+        config::method_name = method_name;
+        config::par_file = parameters_name.value();
+
         std::string parameter_file = (std::string(INSTALL_DIR) + "/share/parameters/" + parameters_name.value() + ".json");
         if (!parameter_file.empty()) {
             parameters = std::make_unique<Parameters>(parameter_file);
@@ -161,6 +167,17 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 }
 
 
+void
+write_cif(const Molecules &molecules, const std::map<std::string, std::vector<double>> &charges, const std::string &inp_cif, std::optional<const std::string> &out_dir) {
+
+    if (out_dir.has_value() && fs::is_directory(fs::path{out_dir.value()})){
+        config::chg_out_dir = out_dir.value();
+    }
+    auto cif = CIF();
+    cif.save_charges(molecules.ms, Charges(charges), inp_cif);
+}
+
+
 PYBIND11_MODULE(chargefw2_python, m) {
     m.doc() = "Python bindings to ChargeFW2";
     py::class_<Molecules>(m, "Molecules")
@@ -173,4 +190,6 @@ PYBIND11_MODULE(chargefw2_python, m) {
     m.def("get_suitable_methods", &get_sutaible_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
           "Calculate partial atomic charges for a given molecules and method");
+    m.def("write_cif", &write_cif, "molecules"_a, "charges"_a, "inp_file"_a, "out_dir"_a = py::none(),
+          "Write cif file (.fw2.cif) with the partial charges");
 }
