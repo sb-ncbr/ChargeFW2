@@ -88,7 +88,7 @@ std::tuple<double, double, double, double> evaluate(const Data &data, const std:
 }
 
 
-PYBIND11_MODULE(chargefw2_python, m) {
+PYBIND11_MODULE(chargefw2_gp, m) {
     m.doc() = "Python bindings to ChargeFW2 (gp)";
     py::class_<Data>(m, "Data")
             .def(py::init<const std::string &, const std::string &, const std::string &>());

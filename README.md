@@ -13,7 +13,7 @@ See the [short description](https://acc2.ncbr.muni.cz/static/methods.pdf) of imp
 - [fmt](https://fmt.dev) 6.2.1
 - [nanoflann](https://github.com/jlblancoc/nanoflann) 1.3.0
 - [JSON for Modern C++](https://github.com/nlohmann/json) 3.7.3
-- [GEMMI](https://github.com/project-gemmi/gemmi) 0.3.6
+- [GEMMI](https://github.com/project-gemmi/gemmi) 0.4.7
 - [pybind11](https://github.com/pybind/pybind11) 2.5.0
 
 Tested on Fedora 32-34 and Ubuntu 20.04. Other version of the libraries might work too however this was not tested.
@@ -40,3 +40,6 @@ $ docker run -it chargefw2
 ## Usage
 
 The [documentation](doc/documentation.md) for the application and its [Python bindings](doc/ChargeFW2%20-%20tutorial.pdf) is located in the [doc](doc) folder.
+
+## How to cite
+If you found ChargeFW2 or Atomic Charge Calculator II helpful, please cite: [Raček, T., Schindler, O., Toušek, D., Horský, V., Berka, K., Koča, J., & Svobodová, R. (2020). Atomic Charge Calculator II: web-based tool for the calculation of partial atomic charges. Nucleic Acids Research](https://doi.org/10.1093/nar/gkaa367).
