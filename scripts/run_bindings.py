@@ -12,7 +12,7 @@ def cli():
     parser.add_argument('cif_file', type=str)
 
     parser.add_argument('-d', '--cif-dir', required=False, type=Path, 
-        default=Path('../../../data/proteins/fw2/input'))
+        default=Path('./input'))
 
     parser.add_argument('-m','--method', required=False, type=str, default='eem')
 
