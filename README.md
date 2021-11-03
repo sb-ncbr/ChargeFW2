@@ -11,12 +11,12 @@ See the [short description](https://acc2.ncbr.muni.cz/static/methods.pdf) of imp
 - [Boost](https://www.boost.org/) 1.69
 - [Eigen](http://eigen.tuxfamily.org) 3.3
 - [fmt](https://fmt.dev) 6.2.1
-- [nanoflann](https://github.com/jlblancoc/nanoflann) 1.3.0
+- [nanoflann](https://github.com/jlblancoc/nanoflann) <= 1.3.2
 - [JSON for Modern C++](https://github.com/nlohmann/json) 3.7.3
 - [GEMMI](https://github.com/project-gemmi/gemmi) 0.4.7
 - [pybind11](https://github.com/pybind/pybind11) 2.5.0
 
-Tested on Fedora 32-34 and Ubuntu 20.04. Other version of the libraries might work too however this was not tested.
+Tested on Fedora 32-35 and Ubuntu 20.04. Other version of the libraries might work too however this was not tested.
 
 ## Installation
 After downloading and unpacking the sources, run the following in the ChargeFW2 directory:
