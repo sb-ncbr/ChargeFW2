@@ -6,6 +6,7 @@
 #include <sys/resource.h>
 #include <ctime>
 #include <chrono>
+#include <cmath>
 #include <unistd.h>
 #include <tuple>
 #include <algorithm>
@@ -116,7 +117,7 @@ int main(int argc, char **argv) {
 
         for (auto &mol: m.molecules()) {
             auto results = method->calculate_charges(mol);
-            if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
+            if (std::any_of(results.begin(), results.end(), [](double chg) { return not std::isfinite(chg); })) {
                 fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n",
                            mol.name());
                 continue;
@@ -224,7 +225,7 @@ int main(int argc, char **argv) {
 
         for (auto &mol: m.molecules()) {
             auto results = method->calculate_charges(mol);
-            if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
+            if (std::any_of(results.begin(), results.end(), [](double chg) { return not std::isfinite(chg); })) {
                 fmt::print(stderr, "Cannot compute charges for {}: Method returned numerically incorrect values\n",
                            mol.name());
                 continue;
