@@ -1,0 +1,71 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  Atomic Charge Calculator II: web-based tool for the
+  calculation of partial atomic charges
+message: >-
+  Please cite this software using the metadata from
+  'preferred-citation'.
+type: software
+authors:
+  - given-names: Tomáš
+    family-names: Raček
+    orcid: 'https://orcid.org/0000-0002-0296-2452'
+  - given-names: Ondřej
+    family-names: Schindler
+    orcid: 'https://orcid.org/0000-0002-9047-0334'
+  - given-names: Dominik
+    family-names: Toušek
+  - given-names: Vladimír
+    family-names: Horský
+    orcid: 'https://orcid.org/0000-0002-9252-5386'
+  - given-names: Karel
+    family-names: Berka
+    orcid: 'https://orcid.org/0000-0001-9472-2589'
+  - given-names: Jaroslav
+    family-names: Koča
+    orcid: 'https://orcid.org/0000-0002-2780-4901'
+  - given-names: Radka
+    family-names: Svobodová Vařeková
+    orcid: 'https://orcid.org/0000-0002-3840-8760'
+keywords:
+  - partial atomic charges
+  - molecular structures
+  - non-QM charge calculation methods
+  - electrostatics
+  - chemoinformatics
+license: MIT
+preferred-citation:
+  authors:
+    - given-names: Tomáš
+      family-names: Raček
+      orcid: 'https://orcid.org/0000-0002-0296-2452'
+    - given-names: Ondřej
+      family-names: Schindler
+      orcid: 'https://orcid.org/0000-0002-9047-0334'
+    - given-names: Dominik
+      family-names: Toušek
+    - given-names: Vladimír
+      family-names: Horský
+      orcid: 'https://orcid.org/0000-0002-9252-5386'
+    - given-names: Karel
+      family-names: Berka
+      orcid: 'https://orcid.org/0000-0001-9472-2589'
+    - given-names: Jaroslav
+      family-names: Koča
+      orcid: 'https://orcid.org/0000-0002-2780-4901'
+    - given-names: Radka
+      family-names: Svobodová
+      orcid: 'https://orcid.org/0000-0002-3840-8760'
+  title: >-
+    Atomic Charge Calculator II: web-based tool for the calculation of partial
+    atomic charges
+  type: article
+  doi: 10.1093/nar/gkaa367
+  journal: Nucleic Acids Research
+  issue: W1
+  volume: 48
+  year: 2020
+  month: 7
