@@ -123,7 +123,7 @@ void CIF::append_fw2_config(gemmi::cif::Block &block, const std::string &method,
     };
 
     for (unsigned i = 0; i != config_tags.size(); ++i) {
-            block.set_pair(config_prefix + config_tags[i], config_data[i]);
+        block.set_pair(config_prefix + config_tags[i], config_data[i]);
     }
 }
 
@@ -182,8 +182,6 @@ void CIF::write_cif_block(std::ostream &out,
                           const std::string &method,
                           const std::string &parameters) {
 
-    append_fw2_config(table.bloc, method, parameters);
-
     std::vector<std::string> fw2_tags{
         "_atom_site.fw2_charge",
         "_atom_site.fw2_vdw_radius"};
@@ -195,6 +193,8 @@ void CIF::write_cif_block(std::ostream &out,
     } else {
         append_fw2_columns(table, p_charge, vdw_radii, fw2_tags);
     }
+
+    append_fw2_config(table.bloc, method, parameters);
 
     gemmi::cif::write_cif_block_to_stream(out, table.bloc);
 }
@@ -241,7 +241,7 @@ void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
             row_num = mcra.find_row(table, row_num);
 
             if (row_num == -1){
-                 fmt::print(stderr, "Failed to find Atom(1, {}, {}, {}, {})\n", 
+                fmt::print(stderr, "Failed to find Atom(1, {}, {}, {}, {})\n", 
                     atom.chain_id(), atom.residue_id(), atom.residue(), atom.name());
                 exit(EXIT_FILE_ERROR);
             }

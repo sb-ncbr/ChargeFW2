@@ -12,6 +12,7 @@
 
 #include "structures/molecule_set.h"
 #include "formats/reader.h"
+#include "formats/cif.h"
 #include "config.h"
 #include "charges.h"
 #include "candidates.h"
@@ -32,6 +33,8 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 
 std::map<std::string, std::vector<std::string>> get_sutaible_methods_python(struct Molecules &molecules);
 
+void 
+write_cif(const Molecules &molecules, const std::map<std::string, std::vector<double>> &charges, const std::string &inp_cif, std::optional<const std::string> &out_dir);
 
 struct Molecules {
     MoleculeSet ms;
@@ -49,8 +52,6 @@ Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool 
     if (ms.molecules().empty()) {
         throw std::runtime_error("No molecules were loaded from the input file");
     }
-
-    ms.fulfill_requirements({RequiredFeatures::DISTANCE_TREE, RequiredFeatures::BOND_DISTANCES});
 }
 
 
@@ -129,8 +130,11 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
             throw std::runtime_error(std::string("Method ") + method_name + std::string(" requires parameters"));
         }
 
+        config::method_name = method_name;
+        config::par_file = parameters_name.value();
+
         std::string parameter_file = (std::string(INSTALL_DIR) + "/share/parameters/" + parameters_name.value() + ".json");
-        if (not parameter_file.empty()) {
+        if (!parameter_file.empty()) {
             parameters = std::make_unique<Parameters>(parameter_file);
             auto unclassified = molecules.ms.classify_set_from_parameters(*parameters, false, true);
             if (unclassified) {
@@ -141,6 +145,8 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
     method->set_parameters(parameters.get());
 
+    molecules.ms.fulfill_requirements(method->get_requirements());
+
     /* Use only default values */
     for (const auto &[opt, info]: method->get_options()) {
         method->set_option_value(opt, info.default_value);
@@ -148,7 +154,6 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
     std::map<std::string, std::vector<double>> charges;
     for (auto &mol: molecules.ms.molecules()) {
-
         auto results = method->calculate_charges(mol);
         if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
             fmt::print("Incorrect values encoutened for: {}. Skipping molecule.\n", mol.name());
@@ -159,6 +164,17 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
     dlclose(handle);
     return charges;
+}
+
+
+void
+write_cif(const Molecules &molecules, const std::map<std::string, std::vector<double>> &charges, const std::string &inp_cif, std::optional<const std::string> &out_dir) {
+
+    if (out_dir.has_value() && fs::is_directory(fs::path{out_dir.value()})){
+        config::chg_out_dir = out_dir.value();
+    }
+    auto cif = CIF();
+    cif.save_charges(molecules.ms, Charges(charges), inp_cif);
 }
 
 
@@ -174,4 +190,6 @@ PYBIND11_MODULE(chargefw2_python, m) {
     m.def("get_suitable_methods", &get_sutaible_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
           "Calculate partial atomic charges for a given molecules and method");
+    m.def("write_cif", &write_cif, "molecules"_a, "charges"_a, "inp_file"_a, "out_dir"_a = py::none(),
+          "Write cif file (.fw2.cif) with the partial charges");
 }

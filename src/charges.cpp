@@ -39,3 +39,7 @@ Charges::Charges(const std::string &filename) {
     }
     f.close();
 }
+
+
+Charges::Charges(const std::map<std::string, std::vector<double>> &charges)
+    : charges_(charges){}
