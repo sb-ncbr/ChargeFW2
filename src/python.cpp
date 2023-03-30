@@ -30,7 +30,7 @@ std::vector<std::string> get_available_methods();
 
 std::vector<std::string> get_available_parameters(const std::string &method_name);
 
-std::map<std::string, std::vector<std::string>> get_sutaible_methods_python(struct Molecules &molecules);
+std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules);
 
 
 struct Molecules {
@@ -98,16 +98,8 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 }
 
 
-std::map<std::string, std::vector<std::string>> get_sutaible_methods_python(struct Molecules &molecules) {
-    std::map<std::string, std::vector<std::string>> results;
-    const auto res = get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
-    for (const auto &[method_name, parameters]: res) {
-        results[method_name] = {};
-        for (const auto &parameter_file: parameters) {
-            results[method_name].emplace_back(fs::path(parameter_file).stem().string());
-        }
-    }
-    return results;
+std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules) {
+    return get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
 }
 
 
