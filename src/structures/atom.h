@@ -25,6 +25,7 @@ class Atom {
     int residue_id_{};
     std::string residue_{};
     std::string chain_id_{};
+    std::string atom_type_mol2_{};
     bool hetatm_{};
 
     friend class Molecule;
@@ -55,9 +56,13 @@ public:
 
     [[nodiscard]] std::string name() const { return atom_name_; }
 
+    [[nodiscard]] std::string atom_type_mol2() const { return atom_type_mol2_; }
+
     [[nodiscard]] bool hetatm() const { return hetatm_; }
 
     void _set_formal_charge(int charge) { formal_charge_ = charge; }
+
+    void _set_atom_type_mol2(const std::string &atom_type) {atom_type_mol2_ = atom_type; }
 
     bool inline operator==(const Atom &other) const {
         return this->index_ == other.index_ and this->molecule_ == other.molecule_;

@@ -57,6 +57,7 @@ void Mol2::read_record(std::ifstream &file, std::string &line, std::unique_ptr<s
         auto element = PeriodicTable::pte().get_element_by_symbol(element_symbol);
 
         atoms->emplace_back(i, element, x, y, z, atom_name, residue_id, residue, "", false);
+        atoms->back()._set_atom_type_mol2(atom_type);
     }
 
     /* Read @<TRIPOS>BOND */
@@ -167,8 +168,12 @@ void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std
             fmt::print(file, "@<TRIPOS>ATOM\n");
             for (size_t i = 0; i < molecule.atoms().size(); i++) {
                 const auto &atom = molecule.atoms()[i];
-                fmt::print(file, "{:>5d} {:<6s} {:>8.3f} {:>8.3f} {:>8.3f} {:s} {:>3d} {:>3s} {:>6.3f}\n",
-                           i + 1, atom.name(), atom.pos()[0], atom.pos()[1], atom.pos()[2], atom.element().symbol(),
+                std::string atom_type = atom.atom_type_mol2();
+                if (atom_type.empty()) {
+                    atom_type = atom.element().symbol();
+                }
+                fmt::print(file, "{:>5d} {:<6s} {:>8.3f} {:>8.3f} {:>8.3f} {:<5s} {:>3d} {:>3s} {:>6.3f}\n",
+                           i + 1, atom.name(), atom.pos()[0], atom.pos()[1], atom.pos()[2], atom_type,
                            atom.residue_id(), atom.residue(), chg[i]);
             }
 
