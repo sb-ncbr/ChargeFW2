@@ -2,7 +2,7 @@
   "metadata": {
     "method": "sqeqp",
     "name": "Schindler 2021 (DTP_small)",
-    "publication": null
+    "publication": "10.1186/s13321-021-00528-w"
   },
   "atom": {
     "names": ["electronegativity", "hardness", "width", "q0"],

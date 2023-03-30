@@ -1,6 +1,14 @@
 {
   "methods": [
     {
+      "name": "SQE+qp",
+      "internal_name": "sqeqp",
+      "full_name": "Split-charge equilibration with parametrized initial charges",
+      "publication": null,
+      "type": "3D",
+      "has_parameters": true
+    },
+    {
       "name": "EEM",
       "internal_name": "eem",
       "full_name": "Electronegativity Equalization Method",
@@ -101,14 +109,6 @@
       "internal_name": "sqeq0",
       "full_name": "Split-charge equilibration with initial formal charges",
       "publication": "10.1021/ct200512e",
-      "type": "3D",
-      "has_parameters": true
-    },
-    {
-      "name": "SQE+qp",
-      "internal_name": "sqeqp",
-      "full_name": "Split-charge equilibration with parametrized initial charges",
-      "publication": null,
       "type": "3D",
       "has_parameters": true
     },
