@@ -4,7 +4,7 @@
       "name": "SQE+qp",
       "internal_name": "sqeqp",
       "full_name": "Split-charge equilibration with parametrized initial charges",
-      "publication": null,
+      "publication": "10.1186/s13321-021-00528-w",
       "type": "3D",
       "has_parameters": true
     },
