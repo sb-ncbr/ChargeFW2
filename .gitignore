@@ -1,4 +1,10 @@
+# Editor directories and files
 .idea
+.vscode
+!.vscode/extensions.json
+
+build
 test
 cmake-build-*
 .ipynb_checkpoints
+.devcontainer

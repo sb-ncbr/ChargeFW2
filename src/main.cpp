@@ -125,25 +125,18 @@ int main(int argc, char **argv) {
             charges.insert(mol.name(), results);
         }
 
-        auto txt = TXT();
         std::filesystem::path dir(config::chg_out_dir);
         std::filesystem::path file(config::input_file);
         auto txt_str = file.filename().string() + ".txt";
-        txt.save_charges(m, charges, dir / std::filesystem::path(txt_str));
+        TXT().save_charges(m, charges, dir / std::filesystem::path(txt_str));
+        CIF().save_charges(m, charges, config::input_file);
 
         if (is_protein_structure) {
-            auto pqr = PQR();
             auto pqr_str = file.filename().string() + ".pqr";
-            pqr.save_charges(m, charges, dir / std::filesystem::path(pqr_str));
-
-            if (ext == ".cif"){
-                auto cif = CIF();
-                cif.save_charges(m, charges, config::input_file);
-            }
+            PQR().save_charges(m, charges, dir / std::filesystem::path(pqr_str));
         } else {
-            auto mol2 = Mol2();
             auto mol2_str = file.filename().string() + ".mol2";
-            mol2.save_charges(m, charges, dir / std::filesystem::path(mol2_str));
+            Mol2().save_charges(m, charges, dir / std::filesystem::path(mol2_str));
         }
 
         if (not config::log_file.empty()) {

@@ -109,7 +109,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
     std::string method_file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
     auto handle = dlopen(method_file.c_str(), RTLD_LAZY);
 
-    auto get_method_handle = (Method *(*)()) (dlsym(handle, "get_method"));
+    auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
     if (!get_method_handle) {
         throw std::runtime_error(dlerror());
     }
