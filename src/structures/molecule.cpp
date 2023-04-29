@@ -165,8 +165,8 @@ int Molecule::total_charge() const {
 std::vector<const Atom *> Molecule::get_close_atoms(const Atom &atom, double cutoff) const {
     std::vector<const Atom *> close_atoms;
 
-    std::vector<std::pair<uint32_t , double>> results;
-    nanoflann::SearchParams params;
+    std::vector<nanoflann::ResultItem<uint32_t , double>> results;
+    nanoflann::SearchParameters params;
 
     auto matches_count = index_->radiusSearch(atom.pos().data(), cutoff * cutoff, results, params);
     for (size_t i = 0; i < matches_count; i++) {
