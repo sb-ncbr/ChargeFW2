@@ -21,7 +21,6 @@ add_subdirectory(structures)
 add_subdirectory(methods)
 add_subdirectory(formats)
 add_subdirectory(utility)
-add_subdirectory(external/lhs)
 
 SET(SOURCES main.cpp periodic_table.cpp periodic_table.h charges.h charges.cpp statistics.h statistics.cpp
         candidates.h candidates.cpp)
@@ -30,7 +29,7 @@ add_executable(chargefw2 ${SOURCES})
 
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility lhs Boost::program_options dl Boost::filesystem fmt::fmt)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility Boost::program_options dl Boost::filesystem fmt::fmt)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 
