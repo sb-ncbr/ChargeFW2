@@ -46,16 +46,16 @@ static std::string convert_bond_order_to_mmcif_value_order_string(int order) {
 }
 
 static void append_charges_to_block(const Molecule &molecule, const Charges &charges, gemmi::cif::Block &block) {
-    const std::string partial_atomic_charges_meta_prefix = "_partial_atomic_charges_meta.";
-    const std::string partial_atomic_charges_prefix = "_partial_atomic_charges.";
+    const std::string sb_ncbr_partial_atomic_charges_meta_prefix = "_sb_ncbr_partial_atomic_charges_meta.";
+    const std::string sb_ncbr_partial_atomic_charges_prefix = "_sb_ncbr_partial_atomic_charges.";
     
-    const std::vector<std::string> partial_atomic_charges_meta_attributes = {
+    const std::vector<std::string> sb_ncbr_partial_atomic_charges_meta_attributes = {
         "id",
         "type",
         "method",
     };
 
-    const std::vector<std::string> partial_atomic_charges_attributes = {
+    const std::vector<std::string> sb_ncbr_partial_atomic_charges_attributes = {
         "type_id",
         "atom_id",
         "charge",
@@ -63,8 +63,8 @@ static void append_charges_to_block(const Molecule &molecule, const Charges &cha
 
     const auto& atom_charges = charges[molecule.name()];
 
-    // _partial_atomic_charges_meta
-    auto& metadata_loop = block.init_loop(partial_atomic_charges_meta_prefix, partial_atomic_charges_meta_attributes);
+    // _sb_ncbr_partial_atomic_charges_meta
+    auto& metadata_loop = block.init_loop(sb_ncbr_partial_atomic_charges_meta_prefix, sb_ncbr_partial_atomic_charges_meta_attributes);
     const auto id = "1";
     const auto type = "empirical";
     const auto method = fmt::format("'{}/{}'", charges.method_name(), charges.parameters_name());
@@ -74,8 +74,8 @@ static void append_charges_to_block(const Molecule &molecule, const Charges &cha
         method,
     });
 
-    // _partial_atomic_charges  
-    auto& charges_loop = block.init_loop(partial_atomic_charges_prefix, partial_atomic_charges_attributes);
+    // _sb_ncbr_partial_atomic_charges  
+    auto& charges_loop = block.init_loop(sb_ncbr_partial_atomic_charges_prefix, sb_ncbr_partial_atomic_charges_attributes);
     for (size_t i = 0; i < molecule.atoms().size(); ++i) {
         const auto &atom = molecule.atoms()[i];
         const auto id = "1";
