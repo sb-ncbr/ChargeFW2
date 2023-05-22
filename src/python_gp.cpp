@@ -52,7 +52,7 @@ std::tuple<double, double, double, double> evaluate(const Data &data, const std:
 
     auto handle = dlopen(method_name.c_str(), RTLD_LAZY);
 
-    auto get_method_handle = (Method *(*)()) (dlsym(handle, "get_method"));
+    auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
     if (!get_method_handle) {
         throw std::runtime_error(dlerror());
     }
