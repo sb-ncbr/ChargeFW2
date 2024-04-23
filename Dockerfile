@@ -5,6 +5,7 @@ ENV PYTHONPATH=/usr/local/lib
 ARG DEPS="\
         cmake \
         g++ \
+        gemmi \
         gemmi-dev \
         git \
         libboost-filesystem-dev \
