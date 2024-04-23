@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS build
+FROM ubuntu:23.10 AS build
 
 ENV PYTHONPATH=/usr/local/lib
 
@@ -44,7 +44,7 @@ RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
         /dependencies
 
 
-FROM ubuntu:22.04 AS app
+FROM ubuntu:23.10 AS app
 
 ENV PATH=/ChargeFW2/build/bin:${PATH}
 
