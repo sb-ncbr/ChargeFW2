@@ -6,17 +6,21 @@ ChargeFW2 is the computational core of [Atomic Charge Calculator II](https://acc
 See the [short description](https://acc2.ncbr.muni.cz/static/methods.pdf) of implemented methods. 
 
 ## Compilation requirements
-- [CMake](https://cmake.org/) 3.17
-- [GCC](https://gcc.gnu.org/) 10 or [Clang](https://clang.llvm.org/) 10
-- [Boost](https://www.boost.org/) 1.69
-- [Eigen](http://eigen.tuxfamily.org) 3.3
-- [fmt](https://fmt.dev) 6.2.1
-- [nanoflann](https://github.com/jlblancoc/nanoflann) 1.4.3
-- [JSON for Modern C++](https://github.com/nlohmann/json) 3.7.3
-- [GEMMI](https://github.com/project-gemmi/gemmi) 0.4.7
-- [pybind11](https://github.com/pybind/pybind11) 2.5.0
 
-Tested on Fedora 32-36 and Ubuntu 20.04-22.04. Other version of the libraries might work too however this was not tested.
+To compile ChargeFW2, several requirements have to be installed first.
+The compilation was tested on Ubuntu 23.10 with these versions of libraries:
+
+- [CMake](https://cmake.org/) 3.27
+- [GCC](https://gcc.gnu.org/) 13
+- [Boost](https://www.boost.org/) 1.74
+- [Eigen](http://eigen.tuxfamily.org) 3.4
+- [fmt](https://fmt.dev) 9.1
+- [nanoflann](https://github.com/jlblancoc/nanoflann) 1.5
+- [JSON for Modern C++](https://github.com/nlohmann/json) 3.11
+- [GEMMI](https://github.com/project-gemmi/gemmi) 0.6.2
+- [pybind11](https://github.com/pybind/pybind11) 2.11
+
+Other version of the libraries might work too but these were not tested.
 
 ## Installation
 After downloading and unpacking the sources, run the following in the ChargeFW2 directory:
