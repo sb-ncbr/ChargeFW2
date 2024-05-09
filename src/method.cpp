@@ -212,7 +212,7 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
 Method* load_method(const std::string &method_name) {
 
     std::string file;
-    if (ends_with(method_name, ".so")) {
+    if (method_name.ends_with(".so")) {
         file = method_name;
     } else {
         file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");

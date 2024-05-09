@@ -85,7 +85,7 @@ std::vector<std::string> get_available_methods() {
 std::vector<std::string> get_available_parameters(const std::string &method_name) {
     std::vector<std::string> parameters;
     for (const auto &parameter_file: get_parameter_files()) {
-        if (not starts_with(to_lowercase(parameter_file.filename().string()), method_name)) {
+        if (not to_lowercase(parameter_file.filename().string()).starts_with(method_name)) {
             continue;
         }
 

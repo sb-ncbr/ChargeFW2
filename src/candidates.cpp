@@ -36,7 +36,7 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
     std::vector<std::string> ligand_parameters;
 
     for (const auto &parameter_file: get_parameter_files()) {
-        if (not starts_with(to_lowercase(parameter_file.filename().string()), method_name)) {
+        if (not to_lowercase(parameter_file.filename().string()).starts_with(method_name)) {
             continue;
         }
 

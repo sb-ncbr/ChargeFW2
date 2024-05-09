@@ -239,7 +239,7 @@ int main(int argc, char **argv) {
             rmsd = RMSD(reference_charges, charges);
             R2 = Pearson2(reference_charges, charges);
         } catch (std::runtime_error &e) {
-            fmt::print(stderr, e.what());
+            fmt::print(stderr, "\n", e.what());
             exit(EXIT_INTERNAL_ERROR);
         }
 

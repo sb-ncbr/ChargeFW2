@@ -166,10 +166,10 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
             exit(EXIT_FILE_ERROR);
         }
         while(std::getline(file, line)) {
-            if (starts_with(line, "#") or line.empty()) {
+            if (line.starts_with("#") or line.empty()) {
                 continue;
             }
-            if (starts_with(line, "data_")) {
+            if (line.starts_with("data_")) {
                 if (not structure_data.empty()) {
                     process_record(structure_data, molecules);
                 }
