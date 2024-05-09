@@ -20,7 +20,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -fPIC -march=native -fo
 # Remove executable permission on shared libraries
 set(CMAKE_INSTALL_SO_NO_EXE 1)
 
-if(NOT DEFINED CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
