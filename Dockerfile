@@ -8,9 +8,7 @@ ARG DEPS="\
         gemmi \
         gemmi-dev \
         git \
-        libboost-filesystem-dev \
         libboost-program-options-dev \
-        libboost-system-dev \
         libeigen3-dev \
         libfmt-dev \
         libnanoflann-dev \

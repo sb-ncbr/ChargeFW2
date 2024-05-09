@@ -1,8 +1,9 @@
-find_package(Boost COMPONENTS program_options system filesystem REQUIRED)
+find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(fmt 5.3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(nanoflann 1.3 REQUIRED)
 find_package(pybind11)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(gemmi 0.6.2 CONFIG REQUIRED)
 
 include_directories(${PROJECT_BINARY_DIR}/src)
@@ -30,7 +31,7 @@ add_executable(chargefw2 ${SOURCES})
 
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility Boost::program_options dl Boost::filesystem fmt::fmt gemmi::gemmi_cpp)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats utility Boost::program_options dl fmt::fmt gemmi::gemmi_cpp)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 

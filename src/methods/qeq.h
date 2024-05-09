@@ -7,7 +7,6 @@
 #include <Eigen/Core>
 #include <string>
 #include <vector>
-#include <boost/config.hpp>
 
 #include "../structures/atom.h"
 #include "../structures/molecule.h"
