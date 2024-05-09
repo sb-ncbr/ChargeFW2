@@ -78,7 +78,6 @@ static void append_charges_to_block(const Molecule &molecule, const Charges &cha
     auto& charges_loop = block.init_loop(sb_ncbr_partial_atomic_charges_prefix, sb_ncbr_partial_atomic_charges_attributes);
     for (size_t i = 0; i < molecule.atoms().size(); ++i) {
         const auto &atom = molecule.atoms()[i];
-        const auto id = "1";
         const auto atomId = fmt::format("{}", atom.index() + 1);
         const auto charge = fmt::format("{: 1.4f}", atom_charges[i]);
         charges_loop.add_row({
@@ -172,13 +171,11 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
         "label_atom_id",
         "label_comp_id",
         "label_seq_id",
-        // "label_alt_id",
         "label_asym_id",
         "label_entity_id",
         "Cartn_x",
         "Cartn_y",
         "Cartn_z",
-        // "auth_asym_id",
     };
 
     const std::vector<std::string> chem_comp_attributes = {
@@ -210,16 +207,14 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
             const std::string group_PDB = atom.hetatm() ? "HETATM" : "ATOM";
             const std::string id = fmt::format("{}", atom.index() + 1);
             const std::string type_symbol = atom.element().symbol();
-            const std::string label_atom_id = id;
+            const std::string& label_atom_id = id;
             const std::string label_comp_id = atom.residue();
             const std::string label_seq_id = fmt::format("{}", atom.residue_id());
-            // const std::string label_alt_id = ".";
-            const std::string label_asym_id = atom.chain_id() == "" ? "." : atom.chain_id();
+            const std::string label_asym_id = atom.chain_id().empty() ? "." : atom.chain_id();
             const std::string label_entity_id = "1";
             const std::string cartn_x = fmt::format("{:.3f}", atom.pos()[0]);
             const std::string cartn_y = fmt::format("{:.3f}", atom.pos()[1]);
             const std::string cartn_z = fmt::format("{:.3f}", atom.pos()[2]);
-            // const std::string auth_asym_id = ".";
             atom_site_loop.add_row({
                 group_PDB,
                 id,
@@ -227,13 +222,11 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
                 label_atom_id,
                 label_comp_id,
                 label_seq_id,
-                // label_alt_id,
                 label_asym_id,
                 label_entity_id,
                 cartn_x,
                 cartn_y,
                 cartn_z,
-                // auth_asym_id,
             });
         }
 
@@ -247,7 +240,6 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
         // _chem_comp_bond
         auto& chem_comp_bond_loop = block.init_loop(chem_comp_bond_prefix, chem_comp_bond_attributes);
         for (const auto& bond: molecule.bonds()) {
-            const std::string comp_id = "UNL";
             const std::string atom_id_1 = fmt::format("{}", bond.first().index() + 1);
             const std::string atom_id_2 = fmt::format("{}", bond.second().index() + 1);
             const std::string value_order = convert_bond_order_to_mmcif_value_order_string(bond.order());
