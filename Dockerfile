@@ -1,9 +1,9 @@
 FROM ubuntu:24.04 AS build
 
-ENV PYTHONPATH=/usr/local/lib
-
 ARG DEPS="\
+        ca-certificates \
         cmake \
+        make \
         g++ \
         gemmi \
         gemmi-dev \
@@ -15,10 +15,10 @@ ARG DEPS="\
         libomp-dev \
         libstb-dev \
         nlohmann-json3-dev \
+        zlib1g-dev \
         tao-pegtl-dev"
 
-RUN apt-get update && \
-        apt-get install -y ${DEPS}
+RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
 
 ARG REBUILD=foo
 RUN git clone --depth 1 https://github.com/sb-ncbr/ChargeFW2.git && \
@@ -26,7 +26,7 @@ RUN git clone --depth 1 https://github.com/sb-ncbr/ChargeFW2.git && \
         git checkout master && \
         mkdir build && \
         cd build && \
-        cmake .. -DCMAKE_INSTALL_PREFIX=. && \
+        cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=OFF && \
         make -j4 && \
         make install
 
