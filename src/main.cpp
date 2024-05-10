@@ -24,6 +24,7 @@
 #include "candidates.h"
 #include "statistics.h"
 #include "config.h"
+#include "options.h"
 #include "utility/strings.h"
 
 

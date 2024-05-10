@@ -29,7 +29,7 @@ SET(SOURCES periodic_table.cpp periodic_table.h charges.h charges.cpp statistics
 
 add_library(common ${SOURCES})
 
-add_executable(chargefw2 main.cpp)
+add_executable(chargefw2 main.cpp options.cpp options.h)
 add_dependencies(chargefw2 ${METHODS})
 
 target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats common utility Boost::program_options dl fmt::fmt gemmi::gemmi_cpp)
@@ -39,5 +39,5 @@ set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 install(TARGETS chargefw2 DESTINATION bin)
 
 pybind11_add_module(chargefw2_python python.cpp)
-target_link_libraries(chargefw2_python PRIVATE formats common ${COMMON_LIBS} utility Boost::program_options gemmi::gemmi_cpp)
+target_link_libraries(chargefw2_python PRIVATE formats common ${COMMON_LIBS} utility gemmi::gemmi_cpp)
 install(TARGETS chargefw2_python DESTINATION lib)
