@@ -29,8 +29,7 @@ add_subdirectory(methods)
 add_subdirectory(formats)
 add_subdirectory(utility)
 
-SET(SOURCES periodic_table.cpp periodic_table.h charges.h charges.cpp statistics.h statistics.cpp
-        candidates.h candidates.cpp)
+SET(SOURCES periodic_table.cpp periodic_table.h charges.h charges.cpp candidates.h candidates.cpp)
 
 add_library(common ${SOURCES})
 

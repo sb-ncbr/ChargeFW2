@@ -8,7 +8,6 @@ namespace config {
     std::string mode;
     std::string input_file;
     std::string par_file;
-    std::string ref_chg_file;
     std::string chg_out_dir;
     std::string log_file;
     std::string method_name;
@@ -24,29 +23,16 @@ void check_common_args() {
         exit(EXIT_PARAMETER_ERROR);
     }
 
-    if (config::mode == "parameters" or config::mode == "best-parameters" or config::mode == "evaluation") {
+    if (config::mode == "best-parameters") {
         if (config::method_name.empty()) {
             fmt::print(stderr, "No method selected.\n");
             exit(EXIT_PARAMETER_ERROR);
         }
     }
 
-    if (config::mode == "charges" or config::mode == "parameters") {
+    if (config::mode == "charges") {
         if (config::chg_out_dir.empty()) {
             fmt::print(stderr, "Directory where to store charges must be provided\n");
-            exit(EXIT_PARAMETER_ERROR);
-        }
-    }
-
-    if (config::mode == "parameters" or config::mode == "evaluation") {
-        if (config::ref_chg_file.empty()) {
-            fmt::print(stderr, "File with reference charges must be provided\n");
-            exit(EXIT_PARAMETER_ERROR);
-        }
-    }
-    if (config::mode == "parameters") {
-        if (config::par_file.empty()) {
-            fmt::print(stderr, "File where to store parameters must be provided\n");
             exit(EXIT_PARAMETER_ERROR);
         }
     }

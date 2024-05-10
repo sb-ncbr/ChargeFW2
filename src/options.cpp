@@ -16,7 +16,6 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
             ("mode", po::value<std::string>()->required(), "Mode")
             ("input-file", po::value<std::string>()->default_value(""), "Input file")
             ("par-file", po::value<std::string>()->default_value(""), "File with parameters (json)")
-            ("ref-chg-file", po::value<std::string>()->default_value(""), "File with reference charges")
             ("chg-out-dir", po::value<std::string>()->default_value(""), "Directory to output charges to")
             ("log-file", po::value<std::string>()->default_value(""), "Log file")
             ("read-hetatm", po::bool_switch()->default_value(false), "Read HETATM records from PDB/mmCIF files")
@@ -50,7 +49,6 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
         config::input_file = vm["input-file"].as<std::string>();
         config::par_file = vm["par-file"].as<std::string>();
         config::chg_out_dir = vm["chg-out-dir"].as<std::string>();
-        config::ref_chg_file = vm["ref-chg-file"].as<std::string>();
         config::log_file = vm["log-file"].as<std::string>();
         config::method_name = vm["method"].as<std::string>();
         config::read_hetatm = vm["read-hetatm"].as<bool>();
