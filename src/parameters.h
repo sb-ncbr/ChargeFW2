@@ -1,9 +1,3 @@
-#include <utility>
-
-//
-// Created by krab1k on 05/11/18.
-//
-
 #pragma once
 
 #include <map>

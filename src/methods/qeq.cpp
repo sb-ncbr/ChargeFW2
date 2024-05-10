@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 02/01/19.
-//
-
 #include <functional>
 #include <string>
 #include <cmath>

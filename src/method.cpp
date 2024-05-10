@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 6.11.18.
-//
-
 #include <vector>
 #include <map>
 #include <set>

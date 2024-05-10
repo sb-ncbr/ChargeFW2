@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 19.05.21.
-//
-
 #include <fmt/format.h>
 #include <dlfcn.h>
 #include <filesystem>

@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 4.1.19.
-//
-
 #include <cmath>
 #include <fmt/format.h>
 #include <numeric>

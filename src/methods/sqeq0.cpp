@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 27.08.20.
-//
-
 #include <vector>
 #include <cmath>
 #include <Eigen/LU>

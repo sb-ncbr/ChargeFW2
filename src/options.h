@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 10/05/24.
-//
-
 #pragma once
 
 #include <boost/program_options.hpp>

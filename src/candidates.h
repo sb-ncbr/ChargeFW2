@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 8.4.19.
-//
-
 #pragma once
 
 #include "structures/molecule_set.h"

@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 28.1.19.
-//
-
 #include <vector>
 #include <memory>
 #include <string>

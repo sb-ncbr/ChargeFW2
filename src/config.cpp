@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 4.2.19.
-//
-
 #include <fmt/core.h>
 
 #include "chargefw2.h"

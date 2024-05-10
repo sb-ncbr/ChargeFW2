@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 23/10/18.
-//
-
 #include <utility>
 #include "atom.h"
 #include "../element.h"

@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 11.12.18.
-//
-
 #include  <stdexcept>
 
 #include "element.h"

@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 10/05/24.
-//
-
 #include <boost/program_options.hpp>
 #include <fmt/core.h>
 #include <fmt/ostream.h>

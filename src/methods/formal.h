@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 12/11/18.
-//
-
 #pragma once
 
 #include "../method.h"

@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 02/01/19.
-//
-
 #pragma once
 
 #include "structures/atom.h"

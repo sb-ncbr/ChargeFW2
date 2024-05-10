@@ -1,8 +1,3 @@
-//
-// Created by krab1k on 2019-11-14.
-//
-
-
 #include <string>
 #include <algorithm>
 

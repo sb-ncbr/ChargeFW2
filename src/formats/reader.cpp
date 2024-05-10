@@ -1,7 +1,3 @@
-//
-// Created by krab1k on 29.1.19.
-//
-
 #include <filesystem>
 
 #include "reader.h"
