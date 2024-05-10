@@ -86,5 +86,5 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
         }
         q(i) += correction;
     }
-    return std::vector<double>(q.data(), q.data() + q.size());
+    return {q.data(), q.data() + q.size()};
 }

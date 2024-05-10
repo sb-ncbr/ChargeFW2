@@ -44,5 +44,5 @@ std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
     }
     chi /= exp(log_sum / n);
 
-    return std::vector<double>(chi.data(), chi.data() + chi.size());
+    return {chi.data(), chi.data() + chi.size()};
 }

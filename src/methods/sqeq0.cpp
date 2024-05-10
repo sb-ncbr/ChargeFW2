@@ -70,5 +70,5 @@ std::vector<double> SQEq0::calculate_charges(const Molecule &molecule) const {
     Eigen::VectorXd split_q = split_A.partialPivLu().solve(split_b);
     Eigen::VectorXd q = T.transpose() * split_q + q0;
 
-    return std::vector<double>(q.data(), q.data() + n);
+    return {q.data(), q.data() + n};
 }

@@ -57,5 +57,5 @@ std::vector<double> SMP_QEq::calculate_charges(const Molecule &molecule) const {
     };
 
     Eigen::VectorXd q = solve_EE(molecule, f);
-    return std::vector<double>(q.data(), q.data() + q.size());
+    return {q.data(), q.data() + q.size()};
 }

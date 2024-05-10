@@ -45,5 +45,5 @@ std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
         q = x.solve(q - tmp);
     }
 
-    return std::vector<double>(q.data(), q.data() + q.size());
+    return {q.data(), q.data() + q.size()};
 }

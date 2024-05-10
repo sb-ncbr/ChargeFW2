@@ -98,5 +98,5 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
         q(bond.second().index()) += 0.5 * q(n + i);
     }
 
-    return std::vector<double>(q.data(), q.data() + n);
+    return {q.data(), q.data() + n};
 }

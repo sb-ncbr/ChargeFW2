@@ -50,5 +50,5 @@ std::vector<double> SFKEEM::calculate_charges(const Molecule &molecule) const {
     };
 
     Eigen::VectorXd q = solve_EE(molecule, f);
-    return std::vector<double>(q.data(), q.data() + q.size());
+    return {q.data(), q.data() + q.size()};
 }

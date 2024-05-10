@@ -51,5 +51,5 @@ std::vector<double> TSEF::calculate_charges(const Molecule &molecule) const {
     b(n) = molecule.total_charge();
 
     Eigen::VectorXd q = A.partialPivLu().solve(b).head(n);
-    return std::vector<double>(q.data(), q.data() + q.size());
+    return {q.data(), q.data() + q.size()};
 }

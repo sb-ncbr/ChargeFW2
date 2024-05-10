@@ -43,5 +43,5 @@ std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
     }
 
     Eigen::VectorXd q = (B.transpose() * W * B + Eigen::MatrixXd::Identity(n, n)).partialPivLu().solve(chi0) - chi0;
-    return std::vector<double>(q.data(), q.data() + q.size());
+    return {q.data(), q.data() + q.size()};
 }
