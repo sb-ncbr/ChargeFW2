@@ -16,7 +16,7 @@ CHARGEFW2_METHOD(EQeqC)
 
 Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
-    size_t n = atoms.size();
+    const auto n = static_cast<Eigen::Index>(atoms.size());
 
     const double lambda = 1.2;
     const double k = 14.4;
@@ -27,7 +27,7 @@ Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double 
     Eigen::VectorXd J = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd X = Eigen::VectorXd::Zero(n);
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         if (atom_i.element().symbol() == "H") {
             X(i) = (atom_i.element().ionization_potential() + H_electron_affinity) / 2;
@@ -38,11 +38,11 @@ Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double 
         }
     }
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         A(i, i) = J(i);
         b(i) = -X(i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = *atoms[j];
             double a = std::sqrt(J(i) * J(j)) / k;
             double Rij = distance(atom_i, atom_j);
@@ -63,7 +63,7 @@ Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double 
 
 
 std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
-    size_t n = molecule.atoms().size();
+    const auto n = static_cast<Eigen::Index>(molecule.atoms().size());
 
     auto f = [this](const std::vector<const Atom *> &atoms, double total_charge) -> Eigen::VectorXd {
         return EE_system(atoms, total_charge);
@@ -71,10 +71,10 @@ std::vector<double> EQeqC::calculate_charges(const Molecule &molecule) const {
 
     Eigen::VectorXd q = solve_EE(molecule, f);
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];
         double correction = 0;
-        for (size_t j = 0; j < n; j++) {
+        for (Eigen::Index j = 0; j < n; j++) {
             if (i == j)
                 continue;
             const auto &atom_j = molecule.atoms()[j];

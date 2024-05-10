@@ -3,11 +3,9 @@
 //
 
 #include <vector>
-#include <cmath>
 #include <Eigen/LU>
 
 #include "denr.h"
-#include "../structures/molecule.h"
 #include "../parameters.h"
 
 CHARGEFW2_METHOD(DENR)
@@ -15,22 +13,22 @@ CHARGEFW2_METHOD(DENR)
 
 std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
 
-    size_t n = molecule.atoms().size();
+    const auto n = static_cast<Eigen::Index>(molecule.atoms().size());
 
     Eigen::MatrixXd eta = Eigen::MatrixXd::Zero(n, n);
     Eigen::MatrixXd L = Eigen::MatrixXd::Zero(n, n);
     Eigen::VectorXd chi = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd q = Eigen::VectorXd::Zero(n);
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         auto &atom_i = molecule.atoms()[i];
         chi(i) = parameters_->atom()->parameter(atom::electronegativity)(atom_i);
         eta(i, i) = parameters_->atom()->parameter(atom::hardness)(atom_i);
     }
 
     for (const auto &bond: molecule.bonds()) {
-        auto i1 = bond.first().index();
-        auto i2 = bond.second().index();
+        auto i1 = static_cast<Eigen::Index>(bond.first().index());
+        auto i2 = static_cast<Eigen::Index>(bond.second().index());
         L(i1, i1) += 1;
         L(i2, i2) += 1;
         L(i1, i2) -= 1;

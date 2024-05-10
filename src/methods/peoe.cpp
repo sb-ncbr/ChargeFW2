@@ -5,7 +5,6 @@
 #include <cmath>
 
 #include "peoe.h"
-#include "../structures/molecule.h"
 #include "../structures/bond.h"
 #include "../parameters.h"
 

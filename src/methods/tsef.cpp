@@ -25,18 +25,18 @@ double K(int i) {
 
 std::vector<double> TSEF::calculate_charges(const Molecule &molecule) const {
 
-    size_t n = molecule.atoms().size();
+    const auto n = static_cast<Eigen::Index>(molecule.atoms().size());
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n + 1, n + 1);
     Eigen::VectorXd b = Eigen::VectorXd::Zero(n + 1);
 
     const double alpha = 14.4;
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];
         A(i, i) = parameters_->atom()->parameter(atom::hardness)(atom_i);
         b(i) = - parameters_->atom()->parameter(atom::electronegativity)(atom_i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = molecule.atoms()[j];
             int bd = molecule.bond_distance(atom_i, atom_j);
             auto x = alpha * K(bd) / (0.84 * bd + 0.46);

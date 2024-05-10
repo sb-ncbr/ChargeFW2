@@ -16,16 +16,16 @@ CHARGEFW2_METHOD(SFKEEM)
 
 Eigen::VectorXd SFKEEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
-    size_t n = atoms.size();
+    const auto n = static_cast<Eigen::Index>(atoms.size());
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n + 1, n + 1);
     Eigen::VectorXd b = Eigen::VectorXd::Zero(n + 1);
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         A(i, i) = 2 * parameters_->atom()->parameter(atom::B)(atom_i);
         b(i) = -parameters_->atom()->parameter(atom::A)(atom_i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = *atoms[j];
             auto x = 2 * sqrt(parameters_->atom()->parameter(atom::B)(atom_i) *
                                     parameters_->atom()->parameter(atom::B)(atom_j)) /

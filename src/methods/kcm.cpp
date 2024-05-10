@@ -15,8 +15,8 @@ CHARGEFW2_METHOD(KCM)
 
 std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
 
-    size_t n = molecule.atoms().size();
-    size_t m = molecule.bonds().size();
+    const auto n = static_cast<Eigen::Index>(molecule.atoms().size());
+    const auto m = static_cast<Eigen::Index>(molecule.bonds().size());
 
     Eigen::MatrixXd W = Eigen::MatrixXd::Zero(m, m);
     Eigen::MatrixXd B = Eigen::MatrixXd::Zero(m, n);
@@ -26,11 +26,11 @@ std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
      *  q = (B.T @ W @ B + I)^-1 @ chi0 - chi0
      */
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         chi0(i) = parameters_->atom()->parameter(atom::electronegativity)(molecule.atoms()[i]);
     }
 
-    for (size_t i = 0; i < m; i++) {
+    for (Eigen::Index i = 0; i < m; i++) {
         auto &bond = molecule.bonds()[i];
         auto &first = bond.first();
         auto &second = bond.second();
@@ -38,8 +38,8 @@ std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
         W(i, i) = 1 / (parameters_->atom()->parameter(atom::hardness)(first) +
                             parameters_->atom()->parameter(atom::hardness)(second));
 
-        B(i, first.index()) = 1;
-        B(i, second.index()) = -1;
+        B(i, static_cast<Eigen::Index>(first.index())) = 1;
+        B(i, static_cast<Eigen::Index>(second.index())) = -1;
     }
 
     Eigen::VectorXd q = (B.transpose() * W * B + Eigen::MatrixXd::Identity(n, n)).partialPivLu().solve(chi0) - chi0;

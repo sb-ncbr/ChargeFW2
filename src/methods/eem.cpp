@@ -3,7 +3,6 @@
 //
 
 #include <vector>
-#include <functional>
 #include <Eigen/LU>
 
 #include "eem.h"
@@ -15,16 +14,16 @@ CHARGEFW2_METHOD(EEM)
 
 Eigen::VectorXd EEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
-    size_t n = atoms.size();
+    const auto n = static_cast<Eigen::Index>(atoms.size());
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n + 1, n + 1);
     Eigen::VectorXd b = Eigen::VectorXd::Zero(n + 1);
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         A(i, i) = parameters_->atom()->parameter(atom::B)(atom_i);
         b(i) = -parameters_->atom()->parameter(atom::A)(atom_i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = *atoms[j];
             auto x = parameters_->common()->parameter(common::kappa) / distance(atom_i, atom_j);
             A(i, j) = x;

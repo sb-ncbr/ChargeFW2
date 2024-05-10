@@ -16,7 +16,7 @@ CHARGEFW2_METHOD(EQeq)
 
 Eigen::VectorXd EQeq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
-    size_t n = atoms.size();
+    const auto n = static_cast<Eigen::Index>(atoms.size());
 
     const double lambda = 1.2;
     const double k = 14.4;
@@ -27,7 +27,7 @@ Eigen::VectorXd EQeq::EE_system(const std::vector<const Atom *> &atoms, double t
     Eigen::VectorXd J = Eigen::VectorXd::Zero(n);
     Eigen::VectorXd X = Eigen::VectorXd::Zero(n);
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         if (atom_i.element().symbol() == "H") {
             X(i) = (atom_i.element().ionization_potential() + H_electron_affinity) / 2;
@@ -38,11 +38,11 @@ Eigen::VectorXd EQeq::EE_system(const std::vector<const Atom *> &atoms, double t
         }
     }
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         A(i, i) = J(i);
         b(i) = -X(i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = *atoms[j];
             double a = std::sqrt(J(i) * J(j)) / k;
             double Rij = distance(atom_i, atom_j);
@@ -68,6 +68,5 @@ std::vector<double> EQeq::calculate_charges(const Molecule &molecule) const {
     };
 
     Eigen::VectorXd q = solve_EE(molecule, f);
-
     return {q.data(), q.data() + q.size()};
 }

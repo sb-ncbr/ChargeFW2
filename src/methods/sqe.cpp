@@ -15,21 +15,21 @@ CHARGEFW2_METHOD(SQE)
 
 std::vector<double> SQE::calculate_charges(const Molecule &molecule) const {
 
-    size_t n = molecule.atoms().size();
-    size_t m = molecule.bonds().size();
+    const auto n = static_cast<Eigen::Index>(molecule.atoms().size());
+    const auto m = static_cast<Eigen::Index>(molecule.bonds().size());
 
     Eigen::VectorXd hardness = Eigen::VectorXd::Zero(n);
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom = molecule.atoms()[i];
         hardness(i) = parameters_->atom()->parameter(atom::hardness)(atom);
     }
 
     Eigen::MatrixXd T = Eigen::MatrixXd::Zero(m, n);
-    for (size_t i = 0; i < molecule.bonds().size(); i++) {
+    for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(molecule.bonds().size()); i++) {
         const auto &bond = molecule.bonds()[i];
-        auto i1 = bond.first().index();
-        auto i2 = bond.second().index();
+        auto i1 = static_cast<Eigen::Index>(bond.first().index());
+        auto i2 = static_cast<Eigen::Index>(bond.second().index());
         T(i, i1) = 1;
         T(i, i2) = -1;
     }
@@ -38,11 +38,11 @@ std::vector<double> SQE::calculate_charges(const Molecule &molecule) const {
     Eigen::VectorXd b = Eigen::VectorXd::Zero(n);
 
     /* Setup EEM part */
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];
         A(i, i) = hardness(i);
         b(i) = -parameters_->atom()->parameter(atom::electronegativity)(atom_i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = molecule.atoms()[j];
             auto d = distance(atom_i, atom_j);
             auto wi = parameters_->atom()->parameter(atom::width)(atom_i);
@@ -57,7 +57,7 @@ std::vector<double> SQE::calculate_charges(const Molecule &molecule) const {
     Eigen::MatrixXd split_A = T * A * T.transpose();
     Eigen::VectorXd split_b = T * b;
 
-    for (size_t i = 0; i < molecule.bonds().size(); i++) {
+    for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(molecule.bonds().size()); i++) {
         const auto &bond = molecule.bonds()[i];
         split_A(i, i) += parameters_->bond()->parameter(bond::kappa)(bond);
     }

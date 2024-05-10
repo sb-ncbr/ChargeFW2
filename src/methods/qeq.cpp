@@ -40,18 +40,18 @@ double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::stri
 
 Eigen::VectorXd QEq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
-    size_t n = atoms.size();
+    const auto n = static_cast<Eigen::Index>(atoms.size());
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n + 1, n + 1);
     Eigen::VectorXd b = Eigen::VectorXd::Zero(n + 1);
 
     const auto type = get_option_value<std::string>("overlap_term");
 
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = *atoms[i];
         A(i, i) = parameters_->atom()->parameter(atom::hardness)(atom_i);
         b(i) = - parameters_->atom()->parameter(atom::electronegativity)(atom_i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = *atoms[j];
             auto x = overlap_term(atom_i, atom_j, type);
             A(i, j) = x;

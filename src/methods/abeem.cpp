@@ -15,9 +15,9 @@ CHARGEFW2_METHOD(ABEEM)
 
 std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
 
-    size_t n = molecule.atoms().size();
-    size_t m = molecule.bonds().size();
-    size_t mn = n + m + 1;
+    const auto n = static_cast<Eigen::Index>(molecule.atoms().size());
+    const auto m = static_cast<Eigen::Index>(molecule.bonds().size());
+    const auto mn = n + m + 1;
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(mn, mn);
     Eigen::VectorXd b = Eigen::VectorXd::Zero(mn);
@@ -25,11 +25,11 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     const double k = parameters_->common()->parameter(common::k);
 
     // atom-atom part
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom_i = molecule.atoms()[i];
         A(i, i) = parameters_->atom()->parameter(atom::b)(atom_i);
         b(i) = -parameters_->atom()->parameter(atom::a)(atom_i);
-        for (size_t j = i + 1; j < n; j++) {
+        for (Eigen::Index j = i + 1; j < n; j++) {
             const auto &atom_j = molecule.atoms()[j];
             double off = k / distance(atom_i, atom_j);
             A(i, j) = off;
@@ -38,9 +38,9 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     }
 
     // atom-bond part
-    for (size_t i = 0; i < n; i++) {
+    for (Eigen::Index i = 0; i < n; i++) {
         const auto &atom = molecule.atoms()[i];
-        for (size_t j = 0; j < m; j++) {
+        for (Eigen::Index j = 0; j < m; j++) {
             const auto &bond = molecule.bonds()[j];
             if (bond.hasAtom(atom)) {
                 A(i, n + j) = parameters_->atom()->parameter(atom::c)(atom);
@@ -52,10 +52,10 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     }
 
     // bond-atom part
-    for (size_t i = 0; i < m; i++) {
+    for (Eigen::Index i = 0; i < m; i++) {
         const auto &bond = molecule.bonds()[i];
         b(n + i) = -parameters_->bond()->parameter(bond::A)(bond);
-        for (size_t j = 0; j < n; j++) {
+        for (Eigen::Index j = 0; j < n; j++) {
             const auto &atom = molecule.atoms()[j];
             if (bond.hasAtom(atom)) {
                 if (bond.first() == atom) {
@@ -70,10 +70,10 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     }
 
     // bond-bond part
-    for (size_t i = 0; i < m; i++) {
+    for (Eigen::Index i = 0; i < m; i++) {
         const auto &bond_i = molecule.bonds()[i];
         A(n + i, n + i) = parameters_->bond()->parameter(bond::B)(bond_i);
-        for (size_t j = i + 1; j < m; j++) {
+        for (Eigen::Index j = i + 1; j < m; j++) {
             const auto &bond_j = molecule.bonds()[j];
             double off = k / distance(bond_i, bond_j, true);
             A(n + i, n + j) = off;
@@ -81,7 +81,7 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
         }
     }
 
-    for (size_t i = 0; i < n + m; i++) {
+    for (Eigen::Index i = 0; i < n + m; i++) {
         A(i, n + m) = 1;
         A(n + m, i) = 1;
     }
@@ -92,10 +92,10 @@ std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
     Eigen::VectorXd q = A.partialPivLu().solve(b).head(mn);
 
     // Redistribute the bond charges to the corresponding atoms
-    for(size_t i = 0; i < m; i++) {
+    for(Eigen::Index i = 0; i < m; i++) {
         const auto &bond = molecule.bonds()[i];
-        q(bond.first().index())+= 0.5 * q(n + i);
-        q(bond.second().index()) += 0.5 * q(n + i);
+        q(static_cast<Eigen::Index>(bond.first().index())) += 0.5 * q(n + i);
+        q(static_cast<Eigen::Index>(bond.second().index())) += 0.5 * q(n + i);
     }
 
     return {q.data(), q.data() + n};
