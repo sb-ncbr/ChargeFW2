@@ -28,5 +28,5 @@ std::string trim(const std::string &text) {
         end--;
     } while (std::distance(start, end) > 0 and isspace(*end));
 
-    return std::string(start, end + 1);
+    return {start, end + 1};
 }
