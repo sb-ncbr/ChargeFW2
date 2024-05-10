@@ -15,8 +15,6 @@ ARG DEPS="\
         libomp-dev \
         libstb-dev \
         nlohmann-json3-dev \
-        python3-dev \
-        python3-pybind11 \
         tao-pegtl-dev"
 
 RUN apt-get update && \

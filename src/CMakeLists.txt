@@ -2,9 +2,14 @@ find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(fmt 5.3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(nanoflann 1.3 REQUIRED)
-find_package(pybind11)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 find_package(gemmi 0.6.2 CONFIG REQUIRED)
+
+option(PYTHON_MODULE "Build Python bindings" ON)
+
+if(PYTHON_MODULE)
+    find_package(pybind11)
+endif ()
 
 include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
@@ -38,6 +43,8 @@ set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 
 install(TARGETS chargefw2 DESTINATION bin)
 
-pybind11_add_module(chargefw2_python python.cpp)
-target_link_libraries(chargefw2_python PRIVATE formats common ${COMMON_LIBS} utility gemmi::gemmi_cpp)
-install(TARGETS chargefw2_python DESTINATION lib)
+if(PYTHON_MODULE)
+    pybind11_add_module(chargefw2_python python.cpp)
+    target_link_libraries(chargefw2_python PRIVATE formats common ${COMMON_LIBS} utility gemmi::gemmi_cpp)
+    install(TARGETS chargefw2_python DESTINATION lib)
+endif ()
