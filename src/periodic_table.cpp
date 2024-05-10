@@ -52,7 +52,6 @@ PeriodicTable::PeriodicTable() {
                             electron_affinity, ionization_potential);
             elements_.push_back(element);
             symbol_Z_[symbol] = index;
-            name_Z_[name] = index;
         }
     } catch (std::invalid_argument &) {
         fmt::print(stderr, "Unable to read periodic table data file: {}\n", filename);
@@ -79,10 +78,3 @@ const Element *PeriodicTable::get_element_by_symbol(const std::string &symbol) c
     return get_element_by_Z(symbol_Z_.at(symbol) - 1);
 }
 
-
-const Element *PeriodicTable::get_element_by_name(const std::string &name) const {
-    if (!name_Z_.count(name)) {
-        throw std::runtime_error(fmt::format("No such element: {}", name));
-    }
-    return get_element_by_Z(name_Z_.at(name) - 1);
-}
