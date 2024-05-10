@@ -22,13 +22,14 @@ ARG DEPS="\
 RUN apt-get update && \
         apt-get install -y ${DEPS}
 
+ARG REBUILD=foo
 RUN git clone --depth 1 https://github.com/sb-ncbr/ChargeFW2.git && \
         cd ChargeFW2 && \
         git checkout master && \
         mkdir build && \
         cd build && \
         cmake .. -DCMAKE_INSTALL_PREFIX=. && \
-        make && \
+        make -j4 && \
         make install
 
 # bundle dependencies
