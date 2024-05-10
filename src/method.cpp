@@ -5,6 +5,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <filesystem>
 #include <dlfcn.h>
 #include <fmt/format.h>
 #include <fmt/ranges.h>
@@ -15,6 +16,9 @@
 #include "method.h"
 #include "parameters.h"
 #include "utility/strings.h"
+
+
+namespace fs = std::filesystem;
 
 
 std::vector<RequiredFeatures> Method::get_requirements() const {
@@ -215,7 +219,7 @@ Method* load_method(const std::string &method_name) {
     if (method_name.ends_with(".so")) {
         file = method_name;
     } else {
-        file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
+        file = fs::path(INSTALL_DIR) / "lib" / ("lib" + method_name + ".so");
     }
 
     auto handle = dlopen(file.c_str(), RTLD_LAZY);

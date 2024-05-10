@@ -22,7 +22,7 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 std::vector<fs::path> get_parameter_files() {
     /* Get parameters sorted according to the names and priorities */
     std::vector<fs::path> files;
-    for (const auto &set: fs::directory_iterator(fs::path(INSTALL_DIR) / "share/parameters")) {
+    for (const auto &set: fs::directory_iterator(fs::path(INSTALL_DIR) / "share" / "parameters")) {
         files.emplace_back(set.path());
     }
     std::sort(files.begin(), files.end());
@@ -74,7 +74,7 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 
 std::vector<std::tuple<std::string, std::vector<std::string>>>
 get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
-    std::string filename = (fs::path(INSTALL_DIR) / "share/methods.json").string();
+    std::string filename = fs::path(INSTALL_DIR) / "share" / "methods.json";
     using json = nlohmann::json;
     json j;
     std::ifstream f(filename);

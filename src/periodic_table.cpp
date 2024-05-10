@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <filesystem>
 #include <stdexcept>
 #include <fmt/format.h>
 
@@ -13,9 +14,11 @@
 #include "element.h"
 #include "periodic_table.h"
 
+namespace fs = std::filesystem;
+
 
 PeriodicTable::PeriodicTable() {
-    std::string filename(std::string(INSTALL_DIR) + "/share/pte.csv");
+    std::string filename(fs::path(INSTALL_DIR) / "share" / "pte.csv");
     std::ifstream file(filename);
     if (!file) {
         fmt::print(stderr, "Unable to open periodic table data file: {}\n", filename);

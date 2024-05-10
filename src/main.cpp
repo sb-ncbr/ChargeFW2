@@ -77,7 +77,7 @@ int main(int argc, char **argv) {
                     exit(EXIT_PARAMETER_ERROR);
                 }
                 fmt::print("Best parameters found: {}\n", par_name);
-                par_name = (fs::path(INSTALL_DIR) / "share/parameters" / par_name).string();
+                par_name = fs::path(INSTALL_DIR) / "share" / "parameters" / par_name;
             } else {
                 par_name = config::par_file;
             }

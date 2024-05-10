@@ -61,7 +61,7 @@ size_t Molecules::length() const {
 
 std::vector<std::string> get_available_methods() {
     std::vector<std::string> results;
-    std::string filename = (fs::path(INSTALL_DIR) / "share/methods.json").string();
+    std::string filename = fs::path(INSTALL_DIR) / "share" / "methods.json";
     using json = nlohmann::json;
     json j;
     std::ifstream f(filename);
@@ -106,7 +106,7 @@ std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_meth
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
 
-    std::string method_file = (std::string(INSTALL_DIR) + "/lib/lib" + method_name + ".so");
+    std::string method_file = fs::path(INSTALL_DIR) / "lib" / ("lib" + method_name + ".so");
     auto handle = dlopen(method_file.c_str(), RTLD_LAZY);
 
     auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
@@ -121,7 +121,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
             throw std::runtime_error(std::string("Method ") + method_name + std::string(" requires parameters"));
         }
 
-        std::string parameter_file = (std::string(INSTALL_DIR) + "/share/parameters/" + parameters_name.value() + ".json");
+        std::string parameter_file = fs::path(INSTALL_DIR) / "share" / "parameters" / (parameters_name.value() + ".json");
         if (not parameter_file.empty()) {
             parameters = std::make_unique<Parameters>(parameter_file);
             auto unclassified = molecules.ms.classify_set_from_parameters(*parameters, false, true);

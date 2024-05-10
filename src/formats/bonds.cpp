@@ -7,6 +7,7 @@
 #include <string>
 #include <tuple>
 #include <fstream>
+#include <filesystem>
 #include <map>
 #include <sstream>
 
@@ -15,6 +16,8 @@
 #include "common.h"
 #include "../structures/atom.h"
 #include "../structures/bond.h"
+
+namespace fs = std::filesystem;
 
 
 void load_residues_info(const std::string &filename,
@@ -61,7 +64,7 @@ void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, const std::map<std:
     static bool all_loaded = false;
 
     if (not basic_loaded) {
-        load_residues_info(std::string(INSTALL_DIR) + "/share/amino_acids.txt", residues_data);
+        load_residues_info(fs::path(INSTALL_DIR) / "share" / "amino_acids.txt", residues_data);
         basic_loaded = true;
     }
 
@@ -70,7 +73,7 @@ void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, const std::map<std:
 
     /* Try to load additional residues */
     if (not all_loaded and it == residues_data.end()) {
-        load_residues_info(std::string(INSTALL_DIR) + "/share/other_residues.txt", residues_data);
+        load_residues_info(fs::path(INSTALL_DIR) / "share" / "other_residues.txt", residues_data);
         all_loaded = true;
         it = residues_data.find(residue);
     }
