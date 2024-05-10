@@ -150,7 +150,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 }
 
 
-PYBIND11_MODULE(chargefw2_python, m) {
+PYBIND11_MODULE(chargefw2, m) {
     m.doc() = "Python bindings to ChargeFW2";
     py::class_<Molecules>(m, "Molecules")
             .def(py::init<const std::string &, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
