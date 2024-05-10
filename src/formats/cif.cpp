@@ -1,30 +1,18 @@
-#include <iostream>
 #include <string>
 #include <vector>
 #include <stdexcept>
 #include <fstream>
 #include <filesystem>
 
-#include <gemmi/align.hpp>  // assign_label_seq_id
+#include <gemmi/align.hpp>
 #include <gemmi/cif.hpp>
 #include <gemmi/mmcif.hpp>
 #include <gemmi/pdb.hpp>
 #include <gemmi/to_cif.hpp>
-#include <gemmi/modify.hpp>
-
-// suppresses warnings from gemmi/to_mmcif.hpp
-// unfortunately only works with clang
-#define GEMMI_WRITE_IMPLEMENTATION
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wcpp"
-#include <gemmi/to_mmcif.hpp>  // make_mmcif_block
-#pragma GCC diagnostic pop
-#undef GEMMI_WRITE_IMPLEMENTATION
+#include <gemmi/to_mmcif.hpp>
 
 #include "chargefw2.h"
 #include "cif.h"
-#include "../structures/molecule_set.h"
-#include "../charges.h"
 #include "../config.h"
 #include "../utility/strings.h"
 
@@ -118,17 +106,16 @@ static void filter_out_altloc_atoms(gemmi::cif::Block &block) {
     gemmi::update_mmcif_block(structure, block);
 }
 
-static void generate_mmcif_from_block(gemmi::cif::Block &block, const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
+static void generate_mmcif_from_block(gemmi::cif::Block &block, const MoleculeSet &ms, const Charges &charges) {
     const Molecule &molecule = ms.molecules()[0];
     
     filter_out_altloc_atoms(block);
     append_charges_to_block(molecule, charges, block);
     
-    std::filesystem::path out_dir{config::chg_out_dir};
-    std::string molecule_name = to_lowercase(molecule.name());    
-    std::string out_filename = molecule_name + ".fw2.cif";
-    std::string out_file{(out_dir / out_filename).string()};
-    std::ofstream out_stream{out_file};
+    const std::filesystem::path out_dir{config::chg_out_dir};
+    const std::string molecule_name = to_lowercase(molecule.name());
+    const std::string out_filename = molecule_name + ".fw2.cif";
+    std::ofstream out_stream{{out_dir / out_filename}};
 
     // remove pesky _chem_comp category >:(
     block.find_mmcif_category("_chem_comp.").erase();
@@ -140,7 +127,7 @@ static void generate_mmcif_from_cif_file(const MoleculeSet &ms, const Charges &c
     auto document = gemmi::cif::read_file(filename);
     auto& block = document.sole_block();
     
-    generate_mmcif_from_block(block, ms, charges, filename);
+    generate_mmcif_from_block(block, ms, charges);
 }
 
 static void generate_mmcif_from_pdb_file(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
@@ -156,7 +143,7 @@ static void generate_mmcif_from_pdb_file(const MoleculeSet &ms, const Charges &c
 
     auto block = gemmi::make_mmcif_block(structure);
 
-    generate_mmcif_from_block(block, ms, charges, filename);
+    generate_mmcif_from_block(block, ms, charges);
 }
 
 static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const Charges &charges) {
@@ -202,8 +189,7 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
 
         // _atom_site
         auto& atom_site_loop = block.init_loop(atom_site_prefix, atom_site_attributes);
-        for (size_t i = 0; i < molecule.atoms().size(); i++) {
-            const auto &atom = molecule.atoms()[i];
+        for (const auto &atom: molecule.atoms()) {
             const std::string group_PDB = atom.hetatm() ? "HETATM" : "ATOM";
             const std::string id = fmt::format("{}", atom.index() + 1);
             const std::string type_symbol = atom.element().symbol();
@@ -239,7 +225,7 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
 
         // _chem_comp_bond
         auto& chem_comp_bond_loop = block.init_loop(chem_comp_bond_prefix, chem_comp_bond_attributes);
-        for (const auto& bond: molecule.bonds()) {
+        for (const auto &bond: molecule.bonds()) {
             const std::string atom_id_1 = fmt::format("{}", bond.first().index() + 1);
             const std::string atom_id_2 = fmt::format("{}", bond.second().index() + 1);
             const std::string value_order = convert_bond_order_to_mmcif_value_order_string(bond.order());

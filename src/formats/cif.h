@@ -5,7 +5,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <gemmi/cif.hpp>
 
 #include "writer.h"
