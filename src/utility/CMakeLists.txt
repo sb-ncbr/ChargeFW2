@@ -1,1 +1,1 @@
-add_library(utility utility.h strings.h strings.cpp)
+add_library(utility strings.h strings.cpp)
