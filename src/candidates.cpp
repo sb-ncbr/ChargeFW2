@@ -114,7 +114,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
         auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method_name);
         if (not parameters.empty()) {
-            results.emplace_back(std::make_tuple(method_name, parameters));
+            results.emplace_back(method_name, parameters);
         }
     }
 

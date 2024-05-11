@@ -44,8 +44,7 @@ Parameters::Parameters(const std::string &filename) {
             std::vector<std::vector<double>> parameters;
             for (const auto &obj: j["atom"]["data"]) {
                 auto key = obj["key"];
-                keys.emplace_back(
-                        std::make_tuple(key[0].get<std::string>(), key[1].get<std::string>(), key[2].get<std::string>()));
+                keys.emplace_back(key[0].get<std::string>(), key[1].get<std::string>(), key[2].get<std::string>());
                 parameters.emplace_back(obj["value"].get<std::vector<double>>());
             }
             atoms_ = std::make_unique<AtomParameters>(names, parameters, keys);
@@ -57,10 +56,9 @@ Parameters::Parameters(const std::string &filename) {
             std::vector<std::vector<double>> parameters;
             for (const auto &obj: j["bond"]["data"]) {
                 auto key = obj["key"];
-                keys.emplace_back(
-                        std::make_tuple(key[0].get<std::string>(), key[1].get<std::string>(), key[2].get<std::string>(),
-                                        key[3].get<std::string>(), key[4].get<std::string>(), key[5].get<std::string>(),
-                                        key[6].get<std::string>(), key[7].get<std::string>()));
+                keys.emplace_back(key[0].get<std::string>(), key[1].get<std::string>(), key[2].get<std::string>(),
+                                  key[3].get<std::string>(), key[4].get<std::string>(), key[5].get<std::string>(),
+                                  key[6].get<std::string>(), key[7].get<std::string>());
                 parameters.emplace_back(obj["value"].get<std::vector<double>>());
             }
             bonds_ = std::make_unique<BondParameters>(names, parameters, keys);
