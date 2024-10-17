@@ -3,7 +3,7 @@
 Application for computing partial atomic charges using selected empirical methods.
 ChargeFW2 is the computational core of [Atomic Charge Calculator II](https://acc2.ncbr.muni.cz).
 
-See the [short description](https://acc2.ncbr.muni.cz/static/methods.pdf) of implemented methods. 
+See the [short description](https://acc2.ncbr.muni.cz/static/assets/methods.pdf) of implemented methods. 
 
 ## Compilation requirements
 
