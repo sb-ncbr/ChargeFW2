@@ -1,5 +1,6 @@
 #include <string>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <fmt/os.h>
 
 #include "chargefw2.h"
