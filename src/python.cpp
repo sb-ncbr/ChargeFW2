@@ -101,7 +101,6 @@ std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_meth
 
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
-
     std::string method_file = fs::path(INSTALL_DIR) / "lib" / ("lib" + method_name + ".so");
     auto handle = dlopen(method_file.c_str(), RTLD_LAZY);
 
@@ -161,5 +160,5 @@ PYBIND11_MODULE(chargefw2, m) {
           "Return the list of all parameters of a given method");
     m.def("get_suitable_methods", &get_sutaible_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
-          "Calculate partial atomic charges for a given molecules and method");
+          "Calculate partial atomic charges for a given molecules and method", py::call_guard<py::gil_scoped_release>());
 }
