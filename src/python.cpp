@@ -31,9 +31,6 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules);
 
 struct MoleculeInfo {
-    size_t total_molecules;
-    size_t total_atoms;
-
     struct AtomTypeCount {
         std::string symbol;
         std::string cls;
@@ -43,21 +40,23 @@ struct MoleculeInfo {
         [[nodiscard]] py::dict to_dict() const;
     };
 
-    std::map<size_t, AtomTypeCount> atom_type_counts;
+    size_t total_molecules;
+    size_t total_atoms;
+    std::vector<AtomTypeCount> atom_type_counts;
 
     [[nodiscard]] py::dict to_dict() const;
 };
 
 py::dict MoleculeInfo::to_dict() const {
-    py::dict atom_types_dict;
-    for (const auto& [key, value] : atom_type_counts) {
-        atom_types_dict[py::cast(key)] = value.to_dict();
+    py::list atom_types_list;
+    for (const auto &count : atom_type_counts) {
+        atom_types_list.append(count.to_dict());
     }
 
     return py::dict(
         py::arg("total_molecules") = total_molecules,
         py::arg("total_atoms") = total_atoms,
-        py::arg("atom_type_counts") = atom_types_dict
+        py::arg("atom_type_counts") = atom_types_list
     );
 }
 
@@ -127,7 +126,7 @@ MoleculeInfo Molecules::info() {
     size_t n_atoms = 0;
 
     for (const auto &m: ms.molecules()) {
-        for (const auto &a : m.atoms()) {
+        for (auto &a : m.atoms()) {
             counts[a.type()] += 1;
             n_atoms++;
         }
@@ -136,24 +135,23 @@ MoleculeInfo Molecules::info() {
     result.total_molecules = length();
     result.total_atoms = n_atoms;
 
-    const auto &atom_types = ms.atom_types();
+    auto atom_types = ms.atom_types();
 
-    if (!atom_types.empty()) {
-        for (const auto &[key, val] : counts) {
-            const auto &[symbol, cls, type] = atom_types[key];
+    if (atom_types.size() > 0) {
+        for (auto &[key, val] : counts) {
+            auto [symbol, cls, type] = atom_types[key];
             
-            result.atom_type_counts[key] = {
+            result.atom_type_counts.push_back({
                 .symbol = symbol,
                 .cls = cls,
                 .type = type,
                 .count = val
-            };
+            });
         }
     }
     
     return result;
 }
-
 
 std::vector<std::string> get_available_parameters(const std::string &method_name) {
     std::vector<std::string> parameters;
