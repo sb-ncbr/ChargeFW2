@@ -33,8 +33,6 @@ std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_meth
 struct MoleculeInfo {
     struct AtomTypeCount {
         std::string symbol;
-        std::string cls;
-        std::string type;
         int count;
 
         [[nodiscard]] py::dict to_dict() const;
@@ -63,8 +61,6 @@ py::dict MoleculeInfo::to_dict() const {
 py::dict MoleculeInfo::AtomTypeCount::to_dict() const {
         return py::dict(
             py::arg("symbol") = symbol,
-            py::arg("cls") = cls,
-            py::arg("type") = type,
             py::arg("count") = count
     );
 }
@@ -139,12 +135,10 @@ MoleculeInfo Molecules::info() {
 
     if (atom_types.size() > 0) {
         for (auto &[key, val] : counts) {
-            auto [symbol, cls, type] = atom_types[key];
+            auto symbol =  std::get<0>(atom_types[key]);
             
             result.atom_type_counts.push_back({
                 .symbol = symbol,
-                .cls = cls,
-                .type = type,
                 .count = val
             });
         }
@@ -228,8 +222,6 @@ PYBIND11_MODULE(chargefw2, m) {
     py::class_<MoleculeInfo::AtomTypeCount>(m, "AtomTypeCount")
         .def(py::init<>())
         .def_readwrite("symbol", &MoleculeInfo::AtomTypeCount::symbol)
-        .def_readwrite("cls", &MoleculeInfo::AtomTypeCount::cls)
-        .def_readwrite("type", &MoleculeInfo::AtomTypeCount::type)
         .def_readwrite("count", &MoleculeInfo::AtomTypeCount::count)
         .def("to_dict", &MoleculeInfo::AtomTypeCount::to_dict);
 
