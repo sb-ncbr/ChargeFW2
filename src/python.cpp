@@ -12,7 +12,7 @@
 #include "charges.h"
 #include "candidates.h"
 #include "utility/strings.h"
-
+#include "exceptions/file_exception.h"
 
 namespace fs = std::filesystem;
 namespace py = pybind11;
@@ -62,8 +62,7 @@ std::vector<std::string> get_available_methods() {
     json j;
     std::ifstream f(filename);
     if (!f) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException("Cannot open file: " + filename);
     }
 
     f >> j;

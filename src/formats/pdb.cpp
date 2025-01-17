@@ -8,6 +8,7 @@
 #include "common.h"
 #include "bonds.h"
 #include "../periodic_table.h"
+#include "../exceptions/file_exception.h"
 
 
 MoleculeSet PDB::read_file(const std::string &filename) {
@@ -16,8 +17,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
         structure = gemmi::read_pdb_file(filename);
     }
     catch (std::exception &) {
-        fmt::print(stderr, "Cannot load structure from file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException("Cannot load structure from file: " + filename);
     }
 
     auto molecules = std::make_unique<std::vector<Molecule>>();

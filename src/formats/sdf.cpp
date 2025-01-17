@@ -14,6 +14,7 @@
 #include "../periodic_table.h"
 #include "common.h"
 #include "sdf.h"
+#include "../exceptions/file_exception.h"
 
 
 void SDF::read_until_end_of_record(std::ifstream &file) {
@@ -27,8 +28,7 @@ void SDF::read_until_end_of_record(std::ifstream &file) {
 MoleculeSet SDF::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException("Cannot open file: " + filename);
     }
 
     std::string line;

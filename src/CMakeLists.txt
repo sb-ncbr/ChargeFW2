@@ -19,7 +19,7 @@ configure_file(chargefw2.h.in chargefw2.h)
 SET(COMMON_LIBS parameters geometry element method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
-    target_link_libraries(${lib} structures fmt::fmt)
+    target_link_libraries(${lib} structures exceptions fmt::fmt)
 endforeach ()
 
 target_link_libraries(method Eigen3::Eigen)
@@ -27,6 +27,7 @@ target_link_libraries(method Eigen3::Eigen)
 add_subdirectory(structures)
 add_subdirectory(methods)
 add_subdirectory(formats)
+add_subdirectory(exceptions)
 add_subdirectory(utility)
 
 SET(SOURCES periodic_table.cpp periodic_table.h charges.h charges.cpp candidates.h candidates.cpp)
@@ -36,7 +37,7 @@ add_library(common ${SOURCES})
 add_executable(chargefw2 main.cpp options.cpp options.h)
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats common utility Boost::program_options dl fmt::fmt gemmi::gemmi_cpp)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats common exceptions utility Boost::program_options dl fmt::fmt gemmi::gemmi_cpp)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 

@@ -4,13 +4,13 @@
 #include "pqr.h"
 #include "../structures/molecule_set.h"
 #include "../charges.h"
+#include "../exceptions/file_exception.h"
 
 
 void PQR::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
     auto file = std::fopen(filename.c_str(), "w");
     if (!file) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException("Cannot open file: " + filename);
     }
 
     const auto &molecule = ms.molecules()[0];
