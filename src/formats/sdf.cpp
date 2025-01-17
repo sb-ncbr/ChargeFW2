@@ -28,7 +28,7 @@ void SDF::read_until_end_of_record(std::ifstream &file) {
 MoleculeSet SDF::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        throw FileException("Cannot open file: " + filename);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 
     std::string line;

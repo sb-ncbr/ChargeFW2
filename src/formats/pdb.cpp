@@ -17,7 +17,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
         structure = gemmi::read_pdb_file(filename);
     }
     catch (std::exception &) {
-        throw FileException("Cannot load structure from file: " + filename);
+        throw FileException(fmt::format("Cannot load structure from file: {}", filename));
     }
 
     auto molecules = std::make_unique<std::vector<Molecule>>();

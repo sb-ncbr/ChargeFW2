@@ -159,7 +159,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
     try {
         std::ifstream file(filename);
         if (!file) {
-            throw FileException("Cannot open file: " + filename);
+            throw FileException(fmt::format("Cannot open file: {}", filename));
         }
         while(std::getline(file, line)) {
             if (line.starts_with("#") or line.empty()) {
@@ -180,7 +180,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
         process_record(structure_data, molecules);
     }
     catch (std::exception &e) {
-        throw FileException("Cannot load structure from file: " + filename + e.what());
+        throw FileException(fmt::format("Cannot load structure from file: {} {}", filename, e.what()));
     }
     return MoleculeSet(std::move(molecules));
 }

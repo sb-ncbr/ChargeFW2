@@ -80,7 +80,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
     json j;
     std::ifstream f(filename);
     if (!f) {
-        throw FileException("Cannot open file: " + filename);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 
     f >> j;

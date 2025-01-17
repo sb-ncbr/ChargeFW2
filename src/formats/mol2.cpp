@@ -97,7 +97,7 @@ void Mol2::read_until_end_of_record(std::ifstream &file) {
 MoleculeSet Mol2::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        throw FileException("Cannot open file: " + filename);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 
     auto molecules = std::make_unique<std::vector<Molecule>>();
@@ -140,7 +140,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
     auto file = std::fopen(filename.c_str(), "w");
     if (!file) {
-        throw FileException("Cannot open file: " + filename);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 
     for (const auto &molecule: ms.molecules()) {

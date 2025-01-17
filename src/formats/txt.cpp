@@ -19,6 +19,6 @@ void TXT::save_charges(const MoleculeSet &, const Charges &charges, const std::s
         }
         file.close();
     } catch (std::system_error &e) {
-        throw FileException("Cannot open file: " + filename);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 }
