@@ -8,6 +8,7 @@
 #include "chargefw2.h"
 #include "element.h"
 #include "periodic_table.h"
+#include "exceptions/internal_exception.h"
 
 namespace fs = std::filesystem;
 
@@ -16,8 +17,7 @@ PeriodicTable::PeriodicTable() {
     std::string filename(fs::path(INSTALL_DIR) / "share" / "pte.csv");
     std::ifstream file(filename);
     if (!file) {
-        fmt::print(stderr, "Unable to open periodic table data file: {}\n", filename);
-        exit(EXIT_INTERNAL_ERROR);
+        throw InternalException(fmt::format("Unable to open periodic table data file: {}", filename));
     }
 
     std::string line;
@@ -52,8 +52,7 @@ PeriodicTable::PeriodicTable() {
             symbol_Z_[symbol] = index;
         }
     } catch (std::invalid_argument &) {
-        fmt::print(stderr, "Unable to read periodic table data file: {}\n", filename);
-        exit(EXIT_INTERNAL_ERROR);
+        throw InternalException(fmt::format("Unable to parse periodic table data file: {}", filename));
     }
 }
 
