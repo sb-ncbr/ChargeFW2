@@ -43,15 +43,10 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                     /* Return empty set */
                     return MoleculeSet(std::move(molecules));
                 }
-
-                if (not atom.has_altloc() or atom.altloc == 'A') {
-                    if ((not hetatm) or
-                        (config::read_hetatm and residue.name != "HOH") or
-                        (config::read_hetatm and not config::ignore_water)) {
-                        atoms->emplace_back(idx, element, x, y, z, atom.name, residue_id, residue.name, chain.name, hetatm);
-                        atoms->back()._set_formal_charge(atom.charge);
-                        idx++;
-                    }
+                if (keep_atom(atom, residue)) {
+                    atoms->emplace_back(idx, element, x, y, z, atom.name, residue_id, residue.name, chain.name, hetatm);
+                    atoms->back()._set_formal_charge(atom.charge);
+                    idx++;
                 }
             }
         }

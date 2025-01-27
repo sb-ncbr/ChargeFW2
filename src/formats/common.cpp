@@ -1,9 +1,9 @@
 #include <string>
-#include <vector>
 #include <set>
 #include <cctype>
 
 #include "common.h"
+#include "../config.h"
 #include "../structures/atom.h"
 #include "../utility/strings.h"
 
@@ -48,4 +48,15 @@ std::string fix_atom_name(std::string &atom_name) {
     }
 
     return atom_name;
+}
+
+
+bool keep_atom(const gemmi::Atom& atom, const gemmi::Residue& residue) {
+    if (not atom.has_altloc() or atom.altloc == 'A') {
+        const bool hetatm = residue.het_flag == 'H';
+        if (not hetatm or (config::read_hetatm and (residue.name != "HOH" or not config::ignore_water))) {
+            return true;
+        }
+    }
+    return false;
 }

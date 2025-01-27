@@ -38,14 +38,10 @@ void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::
                     fmt::print("Got charge {} on{}\n", atom.charge, atom.element.name());
                 }
 
-                if (not atom.has_altloc() or atom.altloc == 'A') {
-                    if ((not hetatm) or
-                        (config::read_hetatm and residue.name != "HOH") or
-                        (config::read_hetatm and not config::ignore_water)) {
-                        atoms->emplace_back(idx, element, x, y, z, atom.name, residue.seqid.num.value, residue.name, chain.name, hetatm);
-                        atoms->back()._set_formal_charge(atom.charge);
-                        idx++;
-                    }
+                if (keep_atom(atom, residue)) {
+                    atoms->emplace_back(idx, element, x, y, z, atom.name, residue.seqid.num.value, residue.name, chain.name, hetatm);
+                    atoms->back()._set_formal_charge(atom.charge);
+                    idx++;
                 }
             }
         }

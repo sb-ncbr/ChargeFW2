@@ -13,6 +13,7 @@
 
 #include "chargefw2.h"
 #include "cif.h"
+#include "common.h"
 #include "../config.h"
 #include "../utility/strings.h"
 #include "../exceptions/file_exception.h"
@@ -86,20 +87,13 @@ static void filter_out_altloc_atoms(gemmi::cif::Block &block) {
 
     // filter out the altloc atoms
     // retains the _atom_site.id order
-    auto &model = structure.models[0];
-    for (gemmi::Chain &chain: model.chains) {
-        for (gemmi::Residue &residue: chain.residues) {
-            bool hetatm = residue.het_flag == 'H';
-            for (auto it = residue.atoms.begin(); it != residue.atoms.end(); ) {
-                const auto& atom = *it;
-                if (not atom.has_altloc() or atom.altloc == 'A') {
-                    if ((not hetatm) or
-                        (config::read_hetatm and residue.name != "HOH") or
-                        (config::read_hetatm and not config::ignore_water)) {
-                        ++it;
-                    }
+    for (auto& model = structure.models[0]; gemmi::Chain& chain : model.chains) {
+        for (gemmi::Residue& residue : chain.residues) {
+            for (auto it = residue.atoms.begin(); it != residue.atoms.end();) {
+                if (keep_atom(*it, residue)) {
+                    ++it;
                 } else {
-                    residue.atoms.erase(it);
+                    it = residue.atoms.erase(it);
                 }
             }
         }
@@ -110,14 +104,14 @@ static void filter_out_altloc_atoms(gemmi::cif::Block &block) {
 
 static void generate_mmcif_from_block(gemmi::cif::Block &block, const MoleculeSet &ms, const Charges &charges) {
     const Molecule &molecule = ms.molecules()[0];
-    
+
     filter_out_altloc_atoms(block);
     append_charges_to_block(molecule, charges, block);
     
     const std::filesystem::path out_dir{config::chg_out_dir};
     const std::string molecule_name = to_lowercase(molecule.name());
     const std::string out_filename = molecule_name + ".fw2.cif";
-    std::ofstream out_stream{{out_dir / out_filename}};
+    std::ofstream out_stream{out_dir / out_filename};
 
     // remove pesky _chem_comp category >:(
     block.find_mmcif_category("_chem_comp.").erase();
