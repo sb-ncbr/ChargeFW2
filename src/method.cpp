@@ -12,6 +12,7 @@
 #include "method.h"
 #include "parameters.h"
 #include "utility/strings.h"
+#include "exceptions/file_exception.h"
 
 
 namespace fs = std::filesystem;
@@ -222,8 +223,7 @@ Method* load_method(const std::string &method_name) {
 
     auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
     if (!get_method_handle) {
-        fmt::print(stderr, "{}\n", dlerror());
-        exit(EXIT_FILE_ERROR);
+        throw FileException(dlerror());
     }
 
     return (*get_method_handle)();

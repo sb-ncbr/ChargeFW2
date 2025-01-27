@@ -13,6 +13,7 @@
 #include "../charges.h"
 #include "../periodic_table.h"
 #include "mol2.h"
+#include "../exceptions/file_exception.h"
 
 
 void Mol2::read_record(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
@@ -96,8 +97,7 @@ void Mol2::read_until_end_of_record(std::ifstream &file) {
 MoleculeSet Mol2::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 
     auto molecules = std::make_unique<std::vector<Molecule>>();
@@ -140,8 +140,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
     auto file = std::fopen(filename.c_str(), "w");
     if (!file) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 
     for (const auto &molecule: ms.molecules()) {

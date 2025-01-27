@@ -15,6 +15,8 @@
 #include "cif.h"
 #include "../config.h"
 #include "../utility/strings.h"
+#include "../exceptions/file_exception.h"
+
 
 static std::string convert_bond_order_to_mmcif_value_order_string(int order) {
     // See link for bond order values for PDBx/mmCIF category _chem_comp_bond.value_order
@@ -134,8 +136,7 @@ static void generate_mmcif_from_pdb_file(const MoleculeSet &ms, const Charges &c
     auto structure = gemmi::read_pdb_file(filename);
 
     if (structure.models.empty() || structure.models[0].chains.empty()) {
-        fmt::print(stderr, "ERROR: No models or no chains in PDB file.\n");
-        exit(EXIT_FILE_ERROR);
+        throw FileException("No models or no chains in PDB file.");
     }
 
     gemmi::setup_entities(structure);

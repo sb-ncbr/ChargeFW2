@@ -6,6 +6,7 @@
 #include "mmcif.h"
 #include "mol2.h"
 #include "../utility/strings.h"
+#include "../exceptions/file_exception.h"
 
 
 Reader::~Reader() = default;
@@ -24,8 +25,7 @@ MoleculeSet load_molecule_set(const std::string &filename) {
     } else if (ext == ".cif") {
         reader = std::make_unique<mmCIF>();
     } else {
-        fmt::print(stderr, "Filetype {} not supported\n", ext);
-        exit(EXIT_FILE_ERROR);
+        throw FileException(fmt::format("Filetype {} not supported", ext));
     }
 
     return reader->read_file(filename);

@@ -11,7 +11,7 @@
 #include "molecule_set.h"
 #include "../parameters.h"
 #include "../method.h"
-
+#include "../exceptions/internal_exception.h"
 
 bool check_atom_type(const Molecule &molecule, const Atom &atom, const std::string &symbol, const std::string &cls,
                      const std::string &type, bool permissive);
@@ -135,8 +135,7 @@ bool check_atom_type(const Molecule &molecule, const Atom &atom, const std::stri
     } else if (cls == "bonded") {
         current_type = molecule.get_bonded_elements()[atom.index()];
     } else {
-        fmt::print(stderr, "AtomClassifier {} not found\n", cls);
-        exit(EXIT_INTERNAL_ERROR);
+        throw InternalException(fmt::format("AtomClassifier {} not found", cls));
     }
 
     return current_type == type;
@@ -156,8 +155,7 @@ bool check_bond_type(const Bond &bond, const std::string &cls, const std::string
         }
 
     } else {
-        fmt::print(stderr, "BondClassifier {} not found\n", cls);
-        exit(EXIT_INTERNAL_ERROR);
+        throw InternalException(fmt::format("BondClassifier {} not found", cls));
     }
     return current_type == type;
 }

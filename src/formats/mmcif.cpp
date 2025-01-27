@@ -13,6 +13,7 @@
 #include "../structures/bond.h"
 #include "../periodic_table.h"
 #include "../utility/strings.h"
+#include "../exceptions/file_exception.h"
 
 
 void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
@@ -158,8 +159,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
     try {
         std::ifstream file(filename);
         if (!file) {
-            fmt::print(stderr, "Cannot open file: {}\n", filename);
-            exit(EXIT_FILE_ERROR);
+            throw FileException(fmt::format("Cannot open file: {}", filename));
         }
         while(std::getline(file, line)) {
             if (line.starts_with("#") or line.empty()) {
@@ -180,8 +180,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
         process_record(structure_data, molecules);
     }
     catch (std::exception &e) {
-        fmt::print(stderr, "Cannot load structure from file: {}: {}\n", filename, e.what());
-        exit(EXIT_FILE_ERROR);
+        throw FileException(fmt::format("Cannot load structure from file: {} {}", filename, e.what()));
     }
     return MoleculeSet(std::move(molecules));
 }

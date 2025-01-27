@@ -12,6 +12,7 @@
 #include "common.h"
 #include "../structures/atom.h"
 #include "../structures/bond.h"
+#include "../exceptions/internal_exception.h"
 
 namespace fs = std::filesystem;
 
@@ -27,8 +28,7 @@ void load_residues_info(const std::string &filename,
                         std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> &residues_data) {
     std::ifstream file(filename);
     if (!file) {
-        fmt::print(stderr, "Unable to open amino acids data file: {}\n", filename);
-        exit(EXIT_INTERNAL_ERROR);
+        throw InternalException(fmt::format("Unable to open amino acids data file: {}", filename));
     }
 
     std::string line;

@@ -10,6 +10,7 @@
 #include "candidates.h"
 #include "method.h"
 #include "utility/strings.h"
+#include "exceptions/file_exception.h"
 
 
 namespace fs = std::filesystem;
@@ -79,8 +80,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
     json j;
     std::ifstream f(filename);
     if (!f) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 
     f >> j;

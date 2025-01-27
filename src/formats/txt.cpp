@@ -7,6 +7,7 @@
 #include "../charges.h"
 #include "txt.h"
 #include "../utility/strings.h"
+#include "../exceptions/file_exception.h"
 
 
 void TXT::save_charges(const MoleculeSet &, const Charges &charges, const std::string &filename) {
@@ -18,7 +19,6 @@ void TXT::save_charges(const MoleculeSet &, const Charges &charges, const std::s
         }
         file.close();
     } catch (std::system_error &e) {
-        fmt::print(stderr, "Cannot open file: {}\n", filename);
-        exit(EXIT_FILE_ERROR);
+        throw FileException(fmt::format("Cannot open file: {}", filename));
     }
 }
