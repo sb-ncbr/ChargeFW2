@@ -30,40 +30,9 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 
 std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules);
 
-struct MoleculeInfo {
-    struct AtomTypeCount {
-        std::string symbol;
-        int count;
+py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count);
 
-        [[nodiscard]] py::dict to_dict() const;
-    };
-
-    size_t total_molecules;
-    size_t total_atoms;
-    std::vector<AtomTypeCount> atom_type_counts;
-
-    [[nodiscard]] py::dict to_dict() const;
-};
-
-py::dict MoleculeInfo::to_dict() const {
-    py::list atom_types_list;
-    for (const auto &count : atom_type_counts) {
-        atom_types_list.append(count.to_dict());
-    }
-
-    return py::dict(
-        py::arg("total_molecules") = total_molecules,
-        py::arg("total_atoms") = total_atoms,
-        py::arg("atom_type_counts") = atom_types_list
-    );
-}
-
-py::dict MoleculeInfo::AtomTypeCount::to_dict() const {
-        return py::dict(
-            py::arg("symbol") = symbol,
-            py::arg("count") = count
-    );
-}
+py::dict molecule_info_to_dict(const MoleculeSetStats &info);
 
 struct Molecules {
     MoleculeSet ms;
@@ -71,7 +40,7 @@ struct Molecules {
     Molecules(const std::string &filename, bool read_hetatm, bool ignore_water);
 
     [[nodiscard]] size_t length() const;
-    [[nodiscard]] MoleculeInfo info();
+    [[nodiscard]] MoleculeSetStats info();
 };
 
 Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool ignore_water = true) {
@@ -114,37 +83,29 @@ std::vector<std::string> get_available_methods() {
 }
 
 
-MoleculeInfo Molecules::info() {
+MoleculeSetStats Molecules::info() {
     ms.classify_atoms(AtomClassifier::PLAIN);
+    return ms.get_stats();
+}
 
-    MoleculeInfo result;
-    std::map<size_t, int> counts;
-    size_t n_atoms = 0;
+py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count) {
+        return py::dict(
+            py::arg("symbol") = atom_type_count.symbol,
+            py::arg("count") = atom_type_count.count
+    );
+}
 
-    for (const auto &m: ms.molecules()) {
-        for (auto &a : m.atoms()) {
-            counts[a.type()] += 1;
-            n_atoms++;
-        }
+py::dict molecule_info_to_dict(const MoleculeSetStats &stats) {
+    py::list atom_types_list;
+    for (auto &count : stats.atom_type_counts) {
+        atom_types_list.append(atom_type_count_to_dict(count));
     }
 
-    result.total_molecules = length();
-    result.total_atoms = n_atoms;
-
-    auto atom_types = ms.atom_types();
-
-    if (atom_types.size() > 0) {
-        for (auto &[key, val] : counts) {
-            auto symbol =  std::get<0>(atom_types[key]);
-            
-            result.atom_type_counts.push_back({
-                .symbol = symbol,
-                .count = val
-            });
-        }
-    }
-    
-    return result;
+    return py::dict(
+        py::arg("total_molecules") = stats.total_molecules,
+        py::arg("total_atoms") = stats.total_atoms,
+        py::arg("atom_type_counts") = atom_types_list
+    );
 }
 
 std::vector<std::string> get_available_parameters(const std::string &method_name) {
@@ -219,18 +180,22 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
 PYBIND11_MODULE(chargefw2, m) {
     m.doc() = "Python bindings to ChargeFW2";
-    py::class_<MoleculeInfo::AtomTypeCount>(m, "AtomTypeCount")
+    py::class_<MoleculeSetStats::AtomTypeCount>(m, "AtomTypeCount")
         .def(py::init<>())
-        .def_readwrite("symbol", &MoleculeInfo::AtomTypeCount::symbol)
-        .def_readwrite("count", &MoleculeInfo::AtomTypeCount::count)
-        .def("to_dict", &MoleculeInfo::AtomTypeCount::to_dict);
+        .def_readwrite("symbol", &MoleculeSetStats::AtomTypeCount::symbol)
+        .def_readwrite("count", &MoleculeSetStats::AtomTypeCount::count)
+        .def("to_dict", [](const MoleculeSetStats::AtomTypeCount &self) {
+            return atom_type_count_to_dict(self);
+        });
 
-    py::class_<MoleculeInfo>(m, "MoleculeInfo")
+    py::class_<MoleculeSetStats>(m, "MoleculeSetStats")
         .def(py::init<>())
-        .def_readwrite("total_molecules", &MoleculeInfo::total_molecules)
-        .def_readwrite("total_atoms", &MoleculeInfo::total_atoms)
-        .def_readwrite("atom_type_counts", &MoleculeInfo::atom_type_counts)
-        .def("to_dict", &MoleculeInfo::to_dict);
+        .def_readwrite("total_molecules", &MoleculeSetStats::total_molecules)
+        .def_readwrite("total_atoms", &MoleculeSetStats::total_atoms)
+        .def_readwrite("atom_type_counts", &MoleculeSetStats::atom_type_counts)
+        .def("to_dict", [](const MoleculeSetStats &self) {
+            return molecule_info_to_dict(self);
+        });
 
     py::class_<Molecules>(m, "Molecules")
         .def(py::init<const std::string &, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
