@@ -42,6 +42,18 @@ struct deduce_from<Bond>
     typedef bond_t AB_t;
 };
 
+struct MoleculeSetStats {
+    struct AtomTypeCount {
+        std::string symbol;
+        std::string cls;
+        std::string type;
+        int count;
+    };
+
+    size_t total_molecules;
+    size_t total_atoms;
+    std::vector<AtomTypeCount> atom_type_counts;
+};
 
 class MoleculeSet {
     std::vector<atom_t> atom_types_{};
@@ -62,6 +74,8 @@ public:
     explicit MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules);
 
     void info() const;
+
+    MoleculeSetStats get_stats() const;
 
     [[nodiscard]] const std::vector<Molecule> &molecules() const { return *molecules_; }
 

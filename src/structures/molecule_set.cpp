@@ -31,11 +31,23 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
     }
 }
 
-
 void MoleculeSet::info() const {
-    fmt::print("Number of molecules: {}\n", molecules_->size());
+    auto stats = get_stats();
+
+    fmt::print("Number of molecules: {}\n", stats.total_molecules);
+    fmt::print("Number of atoms: {}\n", stats.total_atoms);
+    
+    for (auto &atom_type_count: stats.atom_type_counts) {
+        auto[symbol, cls, type, count] = atom_type_count;
+        fmt::print("{:2s} {:6s} {:4s}: {}\n", symbol, cls, type, count);
+    }
+}
+
+MoleculeSetStats MoleculeSet::get_stats() const {
+    MoleculeSetStats result;
     std::map<size_t, int> counts;
     size_t n_atoms = 0;
+
     for (const auto &m: *molecules_) {
         for (auto &a : m.atoms()) {
             counts[a.type()] += 1;
@@ -43,11 +55,23 @@ void MoleculeSet::info() const {
         }
     }
 
-    fmt::print("Number of atoms: {}\n", n_atoms);
-    for (auto &[key, val]: counts) {
-        auto[symbol, cls, type] = atom_types_[key];
-        fmt::print("{:2s} {:6s} {:4s}: {}\n", symbol, cls, type, val);
+    result.total_molecules = molecules_->size();
+    result.total_atoms = n_atoms;
+
+    if (atom_types_.size() > 0) {
+        for (auto &[key, val] : counts) {
+            auto [symbol, cls, type] =  atom_types_[key];
+            
+            result.atom_type_counts.push_back({
+                .symbol = symbol,
+                .cls = cls,
+                .type = type,
+                .count = val
+            });
+        }
     }
+    
+    return result;
 }
 
 

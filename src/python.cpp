@@ -1,15 +1,17 @@
+#include <cstdio>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <dlfcn.h>
 #include <filesystem>
 #include <fstream>
 #include <pybind11/pybind11.h>
+#include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 #include <nlohmann/json.hpp>
 
 #include "structures/molecule_set.h"
 #include "formats/reader.h"
 #include "config.h"
-#include "charges.h"
 #include "candidates.h"
 #include "utility/strings.h"
 #include "exceptions/file_exception.h"
@@ -29,6 +31,9 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 
 std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules);
 
+py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count);
+
+py::dict molecule_info_to_dict(const MoleculeSetStats &info);
 
 struct Molecules {
     MoleculeSet ms;
@@ -36,8 +41,8 @@ struct Molecules {
     Molecules(const std::string &filename, bool read_hetatm, bool ignore_water);
 
     [[nodiscard]] size_t length() const;
+    [[nodiscard]] MoleculeSetStats info();
 };
-
 
 Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool ignore_water = true) {
     config::read_hetatm = read_hetatm;
@@ -76,6 +81,31 @@ std::vector<std::string> get_available_methods() {
 }
 
 
+MoleculeSetStats Molecules::info() {
+    ms.classify_atoms(AtomClassifier::PLAIN);
+    return ms.get_stats();
+}
+
+py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count) {
+        return py::dict(
+            py::arg("symbol") = atom_type_count.symbol,
+            py::arg("count") = atom_type_count.count
+    );
+}
+
+py::dict molecule_info_to_dict(const MoleculeSetStats &stats) {
+    py::list atom_types_list;
+    for (auto &count : stats.atom_type_counts) {
+        atom_types_list.append(atom_type_count_to_dict(count));
+    }
+
+    return py::dict(
+        py::arg("total_molecules") = stats.total_molecules,
+        py::arg("total_atoms") = stats.total_atoms,
+        py::arg("atom_type_counts") = atom_types_list
+    );
+}
+
 std::vector<std::string> get_available_parameters(const std::string &method_name) {
     std::vector<std::string> parameters;
     for (const auto &parameter_file: get_parameter_files()) {
@@ -91,7 +121,6 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
     return parameters;
 }
 
-
 std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules) {
     return get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
 }
@@ -99,7 +128,6 @@ std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_meth
 
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
-
     std::string method_file = fs::path(INSTALL_DIR) / "lib" / ("lib" + method_name + ".so");
     auto handle = dlopen(method_file.c_str(), RTLD_LAZY);
 
@@ -137,7 +165,6 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
     std::map<std::string, std::vector<double>> charges;
     for (auto &mol: molecules.ms.molecules()) {
-
         auto results = method->calculate_charges(mol);
         if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
             fmt::print("Incorrect values encoutened for: {}. Skipping molecule.\n", mol.name());
@@ -147,20 +174,40 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
     }
 
     dlclose(handle);
+
     return charges;
 }
 
 
 PYBIND11_MODULE(chargefw2, m) {
     m.doc() = "Python bindings to ChargeFW2";
+    py::class_<MoleculeSetStats::AtomTypeCount>(m, "AtomTypeCount")
+        .def(py::init<>())
+        .def_readwrite("symbol", &MoleculeSetStats::AtomTypeCount::symbol)
+        .def_readwrite("count", &MoleculeSetStats::AtomTypeCount::count)
+        .def("to_dict", [](const MoleculeSetStats::AtomTypeCount &self) {
+            return atom_type_count_to_dict(self);
+        });
+
+    py::class_<MoleculeSetStats>(m, "MoleculeSetStats")
+        .def(py::init<>())
+        .def_readwrite("total_molecules", &MoleculeSetStats::total_molecules)
+        .def_readwrite("total_atoms", &MoleculeSetStats::total_atoms)
+        .def_readwrite("atom_type_counts", &MoleculeSetStats::atom_type_counts)
+        .def("to_dict", [](const MoleculeSetStats &self) {
+            return molecule_info_to_dict(self);
+        });
+
     py::class_<Molecules>(m, "Molecules")
-            .def(py::init<const std::string &, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
-                 py::arg("ignore_water") = false)
-            .def("__len__", &Molecules::length);
+        .def(py::init<const std::string &, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
+                py::arg("ignore_water") = false)
+        .def("__len__", &Molecules::length)
+        .def("info", &Molecules::info);
+
     m.def("get_available_methods", &get_available_methods, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,
           "Return the list of all parameters of a given method");
     m.def("get_suitable_methods", &get_sutaible_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
-          "Calculate partial atomic charges for a given molecules and method");
+          "Calculate partial atomic charges for a given molecules and method", py::call_guard<py::gil_scoped_release>());
 }
