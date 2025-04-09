@@ -26,7 +26,7 @@ std::vector<fs::path> get_parameter_files() {
     for (const auto &set: fs::directory_iterator(fs::path(INSTALL_DIR) / "share" / "parameters")) {
         files.emplace_back(set.path());
     }
-    std::sort(files.begin(), files.end());
+    std::ranges::sort(files);
     return files;
 }
 

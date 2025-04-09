@@ -32,12 +32,12 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
 }
 
 void MoleculeSet::info() const {
-    auto stats = get_stats();
+    auto [total_molecules, total_atoms, atom_type_counts] = get_stats();
 
-    fmt::print("Number of molecules: {}\n", stats.total_molecules);
-    fmt::print("Number of atoms: {}\n", stats.total_atoms);
-    
-    for (auto &atom_type_count: stats.atom_type_counts) {
+    fmt::print("Number of molecules: {}\n", total_molecules);
+    fmt::print("Number of atoms: {}\n", total_atoms);
+
+    for (auto &atom_type_count: atom_type_counts) {
         auto[symbol, cls, type, count] = atom_type_count;
         fmt::print("{:2s} {:6s} {:4s}: {}\n", symbol, cls, type, count);
     }
@@ -58,7 +58,7 @@ MoleculeSetStats MoleculeSet::get_stats() const {
     result.total_molecules = molecules_->size();
     result.total_atoms = n_atoms;
 
-    if (atom_types_.size() > 0) {
+    if (!atom_types_.empty()) {
         for (auto &[key, val] : counts) {
             auto [symbol, cls, type] =  atom_types_[key];
             
@@ -355,5 +355,5 @@ void MoleculeSet::fulfill_requirements(const std::vector<RequiredFeatures> &feat
 
 
 bool MoleculeSet::has_proteins() const {
-    return std::any_of(molecules_->begin(), molecules_->end(), [](const Molecule &m) { return m.is_protein(); });
+    return std::ranges::any_of(*molecules_, [](const Molecule &m) { return m.is_protein(); });
 }

@@ -64,7 +64,7 @@ bool Method::is_suitable_for_molecule(const Molecule &) const {
 
 std::string Method::internal_name() const {
     auto name = to_lowercase(name_);
-    name.erase(std::remove_if(name.begin(), name.end(), [](char c) { return !std::isalnum(c); }), name.end());
+    name.erase(std::ranges::remove_if(name, [](char c) noexcept { return !std::isalnum(c); }).begin(), name.end());
     return name;
 }
 
@@ -155,7 +155,7 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
         std::set<const Atom *> pivots;
         for (auto it = bonding_sizes.rbegin(); it != bonding_sizes.rend(); it++) {
             for (const auto &idx: it->second) {
-                if (all.find(idx) != all.end()) {
+                if (all.contains(idx)) {
                     pivots.insert(&molecule.atoms()[idx]);
                     for (const auto &neighbor: neighbors[idx]) {
                         all.erase(neighbor);
@@ -191,7 +191,7 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
             }
 
             for (size_t j = 0; j < fragment_atoms.size(); j++) {
-                if (close_atoms.find(fragment_atoms[j]->index()) != close_atoms.end()) {
+                if (close_atoms.contains(fragment_atoms[j]->index())) {
 #pragma omp atomic
                     results(fragment_atoms[j]->index()) += res(j);
                 }

@@ -1,7 +1,5 @@
 #include <queue>
 #include <utility>
-#include <tuple>
-#include <map>
 #include <string>
 #include <vector>
 #include <nanoflann.hpp>
@@ -41,7 +39,7 @@ Molecule::Molecule(std::string name, std::unique_ptr<std::vector<Atom> > atoms,
 
     for (size_t i = 0; i < atoms_->size(); i++) {
         auto &bonded = neighbours[i];
-        std::sort(bonded.begin(), bonded.end());
+        std::ranges::sort(bonded);
 
         std::string atom_type;
         for (const auto &symbol: bonded) {
@@ -104,7 +102,7 @@ void Molecule::init_bond_info() {
 void Molecule::init_bond_distances() {
     const size_t n = atoms_->size();
     bond_distances_.resize(n * n);
-    std::fill(bond_distances_.begin(), bond_distances_.end(), -1);
+    std::ranges::fill(bond_distances_, -1);
 
     for (size_t i = 0; i < n; i++) {
         auto q = std::queue<size_t>();

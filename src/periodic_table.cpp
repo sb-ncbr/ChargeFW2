@@ -69,7 +69,7 @@ const Element *PeriodicTable::get_element_by_symbol(const std::string &symbol) c
         return get_element_by_Z(0);
     }
 
-    if (!symbol_Z_.count(symbol)) {
+    if (!symbol_Z_.contains(symbol)) {
         throw std::runtime_error(fmt::format("No such element: {}", symbol));
     }
     return get_element_by_Z(symbol_Z_.at(symbol) - 1);

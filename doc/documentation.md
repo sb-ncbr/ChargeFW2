@@ -93,7 +93,7 @@ S  hbo    2   : 5
 
 ```
 
-Optinally, user can specify a parameter set (`--par-file`). If it is not provided, the ChargeFW2 selects
+Optionally, user can specify a parameter set (`--par-file`). If it is not provided, the ChargeFW2 selects
 the first one from a particular methods based on the list in the previous section. The parameters are stored in the
 `/opt/chargefw2/share/parameters/` directory. See the explicit parameter setting:
 

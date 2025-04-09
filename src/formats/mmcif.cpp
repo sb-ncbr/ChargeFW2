@@ -121,8 +121,8 @@ void mmCIF::process_record(const std::string &structure_data, std::unique_ptr<st
         name = data.name;
         const auto names = data.get_mmcif_category_names();
 
-        bool has_atom_site = std::find(names.begin(), names.end(), "_atom_site.") != names.end();
-        bool has_chem_comp = std::find(names.begin(), names.end(), "_chem_comp_atom.") != names.end();
+        bool has_atom_site = std::ranges::find(names, "_atom_site.") != names.end();
+        bool has_chem_comp = std::ranges::find(names, "_chem_comp_atom.") != names.end();
 
         if (has_atom_site) {
             read_protein_molecule(data, atoms);

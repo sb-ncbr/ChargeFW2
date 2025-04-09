@@ -32,7 +32,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
                 .run();
 
         po::store(parsed, vm);
-        if (vm.count("help")) {
+        if (vm.contains("help")) {
             fmt::print("ChargeFW2 (version {})\n", VERSION);
             fmt::print("by Tomáš Raček (2018-2023)\n");
 
@@ -70,7 +70,7 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
 
     for (const auto &[opt, info]: method->get_options()) {
         if (!info.choices.empty()) {
-            if (std::find(info.choices.begin(), info.choices.end(), info.default_value) == info.choices.end()) {
+            if (std::ranges::find(info.choices, info.default_value) == info.choices.end()) {
                 fmt::print(stderr, "Default value: {} not in possible choices\n", info.default_value);
                 exit(EXIT_INTERNAL_ERROR);
             }
@@ -90,10 +90,10 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
 
     for (const auto &[opt, info]: method->get_options()) {
         std::string opt_name = std::string("method-" + opt);
-        if (vm.count(opt_name)) {
+        if (vm.contains(opt_name)) {
             std::string val = vm[opt_name].as<std::string>();
             if (!info.choices.empty()) {
-                if (std::find(info.choices.begin(), info.choices.end(), val) == info.choices.end()) {
+                if (std::ranges::find(info.choices, val) == info.choices.end()) {
                     fmt::print(stderr, "Provided value: {} not in possible choices\n", val);
                     exit(EXIT_INTERNAL_ERROR);
                 }

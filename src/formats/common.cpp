@@ -24,7 +24,7 @@ std::string sanitize_name(const std::string &name) {
 std::string get_unique_name(const std::string &name, const std::set<std::string> &already_used) {
     int count = 0;
     std::string new_name = name;
-    while (already_used.find(new_name) != already_used.end()) {
+    while (already_used.contains(new_name)) {
         new_name = name + std::string("_") + std::to_string(count);
         count++;
     }

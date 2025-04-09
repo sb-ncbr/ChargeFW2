@@ -29,11 +29,11 @@ std::vector<std::string> get_available_methods();
 
 std::vector<std::string> get_available_parameters(const std::string &method_name);
 
-std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules);
+std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_methods_python(struct Molecules &molecules);
 
 py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count);
 
-py::dict molecule_info_to_dict(const MoleculeSetStats &info);
+py::dict molecule_info_to_dict(const MoleculeSetStats &stats);
 
 struct Molecules {
     MoleculeSet ms;
@@ -121,7 +121,7 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
     return parameters;
 }
 
-std::vector<std::tuple<std::string, std::vector<std::string>>> get_sutaible_methods_python(struct Molecules &molecules) {
+std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_methods_python(struct Molecules &molecules) {
     return get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
 }
 
@@ -166,8 +166,8 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
     std::map<std::string, std::vector<double>> charges;
     for (auto &mol: molecules.ms.molecules()) {
         auto results = method->calculate_charges(mol);
-        if (std::any_of(results.begin(), results.end(), [](double chg) { return not isfinite(chg); })) {
-            fmt::print("Incorrect values encoutened for: {}. Skipping molecule.\n", mol.name());
+        if (std::ranges::any_of(results, [](double chg) noexcept { return not isfinite(chg); })) {
+            fmt::print("Incorrect values encountered for: {}. Skipping molecule.\n", mol.name());
         } else {
             charges[mol.name()] = results;
         }
@@ -207,7 +207,7 @@ PYBIND11_MODULE(chargefw2, m) {
     m.def("get_available_methods", &get_available_methods, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,
           "Return the list of all parameters of a given method");
-    m.def("get_suitable_methods", &get_sutaible_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
+    m.def("get_suitable_methods", &get_suitable_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
           "Calculate partial atomic charges for a given molecules and method", py::call_guard<py::gil_scoped_release>());
 }

@@ -44,7 +44,7 @@ $ docker build -t chargefw2 .
 $ docker run -it --rm --entrypoint bash chargefw2
 ```
 
-A prebuild Linux image is available on [Docker Hub](https://hub.docker.com/r/frimen/chargefw2). However, it is not actively maintained and therefore it should only be used as a demo. It's highly recommended to build and manage your own Docker images.
+A prebuild Linux image is available on [Docker Hub](https://hub.docker.com/r/frimen/chargefw2). However, it is not actively maintained, and therefore it should only be used as a demo. It's highly recommended to build and manage your own Docker images.
 
 ```bash
 $ docker run -it --rm --entrypoint bash docker.io/frimen/chargefw2
@@ -61,7 +61,7 @@ $ docker run -it --rm -v $PWD:$PWD chargefw2 --mode charges \
     --input-file $PWD/doc/molecules.sdf --chg-out-dir $PWD/
 ```
 
-However, it is good practise to only bind-mount necessary directories. In the folowing example we bind-mount two directories: one directory that contains our input files and the other directory for ChargeFW2 output.
+However, it is good practise to only bind-mount necessary directories. In the following example we bind-mount two directories: one directory that contains our input files and the other directory for ChargeFW2 output.
 
 ```bash
 $ INPUT_DIRECTORY="/path/to/input/directory/"
