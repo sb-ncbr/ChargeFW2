@@ -1,13 +1,11 @@
 FROM ubuntu:24.04 AS build
 
 ARG DEPS="\
-        ca-certificates \
         cmake \
         make \
         g++ \
         gemmi \
         gemmi-dev \
-        git \
         libboost-program-options-dev \
         libeigen3-dev \
         libfmt-dev \
@@ -20,10 +18,8 @@ ARG DEPS="\
 
 RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
 
-ARG REBUILD=foo
-RUN git clone --depth 1 https://github.com/sb-ncbr/ChargeFW2.git && \
-        cd ChargeFW2 && \
-        git checkout master && \
+COPY . ChargeFW2
+RUN     cd ChargeFW2 && \
         mkdir build && \
         cd build && \
         cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=OFF && \
