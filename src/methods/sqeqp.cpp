@@ -8,6 +8,20 @@
 
 CHARGEFW2_METHOD(SQEqp)
 
+namespace {
+    const MethodMetadata SQEQP_METADATA = {
+        .internal_name = "sqeqp",
+        .full_name = "Split-charge equilibration with parametrized initial charges",
+        .publication = "10.1186/s13321-021-00528-w",
+        .type = "3D",
+        .priority = 10,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& SQEqp::get_metadata() const {
+    return SQEQP_METADATA;
+};
 
 std::vector<double> SQEqp::calculate_charges(const Molecule &molecule) const {
 

@@ -63,9 +63,7 @@ bool Method::is_suitable_for_molecule(const Molecule &) const {
 
 
 std::string Method::internal_name() const {
-    auto name = to_lowercase(name_);
-    name.erase(std::ranges::remove_if(name, [](char c) noexcept { return !std::isalnum(c); }).begin(), name.end());
-    return name;
+    return this->get_metadata().internal_name;
 }
 
 

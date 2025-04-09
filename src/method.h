@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Eigen/Core>
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <functional>
@@ -28,6 +29,14 @@ struct MethodOption {
     std::vector<std::string> choices;
 };
 
+struct MethodMetadata {
+    std::string internal_name;
+    std::string full_name;
+    std::string publication;
+    std::string type;
+    uint16_t priority;
+    bool has_parameters;
+};
 
 class Method {
 protected:
@@ -79,6 +88,8 @@ public:
     [[nodiscard]] std::string internal_name() const;
 
     [[nodiscard]] std::map<std::string, MethodOption> get_options() const { return options_; }
+
+    [[nodiscard]] virtual const MethodMetadata& get_metadata() const = 0;
 
     template<typename T>
     T get_option_value(const std::string &name) const;
