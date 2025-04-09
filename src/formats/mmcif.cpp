@@ -91,9 +91,9 @@ void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vect
 
     auto bond_table = data.find("_chem_comp_bond.", {"atom_id_1", "atom_id_2", "value_order"});
     for (const auto row: bond_table) {
-        std::string atom1_name = row[0];
-        std::string atom2_ = row[1];
-        std::string order_str = row[2];
+        const std::string &atom1_name = row[0];
+        const std::string &atom2_name = row[1];
+        const std::string &order_str = row[2];
         int order;
         if (order_str == "SING") {
             order = 1;
@@ -104,7 +104,7 @@ void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vect
         } else {
             continue;
         }
-        bonds->emplace_back(atom_names[row[0]], atom_names[row[1]], order);
+        bonds->emplace_back(atom_names[atom1_name], atom_names[atom2_name], order);
     }
 }
 
