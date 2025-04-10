@@ -11,6 +11,7 @@
 #include "method.h"
 #include "utility/strings.h"
 #include "exceptions/file_exception.h"
+#include "utility/install.h"
 
 
 namespace fs = std::filesystem;
@@ -23,7 +24,7 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 std::vector<fs::path> get_parameter_files() {
     /* Get parameters sorted according to the names and priorities */
     std::vector<fs::path> files;
-    for (const auto &set: fs::directory_iterator(fs::path(INSTALL_DIR) / "share" / "parameters")) {
+    for (const auto &set: fs::directory_iterator(InstallPaths::datadir() / "parameters")) {
         files.emplace_back(set.path());
     }
     std::ranges::sort(files);
@@ -75,7 +76,7 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 
 std::vector<std::tuple<std::string, std::vector<std::string>>>
 get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
-    std::string filename = fs::path(INSTALL_DIR) / "share" / "methods.json";
+    std::string filename = InstallPaths::datadir()/ "methods.json";
     using json = nlohmann::json;
     json j;
     std::ifstream f(filename);

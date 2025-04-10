@@ -1,6 +1,5 @@
 #include <string>
 
-#include "chargefw2.h"
 #include "pqr.h"
 #include "../structures/molecule_set.h"
 #include "../charges.h"

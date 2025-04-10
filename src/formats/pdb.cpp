@@ -2,7 +2,6 @@
 #include <fmt/format.h>
 #include <gemmi/pdb.hpp>
 
-#include "chargefw2.h"
 #include "../config.h"
 #include "pdb.h"
 #include "common.h"

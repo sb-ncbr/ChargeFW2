@@ -6,7 +6,6 @@
 #include <tuple>
 #include <string>
 
-#include "chargefw2.h"
 #include "molecule.h"
 #include "../method.h"
 #include "../parameters.h"

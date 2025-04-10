@@ -5,7 +5,6 @@
 #include <gemmi/cif.hpp>
 #include <gemmi/mmcif.hpp>
 
-#include "chargefw2.h"
 #include "mmcif.h"
 #include "common.h"
 #include "bonds.h"

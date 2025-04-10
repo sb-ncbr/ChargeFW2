@@ -5,16 +5,16 @@
 #include <stdexcept>
 #include <fmt/format.h>
 
-#include "chargefw2.h"
 #include "element.h"
 #include "periodic_table.h"
 #include "exceptions/internal_exception.h"
+#include "utility/install.h"
 
 namespace fs = std::filesystem;
 
 
 PeriodicTable::PeriodicTable() {
-    std::string filename(fs::path(INSTALL_DIR) / "share" / "pte.csv");
+    std::string filename(InstallPaths::datadir() / "pte.csv");
     std::ifstream file(filename);
     if (!file) {
         throw InternalException(fmt::format("Unable to open periodic table data file: {}", filename));

@@ -6,7 +6,6 @@
 #include <type_traits>
 #include <fmt/format.h>
 
-#include "chargefw2.h"
 #include "molecule.h"
 #include "molecule_set.h"
 #include "../parameters.h"
@@ -31,6 +30,7 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
     }
 }
 
+
 void MoleculeSet::info() const {
     auto [total_molecules, total_atoms, atom_type_counts] = get_stats();
 
@@ -42,6 +42,7 @@ void MoleculeSet::info() const {
         fmt::print("{:2s} {:6s} {:4s}: {}\n", symbol, cls, type, count);
     }
 }
+
 
 MoleculeSetStats MoleculeSet::get_stats() const {
     MoleculeSetStats result;

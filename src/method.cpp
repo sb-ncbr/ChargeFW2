@@ -8,11 +8,11 @@
 #include <Eigen/Dense>
 #include <omp.h>
 
-#include "chargefw2.h"
 #include "method.h"
 #include "parameters.h"
 #include "utility/strings.h"
 #include "exceptions/file_exception.h"
+#include "utility/install.h"
 
 
 namespace fs = std::filesystem;
@@ -211,7 +211,7 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
 
 
 Method* load_method(const std::string &method_name) {
-    std::string file = fs::path(INSTALL_DIR) / "lib" / ("lib" + method_name + ".so");
+    std::string file = InstallPaths::libdir() / ("lib" + method_name + ".so");
 
     auto handle = dlopen(file.c_str(), RTLD_LAZY);
 

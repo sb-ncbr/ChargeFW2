@@ -11,7 +11,6 @@
 #include <gemmi/to_cif.hpp>
 #include <gemmi/to_mmcif.hpp>
 
-#include "chargefw2.h"
 #include "cif.h"
 #include "common.h"
 #include "../config.h"

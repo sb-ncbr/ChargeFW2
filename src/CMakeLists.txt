@@ -14,8 +14,6 @@ endif ()
 include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
-configure_file(chargefw2.h.in chargefw2.h)
-
 SET(COMMON_LIBS parameters geometry element method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)

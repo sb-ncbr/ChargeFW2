@@ -1,7 +1,6 @@
 #pragma once
 
 #define VERSION "0.1"
-#define INSTALL_DIR "@CMAKE_INSTALL_PREFIX@"
 
 #define EXIT_SUCCESS 0
 #define EXIT_INTERNAL_ERROR 1

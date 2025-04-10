@@ -7,7 +7,6 @@
 #include <memory>
 #include <fmt/format.h>
 
-#include "chargefw2.h"
 #include "../structures/atom.h"
 #include "../structures/bond.h"
 #include "../structures/molecule.h"

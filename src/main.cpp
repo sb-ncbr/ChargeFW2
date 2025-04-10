@@ -23,9 +23,9 @@
 #include "candidates.h"
 #include "config.h"
 #include "options.h"
-#include "utility/strings.h"
 #include "exceptions/file_exception.h"
 #include "exceptions/internal_exception.h"
+#include "utility/install.h"
 
 namespace fs = std::filesystem;
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
                         exit(EXIT_PARAMETER_ERROR);
                     }
                     fmt::print("Best parameters found: {}\n", par_name);
-                    par_name = fs::path(INSTALL_DIR) / "share" / "parameters" / par_name;
+                    par_name = InstallPaths::datadir() / "parameters" / par_name;
                 } else {
                     par_name = config::par_file;
                 }

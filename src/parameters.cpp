@@ -1,11 +1,9 @@
 #include <fstream>
 #include <string>
-#include <map>
 #include <vector>
 #include <nlohmann/json.hpp>
 #include <fmt/format.h>
 
-#include "chargefw2.h"
 #include "parameters.h"
 #include "structures/molecule_set.h"
 #include "method.h"

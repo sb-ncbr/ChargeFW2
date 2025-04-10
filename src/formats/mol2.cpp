@@ -9,7 +9,7 @@
 #include <fmt/format.h>
 
 #include "common.h"
-#include "chargefw2.h"
+#include "../chargefw2.h"
 #include "../charges.h"
 #include "../periodic_table.h"
 #include "mol2.h"
