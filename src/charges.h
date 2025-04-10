@@ -13,8 +13,6 @@ class Charges {
 public:
     Charges() = default;
 
-    explicit Charges(const std::string &filename);
-
     void set_method_name(const std::string &method_name) { method_name_ = method_name; }
 
     void set_parameters_name(const std::string &parameters_name) {parameters_name_ = parameters_name; }
