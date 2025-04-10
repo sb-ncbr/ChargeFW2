@@ -109,12 +109,7 @@ int main(int argc, char **argv) {
             m.info();
             m.fulfill_requirements(method->get_requirements());
 
-            auto charges = Charges();
-
-            charges.set_method_name(method->name());
-            if (method->has_parameters()) {
-                charges.set_parameters_name(method->parameters()->name());
-            }
+            auto charges = Charges(method->name(), method->has_parameters() ? method->parameters()->name(): "None");
 
             for (auto &mol: m.molecules()) {
                 auto results = method->calculate_charges(mol);
