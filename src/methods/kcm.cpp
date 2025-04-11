@@ -8,6 +8,20 @@
 
 CHARGEFW2_METHOD(KCM)
 
+namespace {
+    const MethodMetadata KCM_METADATA = {
+        .internal_name = "kcm",
+        .full_name = "Kirchhoff Charge Model",
+        .publication = "10.1002/jcc.20892",
+        .type = "2D",
+        .priority = 60,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& KCM::get_metadata() const {
+    return KCM_METADATA;
+};
 
 std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
 

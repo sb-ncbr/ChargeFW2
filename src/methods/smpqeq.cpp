@@ -9,6 +9,20 @@
 
 CHARGEFW2_METHOD(SMP_QEq)
 
+namespace {
+    const MethodMetadata SMPQEQ_METADATA = {
+        .internal_name = "smpqeq",
+        .full_name = "Self-Consistent Charge Equilibration Method",
+        .publication = "10.1021/jp8063273",
+        .type = "3D",
+        .priority = 160,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& SMP_QEq::get_metadata() const {
+    return SMPQEQ_METADATA;
+};
 
 Eigen::VectorXd SMP_QEq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

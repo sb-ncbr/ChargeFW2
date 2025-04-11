@@ -8,6 +8,20 @@
 
 CHARGEFW2_METHOD(GDAC)
 
+namespace {
+    const MethodMetadata GDAC_METADATA = {
+        .internal_name = "gdac",
+        .full_name = "Geometry-Dependent Net Atomic Charges",
+        .publication = "10.1021/jp0023213",
+        .type = "3D",
+        .priority = 100,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& GDAC::get_metadata() const {
+    return GDAC_METADATA;
+};
 
 std::vector<double> GDAC::calculate_charges(const Molecule &molecule) const {
 

@@ -1,7 +1,22 @@
 #include "dummy.h"
+#include <optional>
 
 CHARGEFW2_METHOD(Dummy)
 
+namespace {
+    const MethodMetadata DUMMY_METADATA = {
+        .internal_name = "dummy",
+        .full_name = "Dummy Method",
+        .publication = std::nullopt,
+        .type = "other",
+        .priority = 0,
+        .has_parameters = false
+    };
+};
+
+const MethodMetadata& Dummy::get_metadata() const {
+    return DUMMY_METADATA;
+};
 
 std::vector<double> Dummy::calculate_charges(const Molecule &molecule) const {
     return std::vector<double>(molecule.atoms().size(), 0);

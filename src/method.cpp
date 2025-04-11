@@ -1,3 +1,5 @@
+#include <fmt/core.h>
+#include <regex>
 #include <vector>
 #include <map>
 #include <set>
@@ -10,7 +12,6 @@
 
 #include "method.h"
 #include "parameters.h"
-#include "utility/strings.h"
 #include "exceptions/file_exception.h"
 #include "utility/install.h"
 
@@ -63,9 +64,7 @@ bool Method::is_suitable_for_molecule(const Molecule &) const {
 
 
 std::string Method::internal_name() const {
-    auto name = to_lowercase(name_);
-    name.erase(std::ranges::remove_if(name, [](char c) noexcept { return !std::isalnum(c); }).begin(), name.end());
-    return name;
+    return this->get_metadata().internal_name;
 }
 
 
@@ -221,4 +220,30 @@ Method* load_method(const std::string &method_name) {
     }
 
     return (*get_method_handle)();
+}
+
+std::vector<MethodMetadata> get_available_methods() {
+    std::vector<MethodMetadata> results;
+    std::regex method_pattern(R"(^lib(.*)\.so$)");
+
+    for (const auto &entry : fs::directory_iterator(InstallPaths::libdir())) {
+        auto filename = entry.path().filename().string();
+        std::smatch matches;
+
+        if (std::regex_match(filename, matches, method_pattern)) {
+            auto method_name = matches[1].str();
+            Method* method;
+            
+            try {
+                method = load_method(method_name);
+            } catch (FileException &e){
+                fmt::print(stderr, "Failed to load method {}: \n", method_name);
+                continue;
+            }
+            
+            results.emplace_back(method->get_metadata());
+        }
+    }
+
+    return results;
 }

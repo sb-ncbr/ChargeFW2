@@ -7,6 +7,20 @@
 
 CHARGEFW2_METHOD(EEM)
 
+namespace {
+    const MethodMetadata EEM_METADATA = {
+        .internal_name = "eem",
+        .full_name = "Electronegativity Equalization Method",
+        .publication = "10.1021/ja00275a013",
+        .type = "3D",
+        .priority = 200,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& EEM::get_metadata() const {
+    return EEM_METADATA;
+};
 
 Eigen::VectorXd EEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

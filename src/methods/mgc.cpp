@@ -7,6 +7,20 @@
 
 CHARGEFW2_METHOD(MGC)
 
+namespace {
+    const MethodMetadata MGC_METADATA = {
+        .internal_name = "mgc",
+        .full_name = "Molecular Graph Charge",
+        .publication = "10.1002/poc.378",
+        .type = "2D",
+        .priority = 70,
+        .has_parameters = false
+    };
+};
+
+const MethodMetadata& MGC::get_metadata() const {
+    return MGC_METADATA;
+};
 
 std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
 

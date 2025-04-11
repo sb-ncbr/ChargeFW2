@@ -16,5 +16,7 @@ class EQeqC : public EEMethod {
 public:
     explicit EQeqC() : EEMethod("EQeq+C", {"alpha"}, {"Dz"}, {}, {}) {}
 
+    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+    
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };

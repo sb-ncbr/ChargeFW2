@@ -14,5 +14,7 @@ public:
                 {"iters", {"iters", "Number of iterations", "int", "7", {}}}
             }) {}
 
+    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+    
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };

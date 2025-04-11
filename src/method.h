@@ -1,11 +1,12 @@
 #pragma once
 
 #include <Eigen/Core>
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 #include <functional>
 #include <utility>
-#include <memory>
 
 #include "structures/molecule.h"
 
@@ -28,6 +29,14 @@ struct MethodOption {
     std::vector<std::string> choices;
 };
 
+struct MethodMetadata {
+    std::string internal_name;
+    std::string full_name;
+    std::optional<std::string> publication;
+    std::string type;
+    uint16_t priority;
+    bool has_parameters;
+};
 
 class Method {
 protected:
@@ -62,7 +71,7 @@ public:
 
     void set_parameters(Parameters *parameters);
 
-    bool has_parameters() {
+    bool has_parameters() const {
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;
     }
 
@@ -79,6 +88,8 @@ public:
     [[nodiscard]] std::string internal_name() const;
 
     [[nodiscard]] std::map<std::string, MethodOption> get_options() const { return options_; }
+
+    [[nodiscard]] virtual const MethodMetadata& get_metadata() const = 0;
 
     template<typename T>
     T get_option_value(const std::string &name) const;
@@ -124,6 +135,8 @@ public:
 
 
 Method* load_method(const std::string &method_name);
+
+std::vector<MethodMetadata> get_available_methods();
 
 
 #define CHARGEFW2_METHOD(name) extern "C" Method* get_method() {\

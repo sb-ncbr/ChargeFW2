@@ -3,22 +3,22 @@
 #include <fmt/format.h>
 #include <dlfcn.h>
 #include <filesystem>
-#include <fstream>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 #include <nlohmann/json.hpp>
 
+#include "exceptions/file_exception.h"
+#include "method.h"
+#include "parameters.h"
 #include "structures/molecule_set.h"
 #include "formats/reader.h"
 #include "config.h"
 #include "candidates.h"
 #include "utility/strings.h"
-#include "exceptions/file_exception.h"
 #include "utility/install.h"
 
 
-namespace fs = std::filesystem;
 namespace py = pybind11;
 using namespace pybind11::literals;
 
@@ -26,11 +26,13 @@ using namespace pybind11::literals;
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name);
 
-std::vector<std::string> get_available_methods();
+std::vector<MethodMetadata> get_available_methods();
 
-std::vector<std::string> get_available_parameters(const std::string &method_name);
+std::vector<ParametersMetadata> get_available_parameters(const std::string &method_name);
 
-std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_methods_python(struct Molecules &molecules);
+std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types);
+
+std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules);
 
 py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count);
 
@@ -60,28 +62,6 @@ size_t Molecules::length() const {
 }
 
 
-std::vector<std::string> get_available_methods() {
-    std::vector<std::string> results;
-    std::string filename = InstallPaths::datadir() / "methods.json";
-    using json = nlohmann::json;
-    json j;
-    std::ifstream f(filename);
-    if (!f) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
-    }
-
-    f >> j;
-    f.close();
-
-    for (const auto &method_info: j["methods"]) {
-        auto method_name = method_info["internal_name"].get<std::string>();
-        results.emplace_back(method_name);
-    }
-
-    return results;
-}
-
-
 MoleculeSetStats Molecules::info() {
     ms.classify_atoms(AtomClassifier::PLAIN);
     return ms.get_stats();
@@ -107,8 +87,8 @@ py::dict molecule_info_to_dict(const MoleculeSetStats &stats) {
     );
 }
 
-std::vector<std::string> get_available_parameters(const std::string &method_name) {
-    std::vector<std::string> parameters;
+std::vector<ParametersMetadata> get_available_parameters(const std::string &method_name) {
+    std::vector<ParametersMetadata> parameters;
     for (const auto &parameter_file: get_parameter_files()) {
         if (not to_lowercase(parameter_file.filename().string()).starts_with(method_name)) {
             continue;
@@ -116,28 +96,29 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 
         auto p = std::make_unique<Parameters>(parameter_file);
         if (method_name == p->method_name()) {
-            parameters.emplace_back(parameter_file.stem().string());
+            parameters.emplace_back(p->metadata());
         }
     }
     return parameters;
 }
 
-std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_methods_python(struct Molecules &molecules) {
+std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules) {
     return get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
 }
 
+std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types) {
+    auto method = load_method(method_name);
+    return best_parameters(molecules.ms, method, molecules.ms.has_proteins(), permissive_types);
+}
 
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
-    std::string method_file = InstallPaths::libdir() / ("lib" + method_name + ".so");
-    auto handle = dlopen(method_file.c_str(), RTLD_LAZY);
-
-    auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
-    if (!get_method_handle) {
-        throw std::runtime_error(dlerror());
+    Method* method;
+    try {
+        method = load_method(method_name);
+    } catch (FileException &e) {
+        throw std::runtime_error(fmt::format("Failed to load method {}: {}", method_name, e.what()));
     }
-
-    auto method = (*get_method_handle)();
 
     molecules.ms.fulfill_requirements(method->get_requirements());
 
@@ -174,8 +155,6 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         }
     }
 
-    dlclose(handle);
-
     return charges;
 }
 
@@ -205,9 +184,27 @@ PYBIND11_MODULE(chargefw2, m) {
         .def("__len__", &Molecules::length)
         .def("info", &Molecules::info);
 
+    py::class_<MethodMetadata>(m, "MethodMetadata")
+        .def(py::init<>())
+        .def_readwrite("internal_name", &MethodMetadata::internal_name)
+        .def_readwrite("full_name", &MethodMetadata::full_name)
+        .def_readwrite("publication", &MethodMetadata::publication)
+        .def_readwrite("type", &MethodMetadata::type)
+        .def_readwrite("priority", &MethodMetadata::priority)
+        .def_readwrite("has_parameters", &MethodMetadata::has_parameters);
+
+    py::class_<ParametersMetadata>(m, "ParametersMetadata")
+        .def(py::init<>())
+        .def_readwrite("internal_name", &ParametersMetadata::internal_name)
+        .def_readwrite("full_name", &ParametersMetadata::full_name)
+        .def_readwrite("method", &ParametersMetadata::method)
+        .def_readwrite("publication", &ParametersMetadata::publication);
+
     m.def("get_available_methods", &get_available_methods, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,
           "Return the list of all parameters of a given method");
+    m.def("get_best_parameters", &get_best_parameters, "molecules"_a, "method_name"_a, "permissive_types"_a = false,
+          "Return the best parameters for a given set of molecules and method name");
     m.def("get_suitable_methods", &get_suitable_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
           "Calculate partial atomic charges for a given molecules and method", py::call_guard<py::gil_scoped_release>());
