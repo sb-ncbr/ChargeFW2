@@ -136,6 +136,8 @@ public:
 
 Method* load_method(const std::string &method_name);
 
+std::vector<MethodMetadata> get_available_methods();
+
 
 #define CHARGEFW2_METHOD(name) extern "C" Method* get_method() {\
  static name method;\

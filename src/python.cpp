@@ -3,22 +3,21 @@
 #include <fmt/format.h>
 #include <dlfcn.h>
 #include <filesystem>
-#include <fstream>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
 #include <nlohmann/json.hpp>
 
+#include "exceptions/file_exception.h"
+#include "method.h"
 #include "structures/molecule_set.h"
 #include "formats/reader.h"
 #include "config.h"
 #include "candidates.h"
 #include "utility/strings.h"
-#include "exceptions/file_exception.h"
 #include "utility/install.h"
 
 
-namespace fs = std::filesystem;
 namespace py = pybind11;
 using namespace pybind11::literals;
 
@@ -26,7 +25,7 @@ using namespace pybind11::literals;
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name);
 
-std::vector<std::string> get_available_methods();
+std::vector<MethodMetadata> get_available_methods();
 
 std::vector<std::string> get_available_parameters(const std::string &method_name);
 
@@ -57,28 +56,6 @@ Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool 
 
 size_t Molecules::length() const {
     return ms.molecules().size();
-}
-
-
-std::vector<std::string> get_available_methods() {
-    std::vector<std::string> results;
-    std::string filename = InstallPaths::datadir() / "methods.json";
-    using json = nlohmann::json;
-    json j;
-    std::ifstream f(filename);
-    if (!f) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
-    }
-
-    f >> j;
-    f.close();
-
-    for (const auto &method_info: j["methods"]) {
-        auto method_name = method_info["internal_name"].get<std::string>();
-        results.emplace_back(method_name);
-    }
-
-    return results;
 }
 
 
@@ -129,15 +106,12 @@ std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_meth
 
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
-    std::string method_file = InstallPaths::libdir() / ("lib" + method_name + ".so");
-    auto handle = dlopen(method_file.c_str(), RTLD_LAZY);
-
-    auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
-    if (!get_method_handle) {
-        throw std::runtime_error(dlerror());
+    Method* method;
+    try {
+        method = load_method(method_name);
+    } catch (FileException &e) {
+        throw std::runtime_error(fmt::format("Failed to load method {}: {}", method_name, e.what()));
     }
-
-    auto method = (*get_method_handle)();
 
     molecules.ms.fulfill_requirements(method->get_requirements());
 
@@ -173,8 +147,6 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
             charges[mol.name()] = results;
         }
     }
-
-    dlclose(handle);
 
     return charges;
 }

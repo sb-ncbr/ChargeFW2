@@ -76,21 +76,12 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 
 std::vector<std::tuple<std::string, std::vector<std::string>>>
 get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
-    std::string filename = InstallPaths::datadir()/ "methods.json";
-    using json = nlohmann::json;
-    json j;
-    std::ifstream f(filename);
-    if (!f) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
-    }
-
-    f >> j;
-    f.close();
-
     std::vector<std::tuple<std::string, std::vector<std::string>>> results;
 
-    for (const auto &method_info: j["methods"]) {
-        auto method_name = method_info["internal_name"].get<std::string>();
+    auto methods = get_available_methods();
+
+    for (const auto &method_info: methods) {
+        auto method_name = method_info.internal_name;
         const auto method = load_method(method_name);
 
         bool suitable = true;

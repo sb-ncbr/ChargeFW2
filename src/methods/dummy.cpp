@@ -1,4 +1,5 @@
 #include "dummy.h"
+#include <optional>
 
 CHARGEFW2_METHOD(Dummy)
 
@@ -6,7 +7,7 @@ namespace {
     const MethodMetadata DUMMY_METADATA = {
         .internal_name = "dummy",
         .full_name = "Dummy Method",
-        .publication = nullptr,
+        .publication = std::nullopt,
         .type = "other",
         .priority = 0,
         .has_parameters = false

@@ -27,8 +27,6 @@
 #include "exceptions/internal_exception.h"
 #include "utility/install.h"
 
-namespace fs = std::filesystem;
-
 
 int main(int argc, char **argv) {
     auto parsed = parse_args(argc, argv);
@@ -39,6 +37,14 @@ int main(int argc, char **argv) {
     auto ext = std::filesystem::path(config::input_file).extension().string();
 
     try {
+        if (config::mode == "available-methods") {
+            auto methods = get_available_methods();
+            for (const auto &method: methods) {
+                fmt::print("{:<10} - {}\n", method.internal_name, method.full_name);
+            }
+            exit(EXIT_SUCCESS);
+        }
+
         MoleculeSet m = load_molecule_set(config::input_file);
 
         if (m.molecules().empty()) {

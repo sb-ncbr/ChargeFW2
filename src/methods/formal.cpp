@@ -1,4 +1,5 @@
 #include "formal.h"
+#include <optional>
 
 CHARGEFW2_METHOD(Formal)
 
@@ -6,7 +7,7 @@ namespace {
     const MethodMetadata FORMAL_METADATA = {
         .internal_name = "formal",
         .full_name = "Formal charges",
-        .publication = nullptr,
+        .publication = std::nullopt,
         .type = "other",
         .priority = 10,
         .has_parameters = false
