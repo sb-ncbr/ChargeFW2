@@ -5,8 +5,8 @@
 
 std::vector<std::filesystem::path> get_parameter_files();
 
-std::vector<std::tuple<std::string, std::vector<std::string>>>
+std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>>
 get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types = false);
 
-std::string
+std::optional<ParametersMetadata>
 best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types = false);

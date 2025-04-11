@@ -10,6 +10,7 @@
 
 #include "exceptions/file_exception.h"
 #include "method.h"
+#include "parameters.h"
 #include "structures/molecule_set.h"
 #include "formats/reader.h"
 #include "config.h"
@@ -27,11 +28,11 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
 std::vector<MethodMetadata> get_available_methods();
 
-std::vector<std::string> get_available_parameters(const std::string &method_name);
+std::vector<ParametersMetadata> get_available_parameters(const std::string &method_name);
 
-std::string get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types);
+std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types);
 
-std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_methods_python(struct Molecules &molecules);
+std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules);
 
 py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count);
 
@@ -86,8 +87,8 @@ py::dict molecule_info_to_dict(const MoleculeSetStats &stats) {
     );
 }
 
-std::vector<std::string> get_available_parameters(const std::string &method_name) {
-    std::vector<std::string> parameters;
+std::vector<ParametersMetadata> get_available_parameters(const std::string &method_name) {
+    std::vector<ParametersMetadata> parameters;
     for (const auto &parameter_file: get_parameter_files()) {
         if (not to_lowercase(parameter_file.filename().string()).starts_with(method_name)) {
             continue;
@@ -95,17 +96,17 @@ std::vector<std::string> get_available_parameters(const std::string &method_name
 
         auto p = std::make_unique<Parameters>(parameter_file);
         if (method_name == p->method_name()) {
-            parameters.emplace_back(parameter_file.stem().string());
+            parameters.emplace_back(p->metadata());
         }
     }
     return parameters;
 }
 
-std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_methods_python(struct Molecules &molecules) {
+std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules) {
     return get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
 }
 
-std::string get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types) {
+std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types) {
     auto method = load_method(method_name);
     return best_parameters(molecules.ms, method, molecules.ms.has_proteins(), permissive_types);
 }
@@ -191,6 +192,13 @@ PYBIND11_MODULE(chargefw2, m) {
         .def_readwrite("type", &MethodMetadata::type)
         .def_readwrite("priority", &MethodMetadata::priority)
         .def_readwrite("has_parameters", &MethodMetadata::has_parameters);
+
+    py::class_<ParametersMetadata>(m, "ParametersMetadata")
+        .def(py::init<>())
+        .def_readwrite("internal_name", &ParametersMetadata::internal_name)
+        .def_readwrite("full_name", &ParametersMetadata::full_name)
+        .def_readwrite("method", &ParametersMetadata::method)
+        .def_readwrite("publication", &ParametersMetadata::publication);
 
     m.def("get_available_methods", &get_available_methods, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,

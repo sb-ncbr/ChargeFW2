@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
             std::string method_name;
             if (config::method_name.empty()) {
                 auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
-                method_name = std::get<0>(methods.front());
+                method_name = std::get<0>(methods.front()).internal_name;
                 fmt::print("Autoselecting the best method.\n");
             } else {
                 method_name = config::method_name;
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
             if (method->has_parameters()) {
                 std::string par_name;
                 if (config::par_file.empty()) {
-                    par_name = best_parameters(m, method, is_protein_structure, config::permissive_types);
+                    par_name = best_parameters(m, method, is_protein_structure, config::permissive_types)->internal_name;
                     if (par_name.empty()) {
                         fmt::print(stderr, "No parameters found \n");
                         exit(EXIT_PARAMETER_ERROR);
@@ -170,17 +170,17 @@ int main(int argc, char **argv) {
             const auto method = load_method(config::method_name);
 
             auto best = best_parameters(m, method, is_protein_structure, config::permissive_types);
-            if (best.empty()) {
+            if (not best.has_value()) {
                 fmt::print("There are no best parameters\n");
             } else {
-                fmt::print("Best parameters are: {}\n", best);
+                fmt::print("Best parameters are: {}\n", best->internal_name);
             }
         } else if (config::mode == "suitable-methods") {
             auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
             for (const auto &[method, parameters]: methods) {
-                fmt::print("{}", method);
+                fmt::print("{}", method.internal_name);
                 for (const auto &parameter_set: parameters) {
-                    fmt::print(" {}", parameter_set);
+                    fmt::print(" {}", parameter_set.internal_name);
                 }
                 fmt::print("\n");
             }

@@ -1,7 +1,7 @@
 #include <nlohmann/json.hpp>
 #include <filesystem>
-#include <fstream>
 #include <fmt/format.h>
+#include <optional>
 #include <tuple>
 #include <vector>
 #include <string>
@@ -10,15 +10,15 @@
 #include "candidates.h"
 #include "exceptions/parameter_exception.h"
 #include "method.h"
+#include "parameters.h"
 #include "utility/strings.h"
-#include "exceptions/file_exception.h"
 #include "utility/install.h"
 
 
 namespace fs = std::filesystem;
 
 
-std::vector<std::string>
+std::vector<ParametersMetadata>
 get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, const std::string &method_name);
 
 
@@ -33,10 +33,10 @@ std::vector<fs::path> get_parameter_files() {
 }
 
 
-std::vector<std::string>
+std::vector<ParametersMetadata>
 get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, const std::string &method_name) {
-    std::vector<std::string> protein_parameters;
-    std::vector<std::string> ligand_parameters;
+    std::vector<ParametersMetadata> protein_parameters;
+    std::vector<ParametersMetadata> ligand_parameters;
 
     for (const auto &parameter_file: get_parameter_files()) {
         if (not to_lowercase(parameter_file.filename().string()).starts_with(method_name)) {
@@ -51,18 +51,17 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 
         size_t unclassified = ms.classify_set_from_parameters(*p, false, permissive_types);
 
-        auto parameters = parameter_file.filename().string();
         if (!unclassified) {
             if (p->source() == "protein") {
-                protein_parameters.emplace_back(parameters);
+                protein_parameters.emplace_back(p->metadata());
             } else {
-                ligand_parameters.emplace_back(parameters);
+                ligand_parameters.emplace_back(p->metadata());
             }
         }
     }
 
     /* Show protein parameters first if the proteins are in the set */
-    std::vector<std::string> all_parameters;
+    std::vector<ParametersMetadata> all_parameters;
     if (is_protein) {
         all_parameters = protein_parameters;
         all_parameters.insert(all_parameters.end(), ligand_parameters.begin(), ligand_parameters.end());
@@ -75,9 +74,9 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 }
 
 
-std::vector<std::tuple<std::string, std::vector<std::string>>>
+std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>>
 get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
-    std::vector<std::tuple<std::string, std::vector<std::string>>> results;
+    std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> results;
 
     auto methods = get_available_methods();
     std::sort(methods.begin(), methods.end(), [](const MethodMetadata &a, const MethodMetadata &b) {
@@ -104,7 +103,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
-            results.emplace_back(std::tuple<std::string, std::vector<std::string>>(method_name, {}));
+            results.emplace_back(std::tuple<MethodMetadata, std::vector<ParametersMetadata>>(method_info, {}));
             continue;
         }
 
@@ -118,12 +117,17 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 }
 
 
-std::string
+std::optional<ParametersMetadata>
 best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types) {
     if (not method->has_parameters()) {
         throw ParameterException("Method uses no parameters");
     }
     
     auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->internal_name());
-    return parameters.empty() ? "" : parameters.front();
+    
+    if (parameters.empty()) {
+        return std::nullopt;
+    }
+
+    return parameters.front();
 }

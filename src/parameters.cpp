@@ -1,3 +1,4 @@
+#include <filesystem>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -5,9 +6,7 @@
 #include <fmt/format.h>
 
 #include "parameters.h"
-#include "structures/molecule_set.h"
 #include "method.h"
-
 
 Parameters::Parameters(const std::string &filename) {
     using json = nlohmann::json;
@@ -20,9 +19,18 @@ Parameters::Parameters(const std::string &filename) {
     f >> j;
     f.close();
 
+    std::filesystem::path path(filename);
+    std::string internal_name = path.stem().string();
+
     try {
         name_ = j["metadata"]["name"];
         method_name_ = j["metadata"]["method"];
+        metadata_ = ParametersMetadata{
+            .full_name = j["metadata"]["name"],
+            .internal_name = internal_name,
+            .method = j["metadata"]["method"],
+            .publication = j["metadata"]["publication"]
+        };
 
         if (j["metadata"].count("source")) {
             source_ = j["metadata"]["source"];
