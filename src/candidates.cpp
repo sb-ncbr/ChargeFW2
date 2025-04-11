@@ -79,6 +79,9 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
     std::vector<std::tuple<std::string, std::vector<std::string>>> results;
 
     auto methods = get_available_methods();
+    std::sort(methods.begin(), methods.end(), [](const MethodMetadata &a, const MethodMetadata &b) {
+        return a.priority > b.priority;
+    });
 
     for (const auto &method_info: methods) {
         auto method_name = method_info.internal_name;
