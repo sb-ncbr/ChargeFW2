@@ -71,7 +71,7 @@ public:
 
     void set_parameters(Parameters *parameters);
 
-    bool has_parameters() {
+    bool has_parameters() const {
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;
     }
 

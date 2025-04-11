@@ -1,3 +1,4 @@
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <memory>
 #include <filesystem>
@@ -11,6 +12,7 @@
 #include <algorithm>
 
 #include "chargefw2.h"
+#include "exceptions/parameter_exception.h"
 #include "formats/reader.h"
 #include "formats/mol2.h"
 #include "formats/pqr.h"
@@ -167,10 +169,6 @@ int main(int argc, char **argv) {
         } else if (config::mode == "best-parameters") {
             const auto method = load_method(config::method_name);
 
-            if (!method->has_parameters()) {
-                fmt::print(stderr, "Method uses no parameters\n");
-                exit(EXIT_PARAMETER_ERROR);
-            }
             auto best = best_parameters(m, method, is_protein_structure, config::permissive_types);
             if (best.empty()) {
                 fmt::print("There are no best parameters\n");
@@ -197,6 +195,9 @@ int main(int argc, char **argv) {
     } catch (InternalException &e) {
         fmt::print(stderr, "{}\n", e.what());
         exit(EXIT_INTERNAL_ERROR);
+    } catch (ParameterException &e) {
+        fmt::print(stderr, "{}\n", e.what());
+        exit(EXIT_PARAMETER_ERROR);
     }
 
     return EXIT_SUCCESS;

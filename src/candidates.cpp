@@ -8,6 +8,7 @@
 
 #include "chargefw2.h"
 #include "candidates.h"
+#include "exceptions/parameter_exception.h"
 #include "method.h"
 #include "utility/strings.h"
 #include "exceptions/file_exception.h"
@@ -119,6 +120,10 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
 std::string
 best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types) {
+    if (not method->has_parameters()) {
+        throw ParameterException("Method uses no parameters");
+    }
+    
     auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->internal_name());
     return parameters.empty() ? "" : parameters.front();
 }

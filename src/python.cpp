@@ -29,6 +29,8 @@ std::vector<MethodMetadata> get_available_methods();
 
 std::vector<std::string> get_available_parameters(const std::string &method_name);
 
+std::string get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types);
+
 std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_methods_python(struct Molecules &molecules);
 
 py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count);
@@ -103,6 +105,10 @@ std::vector<std::tuple<std::string, std::vector<std::string>>> get_suitable_meth
     return get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
 }
 
+std::string get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types) {
+    auto method = load_method(method_name);
+    return best_parameters(molecules.ms, method, molecules.ms.has_proteins(), permissive_types);
+}
 
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
@@ -177,9 +183,20 @@ PYBIND11_MODULE(chargefw2, m) {
         .def("__len__", &Molecules::length)
         .def("info", &Molecules::info);
 
+    py::class_<MethodMetadata>(m, "MethodMetadata")
+        .def(py::init<>())
+        .def_readwrite("internal_name", &MethodMetadata::internal_name)
+        .def_readwrite("full_name", &MethodMetadata::full_name)
+        .def_readwrite("publication", &MethodMetadata::publication)
+        .def_readwrite("type", &MethodMetadata::type)
+        .def_readwrite("priority", &MethodMetadata::priority)
+        .def_readwrite("has_parameters", &MethodMetadata::has_parameters);
+
     m.def("get_available_methods", &get_available_methods, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,
           "Return the list of all parameters of a given method");
+    m.def("get_best_parameters", &get_best_parameters, "molecules"_a, "method_name"_a, "permissive_types"_a = false,
+          "Return the best parameters for a given set of molecules and method name");
     m.def("get_suitable_methods", &get_suitable_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
           "Calculate partial atomic charges for a given molecules and method", py::call_guard<py::gil_scoped_release>());
