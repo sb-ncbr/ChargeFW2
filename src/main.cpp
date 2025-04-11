@@ -8,19 +8,19 @@
 #include <chrono>
 #include <cmath>
 #include <unistd.h>
-#include <tuple>
 #include <algorithm>
 
 #include "chargefw2.h"
 #include "exceptions/parameter_exception.h"
-#include "formats/reader.h"
+#include "formats/cif.h"
 #include "formats/mol2.h"
 #include "formats/pqr.h"
-#include "formats/cif.h"
+#include "formats/reader.h"
 #include "formats/txt.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
 #include "charges.h"
+#include "formats/save_charges.h"
 #include "method.h"
 #include "candidates.h"
 #include "config.h"
@@ -128,19 +128,7 @@ int main(int argc, char **argv) {
                 charges.insert(mol.name(), results);
             }
 
-            std::filesystem::path dir(config::chg_out_dir);
-            std::filesystem::path file(config::input_file);
-            auto txt_str = file.filename().string() + ".txt";
-            TXT().save_charges(m, charges, dir / std::filesystem::path(txt_str));
-            CIF().save_charges(m, charges, config::input_file);
-
-            if (is_protein_structure) {
-                auto pqr_str = file.filename().string() + ".pqr";
-                PQR().save_charges(m, charges, dir / std::filesystem::path(pqr_str));
-            } else {
-                auto mol2_str = file.filename().string() + ".mol2";
-                Mol2().save_charges(m, charges, dir / std::filesystem::path(mol2_str));
-            }
+            save_charges(m, charges, config::input_file);
 
             if (not config::log_file.empty()) {
                 struct rusage usage = {};

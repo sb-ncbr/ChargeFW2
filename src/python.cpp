@@ -8,7 +8,10 @@
 #include <pybind11/stl.h>
 #include <tuple>
 #include <nlohmann/json.hpp>
+#include <string>
 
+#include "charges.h"
+#include "formats/save_charges.h"
 #include "exceptions/file_exception.h"
 #include "method.h"
 #include "parameters.h"
@@ -27,7 +30,9 @@ struct PythonMethodMetadata;
 
 
 std::map<std::string, std::vector<double>>
-calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name);
+calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name, std::optional<const std::string> &chg_out_dir);
+
+void save_charges_python(std::map<std::string, std::vector<double>> charges, Molecules &molecules, std::string method_name, std::optional<const std::string> parameters_name, std::optional<const std::string> chg_out_dir);
 
 std::vector<PythonMethodMetadata> get_available_methods_python();
 
@@ -50,15 +55,20 @@ struct PythonMethodMetadata : public MethodMetadata {
 struct Molecules {
     MoleculeSet ms;
 
-    Molecules(const std::string &filename, bool read_hetatm, bool ignore_water);
+    Molecules(const std::string &filename, bool read_hetatm, bool ignore_water, bool permissive_types);
+
+    std::string input_file;
 
     [[nodiscard]] size_t length() const;
     [[nodiscard]] MoleculeSetStats info();
 };
 
-Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool ignore_water = true) {
+Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool ignore_water = true, bool permissive_types = false) {
     config::read_hetatm = read_hetatm;
     config::ignore_water = ignore_water;
+    config::permissive_types = permissive_types;
+    input_file = filename;
+
     ms = load_molecule_set(filename);
     if (ms.molecules().empty()) {
         throw std::runtime_error("No molecules were loaded from the input file");
@@ -157,7 +167,9 @@ std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecule
 }
 
 std::map<std::string, std::vector<double>>
-calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name) {
+calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name, std::optional<const std::string> &chg_out_dir) {
+    config::chg_out_dir = chg_out_dir.value_or(".");
+
     Method* method;
     try {
         method = load_method(method_name);
@@ -176,7 +188,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         std::string parameter_file = InstallPaths::parametersdir() / (parameters_name.value() + ".json");
         if (not parameter_file.empty()) {
             parameters = std::make_unique<Parameters>(parameter_file);
-            auto unclassified = molecules.ms.classify_set_from_parameters(*parameters, false, true);
+            auto unclassified = molecules.ms.classify_set_from_parameters(*parameters, false, config::permissive_types);
             if (unclassified) {
                 throw std::runtime_error("Selected parameters doesn't cover the whole molecule set");
             }
@@ -190,19 +202,40 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         method->set_option_value(opt, info.default_value);
     }
 
-    std::map<std::string, std::vector<double>> charges;
+    auto charges = Charges();
+    std::map<std::string, std::vector<double>> result;
     for (auto &mol: molecules.ms.molecules()) {
         auto results = method->calculate_charges(mol);
         if (std::ranges::any_of(results, [](double chg) noexcept { return not isfinite(chg); })) {
             fmt::print("Incorrect values encountered for: {}. Skipping molecule.\n", mol.name());
         } else {
-            charges[mol.name()] = results;
+            charges.insert(mol.name(), results);
+            result[mol.name()] = results;
         }
     }
 
-    return charges;
+    save_charges(molecules.ms, charges, molecules.input_file);
+
+    return result;
 }
 
+void save_charges_python(
+    std::map<std::string, 
+    std::vector<double>> charges, 
+    Molecules &molecules,
+    std::string method_name, 
+    std::optional<const std::string> parameters_name = "None",
+    std::optional<const std::string> chg_out_dir = ".") {
+    config::chg_out_dir = chg_out_dir.value_or(".");
+    config::input_file = molecules.input_file;
+
+    Charges charges_to_save(method_name, parameters_name.value_or("None"));
+    for (const auto &[name, charges] : charges) {
+        charges_to_save.insert(name, charges);
+    }
+
+    save_charges(molecules.ms, charges_to_save, config::input_file);
+}
 
 PYBIND11_MODULE(chargefw2, m) {
     m.doc() = "Python bindings to ChargeFW2";
@@ -224,8 +257,8 @@ PYBIND11_MODULE(chargefw2, m) {
         });
 
     py::class_<Molecules>(m, "Molecules")
-        .def(py::init<const std::string &, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
-                py::arg("ignore_water") = false)
+        .def(py::init<const std::string &, bool, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
+                py::arg("ignore_water") = false, py::arg("permissive_types") = false)
         .def("__len__", &Molecules::length)
         .def("info", &Molecules::info);
 
@@ -251,6 +284,7 @@ PYBIND11_MODULE(chargefw2, m) {
     m.def("get_best_parameters", &get_best_parameters, "molecules"_a, "method_name"_a, "permissive_types"_a = false,
           "Return the best parameters for a given set of molecules and method name");
     m.def("get_suitable_methods", &get_suitable_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
-    m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(),
+    m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(), py::arg("chg_out_dir") = py::none(),
           "Calculate partial atomic charges for a given molecules and method", py::call_guard<py::gil_scoped_release>());
+    m.def("save_charges", &save_charges_python, "molecules"_a, "charges"_a, "method_name"_a, py::arg("parameters_name") = py::none(), py::arg("chg_out_dir") = py::none());
 }
