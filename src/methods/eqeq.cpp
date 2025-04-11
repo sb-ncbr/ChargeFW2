@@ -4,11 +4,24 @@
 #include <Eigen/LU>
 
 #include "eqeq.h"
-#include "../parameters.h"
 #include "../geometry.h"
 
 CHARGEFW2_METHOD(EQeq)
 
+namespace {
+    const MethodMetadata EQEQ_METADATA = {
+        .internal_name = "eqeq",
+        .full_name = "Extended Charge Equilibration Method",
+        .publication = "10.1021/jz3008485",
+        .type = "3D",
+        .priority = 150,
+        .has_parameters = false
+    };
+};
+
+const MethodMetadata& EQeq::get_metadata() const {
+    return EQEQ_METADATA;
+};
 
 Eigen::VectorXd EQeq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

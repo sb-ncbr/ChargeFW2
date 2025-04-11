@@ -6,6 +6,20 @@
 
 CHARGEFW2_METHOD(PEOE)
 
+namespace {
+    const MethodMetadata PEOE_METADATA = {
+        .internal_name = "peoe",
+        .full_name = "Partial Equalization of Atomic Electronegativity",
+        .publication = "10.1016/0040-4020(80)80168-2",
+        .type = "2D",
+        .priority = 120,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& PEOE::get_metadata() const {
+    return PEOE_METADATA;
+};
 
 std::vector<double> PEOE::calculate_charges(const Molecule &molecule) const {
 

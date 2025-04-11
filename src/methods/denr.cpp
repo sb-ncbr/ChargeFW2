@@ -6,6 +6,20 @@
 
 CHARGEFW2_METHOD(DENR)
 
+namespace {
+    const MethodMetadata DENR_METADATA = {
+        .internal_name = "denr",
+        .full_name = "Dynamical Electronegativity Relaxation",
+        .publication = "10.1080/10629360701844142",
+        .type = "2D",
+        .priority = 50,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& DENR::get_metadata() const {
+    return DENR_METADATA;
+};
 
 std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
 

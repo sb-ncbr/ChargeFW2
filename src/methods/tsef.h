@@ -12,6 +12,8 @@ class TSEF : public Method {
 public:
     explicit TSEF() : Method("TSEF", {}, {"electronegativity", "hardness"}, {}, {}) {}
 
+    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+    
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     [[nodiscard]] std::vector<RequiredFeatures> get_requirements() const override {

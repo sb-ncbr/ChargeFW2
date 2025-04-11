@@ -7,6 +7,20 @@
 
 CHARGEFW2_METHOD(MPEOE)
 
+namespace {
+    const MethodMetadata MPEOE_METADATA = {
+        .internal_name = "mpeoe",
+        .full_name = "Modified Partial Equalization of Atomic Electronegativity",
+        .publication = "10.1021/j100374a066",
+        .type = "2D",
+        .priority = 110,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& MPEOE::get_metadata() const {
+    return MPEOE_METADATA;
+};
 
 std::vector<double> MPEOE::calculate_charges(const Molecule &molecule) const {
 

@@ -13,6 +13,8 @@ class SQEq0 : public Method {
 public:
     explicit SQEq0() : Method("SQEq0", {}, {"electronegativity", "hardness", "width"}, {"kappa"}, {}) {}
 
+    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+    
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     [[nodiscard]] bool is_suitable_for_large_molecule() const override { return false; }

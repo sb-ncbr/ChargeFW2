@@ -2,11 +2,11 @@
 
 #include <Eigen/Core>
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 #include <functional>
 #include <utility>
-#include <memory>
 
 #include "structures/molecule.h"
 
@@ -32,7 +32,7 @@ struct MethodOption {
 struct MethodMetadata {
     std::string internal_name;
     std::string full_name;
-    std::string publication;
+    std::optional<std::string> publication;
     std::string type;
     uint16_t priority;
     bool has_parameters;

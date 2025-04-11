@@ -6,6 +6,20 @@
 
 CHARGEFW2_METHOD(TSEF)
 
+namespace {
+    const MethodMetadata TSEF_METADATA = {
+        .internal_name = "tsef",
+        .full_name = "Topologically Symmetrical Energy Function",
+        .publication = "10.1080/10629360701844142",
+        .type = "2D",
+        .priority = 40,
+        .has_parameters = true
+    };
+};
+
+const MethodMetadata& TSEF::get_metadata() const {
+    return TSEF_METADATA;
+};
 
 double K(int i);
 

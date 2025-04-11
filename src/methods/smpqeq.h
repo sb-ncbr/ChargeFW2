@@ -15,5 +15,7 @@ class SMP_QEq : public EEMethod {
 public:
     explicit SMP_QEq() : EEMethod("SMP/QEq", {}, {"first", "second", "third", "fourth"}, {}, {}) {}
 
+    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };
