@@ -14,8 +14,7 @@ namespace {
         .full_name = "Atom-Bond Electronegativity Equalization Method",
         .publication = "10.1021/jp9711048",
         .type = "3D",
-        .priority = 190,
-        .has_parameters = true
+        .priority = 190
     };
 };
 

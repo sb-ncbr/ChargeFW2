@@ -8,8 +8,7 @@ namespace {
         .full_name = "Valence Electrons Equalization Method",
         .publication = "10.1088/1674-0068/24/01/31-39",
         .type = "2D",
-        .priority = 20,
-        .has_parameters = false
+        .priority = 20
     };
 };
 

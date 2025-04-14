@@ -2,6 +2,7 @@
 
 #include <Eigen/Core>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -35,7 +36,6 @@ struct MethodMetadata {
     std::optional<std::string> publication;
     std::string type;
     uint16_t priority;
-    bool has_parameters;
 };
 
 class Method {
@@ -136,7 +136,7 @@ public:
 
 Method* load_method(const std::string &method_name);
 
-std::vector<MethodMetadata> get_available_methods();
+std::vector<Method*> get_available_methods();
 
 
 #define CHARGEFW2_METHOD(name) extern "C" Method* get_method() {\

@@ -12,8 +12,7 @@ namespace {
         .full_name = "Dynamical Electronegativity Relaxation",
         .publication = "10.1080/10629360701844142",
         .type = "2D",
-        .priority = 50,
-        .has_parameters = true
+        .priority = 50
     };
 };
 

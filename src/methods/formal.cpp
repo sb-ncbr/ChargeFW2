@@ -9,8 +9,7 @@ namespace {
         .full_name = "Formal charges",
         .publication = std::nullopt,
         .type = "other",
-        .priority = 10,
-        .has_parameters = false
+        .priority = 10
     };
 };
 

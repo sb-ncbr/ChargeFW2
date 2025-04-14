@@ -12,8 +12,7 @@ namespace {
         .full_name = "Charge2",
         .publication = "10.1002/jcc.540030316",
         .type = "2D",
-        .priority = 30,
-        .has_parameters = true
+        .priority = 30
     };
 };
 

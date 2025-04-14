@@ -14,8 +14,7 @@ namespace {
         .full_name = "Extended Charge Equilibration Method",
         .publication = "10.1021/jz3008485",
         .type = "3D",
-        .priority = 150,
-        .has_parameters = false
+        .priority = 150
     };
 };
 

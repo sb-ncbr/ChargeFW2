@@ -13,8 +13,7 @@ namespace {
         .full_name = "Modified Partial Equalization of Atomic Electronegativity",
         .publication = "10.1021/j100374a066",
         .type = "2D",
-        .priority = 110,
-        .has_parameters = true
+        .priority = 110
     };
 };
 

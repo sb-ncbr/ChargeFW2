@@ -13,8 +13,7 @@ namespace {
         .full_name = "Molecular Graph Charge",
         .publication = "10.1002/poc.378",
         .type = "2D",
-        .priority = 70,
-        .has_parameters = false
+        .priority = 70
     };
 };
 

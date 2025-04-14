@@ -14,8 +14,7 @@ namespace {
         .full_name = "Split-charge equilibration with parametrized initial charges",
         .publication = "10.1186/s13321-021-00528-w",
         .type = "3D",
-        .priority = 210,
-        .has_parameters = true
+        .priority = 210
     };
 };
 

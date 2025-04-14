@@ -14,8 +14,7 @@ namespace {
         .full_name = "Split-charge equilibration with initial formal charges",
         .publication = "10.1021/ct200512e",
         .type = "3D",
-        .priority = 80,
-        .has_parameters = true
+        .priority = 80
     };
 };
 

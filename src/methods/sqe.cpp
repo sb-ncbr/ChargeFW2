@@ -14,8 +14,7 @@ namespace {
         .full_name = "Split-charge equilibration",
         .publication = "10.1063/1.2346671",
         .type = "3D",
-        .priority = 90,
-        .has_parameters = true
+        .priority = 90
     };
 };
 

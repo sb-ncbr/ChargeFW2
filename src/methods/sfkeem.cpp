@@ -15,8 +15,7 @@ namespace {
         .full_name = "Selfconsistent Functional Kernel Equalized Electronegativity Method",
         .publication = "10.1021/ci050505e",
         .type = "3D",
-        .priority = 180,
-        .has_parameters = true
+        .priority = 180
     };
 };
 

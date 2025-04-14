@@ -1,11 +1,12 @@
 #include <cstdio>
+#include <dlfcn.h>
 #include <fmt/core.h>
 #include <fmt/format.h>
-#include <dlfcn.h>
 #include <filesystem>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
 #include <pybind11/stl.h>
+#include <tuple>
 #include <nlohmann/json.hpp>
 
 #include "exceptions/file_exception.h"
@@ -22,21 +23,29 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
+struct PythonMethodMetadata;
+
 
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name);
 
-std::vector<MethodMetadata> get_available_methods();
+std::vector<PythonMethodMetadata> get_available_methods_python();
 
 std::vector<ParametersMetadata> get_available_parameters(const std::string &method_name);
 
 std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types);
 
-std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules);
+std::vector<std::tuple<PythonMethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules);
 
 py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_type_count);
 
 py::dict molecule_info_to_dict(const MoleculeSetStats &stats);
+
+struct PythonMethodMetadata : public MethodMetadata {
+    bool has_parameters;
+
+    PythonMethodMetadata(const MethodMetadata &metadata, bool has_parameters) : MethodMetadata(metadata), has_parameters(has_parameters) {}
+};
 
 struct Molecules {
     MoleculeSet ms;
@@ -102,13 +111,49 @@ std::vector<ParametersMetadata> get_available_parameters(const std::string &meth
     return parameters;
 }
 
-std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules) {
-    return get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), false);
+std::vector<std::tuple<PythonMethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules) {
+    auto suitable = get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), config::permissive_types);
+    auto result = std::vector<std::tuple<PythonMethodMetadata, std::vector<ParametersMetadata>>>();
+    result.reserve(suitable.size());
+
+    for (auto it = suitable.begin(); it != suitable.end(); ++it) {
+        const auto &[method, parameters_list] = *it;
+
+        auto metadata = method->get_metadata();
+        auto has_parameters = method->has_parameters();
+
+        std::vector<ParametersMetadata> parameters_metadata;
+        if (has_parameters) {
+            for (const auto &parameters : parameters_list) {
+                parameters_metadata.emplace_back(parameters->metadata());
+            }
+        }
+
+        result.emplace_back(PythonMethodMetadata(metadata, has_parameters), parameters_metadata);
+
+    }
+
+    return result;
+}
+
+std::vector<PythonMethodMetadata> get_available_methods_python() {
+    auto methods = get_available_methods();
+    std::vector<PythonMethodMetadata> result;
+    for (const auto &method : methods) {
+        result.emplace_back(PythonMethodMetadata(method->get_metadata(), method->has_parameters()));
+    }
+    return result;
 }
 
 std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types) {
     auto method = load_method(method_name);
-    return best_parameters(molecules.ms, method, molecules.ms.has_proteins(), permissive_types);
+    auto parameters = best_parameters(molecules.ms, method, molecules.ms.has_proteins(), permissive_types);
+
+    if (not parameters.has_value()) {
+        return std::nullopt;
+    }
+
+    return parameters.value()->metadata();
 }
 
 std::map<std::string, std::vector<double>>
@@ -124,7 +169,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
 
     std::unique_ptr<Parameters> parameters;
     if (method->has_parameters()) {
-        if (!parameters_name.has_value()) {
+        if (not parameters_name.has_value()) {
             throw std::runtime_error(std::string("Method ") + method_name + std::string(" requires parameters"));
         }
 
@@ -184,14 +229,13 @@ PYBIND11_MODULE(chargefw2, m) {
         .def("__len__", &Molecules::length)
         .def("info", &Molecules::info);
 
-    py::class_<MethodMetadata>(m, "MethodMetadata")
-        .def(py::init<>())
-        .def_readwrite("internal_name", &MethodMetadata::internal_name)
-        .def_readwrite("full_name", &MethodMetadata::full_name)
-        .def_readwrite("publication", &MethodMetadata::publication)
-        .def_readwrite("type", &MethodMetadata::type)
-        .def_readwrite("priority", &MethodMetadata::priority)
-        .def_readwrite("has_parameters", &MethodMetadata::has_parameters);
+    py::class_<PythonMethodMetadata>(m, "MethodMetadata")
+        .def_readwrite("internal_name", &PythonMethodMetadata::internal_name)
+        .def_readwrite("full_name", &PythonMethodMetadata::full_name)
+        .def_readwrite("publication", &PythonMethodMetadata::publication)
+        .def_readwrite("type", &PythonMethodMetadata::type)
+        .def_readwrite("priority", &PythonMethodMetadata::priority)
+        .def_readwrite("has_parameters", &PythonMethodMetadata::has_parameters);
 
     py::class_<ParametersMetadata>(m, "ParametersMetadata")
         .def(py::init<>())
@@ -200,7 +244,7 @@ PYBIND11_MODULE(chargefw2, m) {
         .def_readwrite("method", &ParametersMetadata::method)
         .def_readwrite("publication", &ParametersMetadata::publication);
 
-    m.def("get_available_methods", &get_available_methods, "Return the list of all available methods");
+    m.def("get_available_methods", &get_available_methods_python, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,
           "Return the list of all parameters of a given method");
     m.def("get_best_parameters", &get_best_parameters, "molecules"_a, "method_name"_a, "permissive_types"_a = false,

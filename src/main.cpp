@@ -27,7 +27,6 @@
 #include "options.h"
 #include "exceptions/file_exception.h"
 #include "exceptions/internal_exception.h"
-#include "utility/install.h"
 
 
 int main(int argc, char **argv) {
@@ -42,7 +41,7 @@ int main(int argc, char **argv) {
         if (config::mode == "available-methods") {
             auto methods = get_available_methods();
             for (const auto &method: methods) {
-                fmt::print("{:<10} - {}\n", method.internal_name, method.full_name);
+                fmt::print("{:<10} - {}\n", method->get_metadata().internal_name, method->get_metadata().full_name);
             }
             exit(EXIT_SUCCESS);
         }
@@ -64,7 +63,7 @@ int main(int argc, char **argv) {
             std::string method_name;
             if (config::method_name.empty()) {
                 auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
-                method_name = std::get<0>(methods.front()).internal_name;
+                method_name = std::get<0>(methods.front())->get_metadata().internal_name;
                 fmt::print("Autoselecting the best method.\n");
             } else {
                 method_name = config::method_name;
@@ -78,24 +77,21 @@ int main(int argc, char **argv) {
             auto p = std::unique_ptr<Parameters>();
 
             if (method->has_parameters()) {
-                std::string par_name;
                 if (config::par_file.empty()) {
-                    par_name = best_parameters(m, method, is_protein_structure, config::permissive_types)->internal_name;
-                    if (par_name.empty()) {
+                    auto best_par = best_parameters(m, method, is_protein_structure, config::permissive_types);
+                    if (!best_par.has_value()) {
                         fmt::print(stderr, "No parameters found \n");
                         exit(EXIT_PARAMETER_ERROR);
                     }
-                    fmt::print("Best parameters found: {}\n", par_name);
-                    par_name = InstallPaths::datadir() / "parameters" / par_name;
+                    fmt::print("Best parameters found: {}\n", best_par->get()->name());
+                    p = std::move(best_par.value());
                 } else {
-                    par_name = config::par_file;
-                }
-
-                try {
-                    p = std::make_unique<Parameters>(par_name);
-                } catch (std::runtime_error &e) {
-                    fmt::print(stderr, "{}\n", e.what());
-                    exit(EXIT_FILE_ERROR);
+                    try {
+                        p = std::make_unique<Parameters>(config::par_file);
+                    } catch (std::runtime_error &e) {
+                        fmt::print(stderr, "{}\n", e.what());
+                        exit(EXIT_FILE_ERROR);
+                    }    
                 }
 
                 p->print();
@@ -173,14 +169,14 @@ int main(int argc, char **argv) {
             if (not best.has_value()) {
                 fmt::print("There are no best parameters\n");
             } else {
-                fmt::print("Best parameters are: {}\n", best->internal_name);
+                fmt::print("Best parameters are: {}\n", best->get()->metadata().internal_name);
             }
         } else if (config::mode == "suitable-methods") {
             auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
             for (const auto &[method, parameters]: methods) {
-                fmt::print("{}", method.internal_name);
+                fmt::print("{}", method->get_metadata().internal_name);
                 for (const auto &parameter_set: parameters) {
-                    fmt::print(" {}", parameter_set.internal_name);
+                    fmt::print(" {}", parameter_set->metadata().internal_name);
                 }
                 fmt::print("\n");
             }

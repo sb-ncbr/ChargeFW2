@@ -15,8 +15,7 @@ namespace {
         .full_name = "Self-Consistent Charge Equilibration Method",
         .publication = "10.1021/jp8063273",
         .type = "3D",
-        .priority = 160,
-        .has_parameters = true
+        .priority = 160
     };
 };
 

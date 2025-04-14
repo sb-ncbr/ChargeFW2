@@ -14,8 +14,7 @@ namespace {
         .full_name = "Geometry-Dependent Net Atomic Charges",
         .publication = "10.1021/jp0023213",
         .type = "3D",
-        .priority = 100,
-        .has_parameters = true
+        .priority = 100
     };
 };
 

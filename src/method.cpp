@@ -1,4 +1,5 @@
 #include <fmt/core.h>
+#include <memory>
 #include <regex>
 #include <vector>
 #include <map>
@@ -222,8 +223,8 @@ Method* load_method(const std::string &method_name) {
     return (*get_method_handle)();
 }
 
-std::vector<MethodMetadata> get_available_methods() {
-    std::vector<MethodMetadata> results;
+std::vector<Method*> get_available_methods() {
+    std::vector<Method*> results;
     std::regex method_pattern(R"(^lib(.*)\.so$)");
 
     for (const auto &entry : fs::directory_iterator(InstallPaths::libdir())) {
@@ -241,7 +242,7 @@ std::vector<MethodMetadata> get_available_methods() {
                 continue;
             }
             
-            results.emplace_back(method->get_metadata());
+            results.emplace_back(method);
         }
     }
 

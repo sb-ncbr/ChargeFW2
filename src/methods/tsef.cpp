@@ -12,8 +12,7 @@ namespace {
         .full_name = "Topologically Symmetrical Energy Function",
         .publication = "10.1080/10629360701844142",
         .type = "2D",
-        .priority = 40,
-        .has_parameters = true
+        .priority = 40
     };
 };
 

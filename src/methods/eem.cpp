@@ -13,8 +13,7 @@ namespace {
         .full_name = "Electronegativity Equalization Method",
         .publication = "10.1021/ja00275a013",
         .type = "3D",
-        .priority = 200,
-        .has_parameters = true
+        .priority = 200
     };
 };
 

@@ -15,8 +15,7 @@ namespace {
         .full_name = "Bond-Order-Corrected Extended Charge Equilibration Method",
         .publication = "10.1021/acs.jctc.5b00037",
         .type = "3D",
-        .priority = 140,
-        .has_parameters = true
+        .priority = 140
     };
 };
 

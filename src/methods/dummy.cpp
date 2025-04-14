@@ -9,8 +9,7 @@ namespace {
         .full_name = "Dummy Method",
         .publication = std::nullopt,
         .type = "other",
-        .priority = 0,
-        .has_parameters = false
+        .priority = 0
     };
 };
 

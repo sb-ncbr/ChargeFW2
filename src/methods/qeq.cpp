@@ -16,8 +16,7 @@ namespace {
         .full_name = "Charge Equilibration",
         .publication = "10.1021/j100161a070",
         .type = "3D",
-        .priority = 170,
-        .has_parameters = true
+        .priority = 170
     };
 };
 

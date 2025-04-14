@@ -1,3 +1,6 @@
+#include <fmt/core.h>
+#include <iterator>
+#include <memory>
 #include <nlohmann/json.hpp>
 #include <filesystem>
 #include <fmt/format.h>
@@ -18,7 +21,7 @@
 namespace fs = std::filesystem;
 
 
-std::vector<ParametersMetadata>
+std::vector<std::unique_ptr<Parameters>>
 get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, const std::string &method_name);
 
 
@@ -33,10 +36,10 @@ std::vector<fs::path> get_parameter_files() {
 }
 
 
-std::vector<ParametersMetadata>
+std::vector<std::unique_ptr<Parameters>>
 get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, const std::string &method_name) {
-    std::vector<ParametersMetadata> protein_parameters;
-    std::vector<ParametersMetadata> ligand_parameters;
+    std::vector<std::unique_ptr<Parameters>> protein_parameters;
+    std::vector<std::unique_ptr<Parameters>> ligand_parameters;
 
     for (const auto &parameter_file: get_parameter_files()) {
         if (not to_lowercase(parameter_file.filename().string()).starts_with(method_name)) {
@@ -53,40 +56,43 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 
         if (!unclassified) {
             if (p->source() == "protein") {
-                protein_parameters.emplace_back(p->metadata());
+                protein_parameters.emplace_back(std::move(p));
             } else {
-                ligand_parameters.emplace_back(p->metadata());
+                ligand_parameters.emplace_back(std::move(p));
             }
         }
     }
 
     /* Show protein parameters first if the proteins are in the set */
-    std::vector<ParametersMetadata> all_parameters;
+    std::vector<std::unique_ptr<Parameters>> all_parameters;
     if (is_protein) {
-        all_parameters = protein_parameters;
-        all_parameters.insert(all_parameters.end(), ligand_parameters.begin(), ligand_parameters.end());
+        all_parameters = std::move(protein_parameters);
+        all_parameters.insert(
+            all_parameters.end(), 
+            std::make_move_iterator(ligand_parameters.begin()), 
+            std::make_move_iterator(ligand_parameters.end()));
     } else {
-        all_parameters = ligand_parameters;
-        all_parameters.insert(all_parameters.end(), protein_parameters.begin(), protein_parameters.end());
+        all_parameters = std::move(ligand_parameters);
+        all_parameters.insert(
+            all_parameters.end(), 
+            std::make_move_iterator(protein_parameters.begin()), 
+            std::make_move_iterator(protein_parameters.end()));
     }
 
     return all_parameters;
 }
 
 
-std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>>
+std::vector<std::tuple<Method*, std::vector<std::unique_ptr<Parameters>>>>
 get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
-    std::vector<std::tuple<MethodMetadata, std::vector<ParametersMetadata>>> results;
+    std::vector<std::tuple<Method*, std::vector<std::unique_ptr<Parameters>>>> results;
 
     auto methods = get_available_methods();
-    std::sort(methods.begin(), methods.end(), [](const MethodMetadata &a, const MethodMetadata &b) {
-        return a.priority > b.priority;
+    std::sort(methods.begin(), methods.end(), [](const auto &a, const auto &b) {
+        return a->get_metadata().priority > b->get_metadata().priority;
     });
 
-    for (const auto &method_info: methods) {
-        auto method_name = method_info.internal_name;
-        const auto method = load_method(method_name);
-
+    for (auto &method: methods) {
         bool suitable = true;
         for (const auto &molecule: ms.molecules()) {
             if (not method->is_suitable_for_molecule(molecule) or
@@ -103,13 +109,13 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
-            results.emplace_back(std::tuple<MethodMetadata, std::vector<ParametersMetadata>>(method_info, {}));
+            results.emplace_back(method, std::vector<std::unique_ptr<Parameters>>{});
             continue;
         }
 
-        auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method_name);
+        auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->get_metadata().internal_name);
         if (not parameters.empty()) {
-            results.emplace_back(method_info, parameters);
+            results.emplace_back(method, std::move(parameters));
         }
     }
 
@@ -117,7 +123,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 }
 
 
-std::optional<ParametersMetadata>
+std::optional<std::unique_ptr<Parameters>>
 best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types) {
     if (not method->has_parameters()) {
         throw ParameterException("Method uses no parameters");
@@ -129,5 +135,5 @@ best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool per
         return std::nullopt;
     }
 
-    return parameters.front();
+    return std::move(parameters.front());
 }

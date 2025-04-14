@@ -14,8 +14,7 @@ namespace {
         .full_name = "Kirchhoff Charge Model",
         .publication = "10.1002/jcc.20892",
         .type = "2D",
-        .priority = 60,
-        .has_parameters = true
+        .priority = 60
     };
 };
 
