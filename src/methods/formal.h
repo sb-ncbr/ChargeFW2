@@ -5,9 +5,9 @@
 
 class Formal : public Method {
 public:
-    explicit Formal() : Method("Formal charges (from file)", {}, {}, {}, {}) {}
+    explicit Formal() : Method({}, {}, {}, {}) {}
 
-    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+    [[nodiscard]] const MethodMetadata& metadata() const override;
 
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };

@@ -64,11 +64,6 @@ bool Method::is_suitable_for_molecule(const Molecule &) const {
 }
 
 
-std::string Method::internal_name() const {
-    return this->get_metadata().internal_name;
-}
-
-
 template<>
 double Method::get_option_value<double>(const std::string &name) const {
     return std::stod(option_values_.at(name));

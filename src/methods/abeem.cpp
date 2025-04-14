@@ -10,6 +10,7 @@ CHARGEFW2_METHOD(ABEEM)
 
 namespace {
     const MethodMetadata ABEEM_METADATA = {
+        .name = "ABEEM",
         .internal_name = "abeem",
         .full_name = "Atom-Bond Electronegativity Equalization Method",
         .publication = "10.1021/jp9711048",
@@ -18,7 +19,7 @@ namespace {
     };
 };
 
-const MethodMetadata& ABEEM::get_metadata() const {
+const MethodMetadata& ABEEM::metadata() const {
     return ABEEM_METADATA;
 };
 

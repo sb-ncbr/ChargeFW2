@@ -12,6 +12,7 @@ CHARGEFW2_METHOD(QEq)
 
 namespace {
     const MethodMetadata QEQ_METADATA = {
+        .name = "QEq",
         .internal_name = "qeq",
         .full_name = "Charge Equilibration",
         .publication = "10.1021/j100161a070",
@@ -20,7 +21,7 @@ namespace {
     };
 };
 
-const MethodMetadata& QEq::get_metadata() const {
+const MethodMetadata& QEq::metadata() const {
     return QEQ_METADATA;
 };
 

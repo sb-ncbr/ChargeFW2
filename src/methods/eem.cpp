@@ -9,6 +9,7 @@ CHARGEFW2_METHOD(EEM)
 
 namespace {
     const MethodMetadata EEM_METADATA = {
+        .name = "EEM",
         .internal_name = "eem",
         .full_name = "Electronegativity Equalization Method",
         .publication = "10.1021/ja00275a013",
@@ -17,7 +18,7 @@ namespace {
     };
 };
 
-const MethodMetadata& EEM::get_metadata() const {
+const MethodMetadata& EEM::metadata() const {
     return EEM_METADATA;
 };
 

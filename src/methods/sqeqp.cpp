@@ -10,6 +10,7 @@ CHARGEFW2_METHOD(SQEqp)
 
 namespace {
     const MethodMetadata SQEQP_METADATA = {
+        .name = "SQE+qp",
         .internal_name = "sqeqp",
         .full_name = "Split-charge equilibration with parametrized initial charges",
         .publication = "10.1186/s13321-021-00528-w",
@@ -18,7 +19,7 @@ namespace {
     };
 };
 
-const MethodMetadata& SQEqp::get_metadata() const {
+const MethodMetadata& SQEqp::metadata() const {
     return SQEQP_METADATA;
 };
 

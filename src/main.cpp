@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
         if (config::mode == "available-methods") {
             auto methods = get_available_methods();
             for (const auto &method: methods) {
-                fmt::print("{:<10} - {}\n", method->get_metadata().internal_name, method->get_metadata().full_name);
+                fmt::print("{:<10} - {}\n", method->metadata().internal_name, method->metadata().full_name);
             }
             exit(EXIT_SUCCESS);
         }
@@ -63,14 +63,14 @@ int main(int argc, char **argv) {
             std::string method_name;
             if (config::method_name.empty()) {
                 auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
-                method_name = std::get<0>(methods.front())->get_metadata().internal_name;
+                method_name = std::get<0>(methods.front())->metadata().internal_name;
                 fmt::print("Autoselecting the best method.\n");
             } else {
                 method_name = config::method_name;
             }
 
             auto method = load_method(method_name);
-            fmt::print("Method: {}\n", method->name());
+            fmt::print("Method: {}\n", method->metadata().name);
 
             setup_method_options(method, parsed);
 
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
             m.info();
             m.fulfill_requirements(method->get_requirements());
 
-            auto charges = Charges(method->name(), method->has_parameters() ? method->parameters()->name(): "None");
+            auto charges = Charges(method->metadata().name, method->has_parameters() ? method->parameters()->name(): "None");
 
             for (auto &mol: m.molecules()) {
                 auto results = method->calculate_charges(mol);
@@ -156,7 +156,7 @@ int main(int argc, char **argv) {
                 auto log_file = std::fopen(config::log_file.c_str(), "a");
 
                 fmt::print(log_file, "{} [{}]; File: {}; Processed molecules: {}; Method: {}; Parameters: {}\n",
-                        current_time, pid, config::input_file, m.molecules().size(), method->name(), charges.parameters_name());
+                        current_time, pid, config::input_file, m.molecules().size(), method->metadata().name, charges.parameters_name());
 
                 fmt::print(log_file,
                         "{} [{}]; Walltime: {:.2f} s; User time: {:.2f} s; System time: {:.2f} s; Peak memory: {:.1f} MB \n",
@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
         } else if (config::mode == "suitable-methods") {
             auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
             for (const auto &[method, parameters]: methods) {
-                fmt::print("{}", method->get_metadata().internal_name);
+                fmt::print("{}", method->metadata().internal_name);
                 for (const auto &parameter_set: parameters) {
                     fmt::print(" {}", parameter_set->metadata().internal_name);
                 }

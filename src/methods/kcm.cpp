@@ -10,6 +10,7 @@ CHARGEFW2_METHOD(KCM)
 
 namespace {
     const MethodMetadata KCM_METADATA = {
+        .name = "KCM",
         .internal_name = "kcm",
         .full_name = "Kirchhoff Charge Model",
         .publication = "10.1002/jcc.20892",
@@ -18,7 +19,7 @@ namespace {
     };
 };
 
-const MethodMetadata& KCM::get_metadata() const {
+const MethodMetadata& KCM::metadata() const {
     return KCM_METADATA;
 };
 

@@ -9,6 +9,7 @@ CHARGEFW2_METHOD(MPEOE)
 
 namespace {
     const MethodMetadata MPEOE_METADATA = {
+        .name = "MPEOE",
         .internal_name = "mpeoe",
         .full_name = "Modified Partial Equalization of Atomic Electronegativity",
         .publication = "10.1021/j100374a066",
@@ -17,7 +18,7 @@ namespace {
     };
 };
 
-const MethodMetadata& MPEOE::get_metadata() const {
+const MethodMetadata& MPEOE::metadata() const {
     return MPEOE_METADATA;
 };
 

@@ -9,6 +9,7 @@ CHARGEFW2_METHOD(DelRe)
 
 namespace {
     const MethodMetadata DELRE_METADATA = {
+        .name = "DelRe",
         .internal_name = "delre",
         .full_name = "Method of Del Re",
         .publication = "10.1039/JR9580004031",
@@ -17,7 +18,7 @@ namespace {
     };
 };
 
-const MethodMetadata& DelRe::get_metadata() const {
+const MethodMetadata& DelRe::metadata() const {
     return DELRE_METADATA;
 };
 

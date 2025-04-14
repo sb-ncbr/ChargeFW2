@@ -14,9 +14,9 @@ class EEM : public EEMethod {
     [[nodiscard]] Eigen::VectorXd EE_system(const std::vector<const Atom *> &atoms, double total_charge) const;
 
 public:
-    explicit EEM() : EEMethod("EEM", {"kappa"}, {"A", "B"}, {}, {}) {}
+    explicit EEM() : EEMethod({"kappa"}, {"A", "B"}, {}, {}) {}
 
-    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+    [[nodiscard]] const MethodMetadata& metadata() const override;
     
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 };

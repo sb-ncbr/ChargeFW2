@@ -8,6 +8,7 @@ CHARGEFW2_METHOD(DENR)
 
 namespace {
     const MethodMetadata DENR_METADATA = {
+        .name = "DENR",
         .internal_name = "denr",
         .full_name = "Dynamical Electronegativity Relaxation",
         .publication = "10.1080/10629360701844142",
@@ -16,7 +17,7 @@ namespace {
     };
 };
 
-const MethodMetadata& DENR::get_metadata() const {
+const MethodMetadata& DENR::metadata() const {
     return DENR_METADATA;
 };
 

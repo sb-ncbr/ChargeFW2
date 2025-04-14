@@ -11,6 +11,7 @@ CHARGEFW2_METHOD(EQeqC)
 
 namespace {
     const MethodMetadata EQEQC_METADATA = {
+        .name = "EQeq+C",
         .internal_name = "eqeqc",
         .full_name = "Bond-Order-Corrected Extended Charge Equilibration Method",
         .publication = "10.1021/acs.jctc.5b00037",
@@ -19,7 +20,7 @@ namespace {
     };
 };
 
-const MethodMetadata& EQeqC::get_metadata() const {
+const MethodMetadata& EQeqC::metadata() const {
     return EQEQC_METADATA;
 };
 

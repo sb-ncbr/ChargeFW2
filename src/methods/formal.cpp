@@ -5,6 +5,7 @@ CHARGEFW2_METHOD(Formal)
 
 namespace {
     const MethodMetadata FORMAL_METADATA = {
+        .name = "Formal charges (from file)",
         .internal_name = "formal",
         .full_name = "Formal charges",
         .publication = std::nullopt,
@@ -13,7 +14,7 @@ namespace {
     };
 };
 
-const MethodMetadata& Formal::get_metadata() const {
+const MethodMetadata& Formal::metadata() const {
     return FORMAL_METADATA;
 };
 

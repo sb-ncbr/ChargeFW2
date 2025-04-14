@@ -10,6 +10,7 @@ CHARGEFW2_METHOD(GDAC)
 
 namespace {
     const MethodMetadata GDAC_METADATA = {
+        .name = "GDAC",
         .internal_name = "gdac",
         .full_name = "Geometry-Dependent Net Atomic Charges",
         .publication = "10.1021/jp0023213",
@@ -18,7 +19,7 @@ namespace {
     };
 };
 
-const MethodMetadata& GDAC::get_metadata() const {
+const MethodMetadata& GDAC::metadata() const {
     return GDAC_METADATA;
 };
 

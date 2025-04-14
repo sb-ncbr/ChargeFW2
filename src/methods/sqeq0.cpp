@@ -10,6 +10,7 @@ CHARGEFW2_METHOD(SQEq0)
 
 namespace {
     const MethodMetadata SQEQ0_METADATA = {
+        .name = "SQEq0",
         .internal_name = "sqeq0",
         .full_name = "Split-charge equilibration with initial formal charges",
         .publication = "10.1021/ct200512e",
@@ -18,7 +19,7 @@ namespace {
     };
 };
 
-const MethodMetadata& SQEq0::get_metadata() const {
+const MethodMetadata& SQEq0::metadata() const {
     return SQEQ0_METADATA;
 };
 

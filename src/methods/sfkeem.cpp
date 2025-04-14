@@ -11,6 +11,7 @@ CHARGEFW2_METHOD(SFKEEM)
 
 namespace {
     const MethodMetadata SFKEEM_METADATA = {
+        .name = "SFKEEM",
         .internal_name = "sfkeem",
         .full_name = "Selfconsistent Functional Kernel Equalized Electronegativity Method",
         .publication = "10.1021/ci050505e",
@@ -19,7 +20,7 @@ namespace {
     };
 };
 
-const MethodMetadata& SFKEEM::get_metadata() const {
+const MethodMetadata& SFKEEM::metadata() const {
     return SFKEEM_METADATA;
 };
 

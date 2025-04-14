@@ -119,7 +119,7 @@ std::vector<std::tuple<PythonMethodMetadata, std::vector<ParametersMetadata>>> g
     for (auto it = suitable.begin(); it != suitable.end(); ++it) {
         const auto &[method, parameters_list] = *it;
 
-        auto metadata = method->get_metadata();
+        auto metadata = method->metadata();
         auto has_parameters = method->has_parameters();
 
         std::vector<ParametersMetadata> parameters_metadata;
@@ -140,7 +140,7 @@ std::vector<PythonMethodMetadata> get_available_methods_python() {
     auto methods = get_available_methods();
     std::vector<PythonMethodMetadata> result;
     for (const auto &method : methods) {
-        result.emplace_back(PythonMethodMetadata(method->get_metadata(), method->has_parameters()));
+        result.emplace_back(PythonMethodMetadata(method->metadata(), method->has_parameters()));
     }
     return result;
 }

@@ -4,6 +4,7 @@ CHARGEFW2_METHOD(VEEM)
 
 namespace {
     const MethodMetadata VEEM_METADATA = {
+        .name = "VEEM",
         .internal_name = "veem",
         .full_name = "Valence Electrons Equalization Method",
         .publication = "10.1088/1674-0068/24/01/31-39",
@@ -12,7 +13,7 @@ namespace {
     };
 };
 
-const MethodMetadata& VEEM::get_metadata() const {
+const MethodMetadata& VEEM::metadata() const {
     return VEEM_METADATA;
 };
 

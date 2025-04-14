@@ -11,6 +11,7 @@ CHARGEFW2_METHOD(SMP_QEq)
 
 namespace {
     const MethodMetadata SMPQEQ_METADATA = {
+        .name = "SMP/QEq",
         .internal_name = "smpqeq",
         .full_name = "Self-Consistent Charge Equilibration Method",
         .publication = "10.1021/jp8063273",
@@ -19,7 +20,7 @@ namespace {
     };
 };
 
-const MethodMetadata& SMP_QEq::get_metadata() const {
+const MethodMetadata& SMP_QEq::metadata() const {
     return SMPQEQ_METADATA;
 };
 

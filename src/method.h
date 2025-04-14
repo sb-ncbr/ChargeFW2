@@ -31,6 +31,7 @@ struct MethodOption {
 };
 
 struct MethodMetadata {
+    std::string name;
     std::string internal_name;
     std::string full_name;
     std::optional<std::string> publication;
@@ -40,7 +41,6 @@ struct MethodMetadata {
 
 class Method {
 protected:
-    const std::string name_{};
     const std::vector<std::string> common_parameters_{};
     const std::vector<std::string> atom_parameters_{};
     const std::vector<std::string> bond_parameters_{};
@@ -51,9 +51,8 @@ protected:
     Parameters *parameters_{nullptr};
 
 public:
-    Method(std::string name, std::vector<std::string> common, std::vector<std::string> atom,
+    Method(std::vector<std::string> common, std::vector<std::string> atom,
            std::vector<std::string> bond, std::map<std::string, MethodOption> options) :
-            name_{std::move(name)},
             common_parameters_{std::move(common)},
             atom_parameters_{std::move(atom)},
             bond_parameters_{std::move(bond)},
@@ -83,13 +82,9 @@ public:
 
     [[nodiscard]] virtual std::vector<double> calculate_charges(const Molecule &molecule) const = 0;
 
-    [[nodiscard]] std::string name() const { return name_; }
-
-    [[nodiscard]] std::string internal_name() const;
-
     [[nodiscard]] std::map<std::string, MethodOption> get_options() const { return options_; }
 
-    [[nodiscard]] virtual const MethodMetadata& get_metadata() const = 0;
+    [[nodiscard]] virtual const MethodMetadata& metadata() const = 0;
 
     template<typename T>
     T get_option_value(const std::string &name) const;
@@ -118,9 +113,9 @@ class EEMethod : public Method {
     }
 
 public:
-    EEMethod(std::string name, std::vector<std::string> common, std::vector<std::string> atom,
+    EEMethod(std::vector<std::string> common, std::vector<std::string> atom,
              std::vector<std::string> bond, std::map<std::string, MethodOption> options) :
-            Method(std::move(name), std::move(common), std::move(atom), std::move(bond), augment_options(
+            Method(std::move(common), std::move(atom), std::move(bond), augment_options(
                     std::move(options))) {}
 
     [[nodiscard]] bool is_suitable_for_large_molecule() const override;

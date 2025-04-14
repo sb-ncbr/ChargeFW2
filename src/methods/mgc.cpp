@@ -9,6 +9,7 @@ CHARGEFW2_METHOD(MGC)
 
 namespace {
     const MethodMetadata MGC_METADATA = {
+        .name = "MGC",
         .internal_name = "mgc",
         .full_name = "Molecular Graph Charge",
         .publication = "10.1002/poc.378",
@@ -17,7 +18,7 @@ namespace {
     };
 };
 
-const MethodMetadata& MGC::get_metadata() const {
+const MethodMetadata& MGC::metadata() const {
     return MGC_METADATA;
 };
 

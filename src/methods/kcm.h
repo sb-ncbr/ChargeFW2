@@ -9,9 +9,9 @@
 class KCM : public Method {
     enum atom{electronegativity, hardness};
 public:
-    explicit KCM() : Method("KCM", {}, {"electronegativity", "hardness"}, {}, {}) {}
+    explicit KCM() : Method({}, {"electronegativity", "hardness"}, {}, {}) {}
 
-    [[nodiscard]] const MethodMetadata& get_metadata() const override;
+    [[nodiscard]] const MethodMetadata& metadata() const override;
     
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 

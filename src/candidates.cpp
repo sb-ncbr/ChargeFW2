@@ -89,7 +89,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
     auto methods = get_available_methods();
     std::sort(methods.begin(), methods.end(), [](const auto &a, const auto &b) {
-        return a->get_metadata().priority > b->get_metadata().priority;
+        return a->metadata().priority > b->metadata().priority;
     });
 
     for (auto &method: methods) {
@@ -113,7 +113,7 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
             continue;
         }
 
-        auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->get_metadata().internal_name);
+        auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->metadata().internal_name);
         if (not parameters.empty()) {
             results.emplace_back(method, std::move(parameters));
         }
@@ -129,7 +129,7 @@ best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool per
         throw ParameterException("Method uses no parameters");
     }
     
-    auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->internal_name());
+    auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->metadata().internal_name);
     
     if (parameters.empty()) {
         return std::nullopt;

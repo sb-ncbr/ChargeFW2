@@ -5,6 +5,7 @@ CHARGEFW2_METHOD(Dummy)
 
 namespace {
     const MethodMetadata DUMMY_METADATA = {
+        .name = "Dummy",
         .internal_name = "dummy",
         .full_name = "Dummy Method",
         .publication = std::nullopt,
@@ -13,7 +14,7 @@ namespace {
     };
 };
 
-const MethodMetadata& Dummy::get_metadata() const {
+const MethodMetadata& Dummy::metadata() const {
     return DUMMY_METADATA;
 };
 
