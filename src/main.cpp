@@ -27,6 +27,7 @@
 #include "options.h"
 #include "exceptions/file_exception.h"
 #include "exceptions/internal_exception.h"
+#include "utility/install.h"
 
 
 int main(int argc, char **argv) {
@@ -88,7 +89,8 @@ int main(int argc, char **argv) {
                     p = std::move(best_par.value());
                 } else {
                     try {
-                        p = std::make_unique<Parameters>(config::par_file);
+                        auto par_file = InstallPaths::parametersdir() / (config::par_file + ".json");
+                        p = std::make_unique<Parameters>(par_file);
                     } catch (std::runtime_error &e) {
                         fmt::print(stderr, "{}\n", e.what());
                         exit(EXIT_FILE_ERROR);

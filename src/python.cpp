@@ -173,7 +173,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
             throw std::runtime_error(std::string("Method ") + method_name + std::string(" requires parameters"));
         }
 
-        std::string parameter_file = InstallPaths::datadir() / "parameters" / (parameters_name.value() + ".json");
+        std::string parameter_file = InstallPaths::parametersdir() / (parameters_name.value() + ".json");
         if (not parameter_file.empty()) {
             parameters = std::make_unique<Parameters>(parameter_file);
             auto unclassified = molecules.ms.classify_set_from_parameters(*parameters, false, true);

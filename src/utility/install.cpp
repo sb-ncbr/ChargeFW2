@@ -39,3 +39,7 @@ std::filesystem::path InstallPaths::libdir() {
 std::filesystem::path InstallPaths::datadir() {
     return prefix() / "share";
 }
+
+std::filesystem::path InstallPaths::parametersdir() {
+    return datadir() / "parameters";
+}

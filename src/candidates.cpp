@@ -28,7 +28,7 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 std::vector<fs::path> get_parameter_files() {
     /* Get parameters sorted according to the names and priorities */
     std::vector<fs::path> files;
-    for (const auto &set: fs::directory_iterator(InstallPaths::datadir() / "parameters")) {
+    for (const auto &set: fs::directory_iterator(InstallPaths::parametersdir())) {
         files.emplace_back(set.path());
     }
     std::ranges::sort(files);
