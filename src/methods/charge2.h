@@ -11,8 +11,10 @@ class Charge2 : public Method {
     enum atom{chi, P0, q0};
 
 public:
-    explicit Charge2() : Method("Charge2", {"a1", "a2", "a3", "b", "c", "alpha"}, {"chi", "P0", "q0"}, {}, {}) {}
+    explicit Charge2() : Method({"a1", "a2", "a3", "b", "c", "alpha"}, {"chi", "P0", "q0"}, {}, {}) {}
 
+    [[nodiscard]] const MethodMetadata& metadata() const override;
+    
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     [[nodiscard]] std::vector<RequiredFeatures> get_requirements() const override {

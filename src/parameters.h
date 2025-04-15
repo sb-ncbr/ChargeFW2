@@ -13,6 +13,13 @@
 #include "method.h"
 
 
+struct ParametersMetadata {
+    std::string full_name;
+    std::string internal_name;
+    std::string method;
+    std::string publication;
+};
+
 class MoleculeSet;
 
 
@@ -80,6 +87,7 @@ class Parameters {
     std::string name_{};
     std::string method_name_{};
     std::string source_{};
+    ParametersMetadata metadata_{};
 
     std::unique_ptr<CommonParameters> common_{nullptr};
     std::unique_ptr<AtomParameters> atoms_{nullptr};
@@ -95,6 +103,8 @@ public:
     [[nodiscard]] const std::string &method_name() const { return method_name_; }
 
     [[nodiscard]] const std::string &source() const { return source_; }
+
+    [[nodiscard]] const ParametersMetadata &metadata() const { return metadata_; }
 
     [[nodiscard]] const CommonParameters *common() const { return common_.get(); }
 

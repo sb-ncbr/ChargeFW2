@@ -12,8 +12,10 @@ class ABEEM : public Method {
     enum bond{A, B, C, D};
 
 public:
-    explicit ABEEM() : Method("ABEEM", {"k"}, {"a", "b", "c"}, {"A", "B", "C", "D"}, {}) {}
+    explicit ABEEM() : Method({"k"}, {"a", "b", "c"}, {"A", "B", "C", "D"}, {}) {}
 
+    [[nodiscard]] const MethodMetadata& metadata() const override;
+    
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     [[nodiscard]] bool is_suitable_for_large_molecule() const override { return false; }
