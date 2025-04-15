@@ -88,9 +88,6 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
     std::vector<std::tuple<Method*, std::vector<std::unique_ptr<Parameters>>>> results;
 
     auto methods = get_available_methods();
-    std::sort(methods.begin(), methods.end(), [](const auto &a, const auto &b) {
-        return a->metadata().priority > b->metadata().priority;
-    });
 
     for (auto &method: methods) {
         bool suitable = true;
