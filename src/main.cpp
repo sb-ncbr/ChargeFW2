@@ -42,6 +42,7 @@ int main(int argc, char **argv) {
             auto methods = get_available_methods();
             for (const auto &method: methods) {
                 fmt::print("{:<10} - {}\n", method->metadata().internal_name, method->metadata().full_name);
+                fmt::print("{:<10}   doi: {}\n", "", method->metadata().publication.value_or("<none>"));
             }
             exit(EXIT_SUCCESS);
         }
