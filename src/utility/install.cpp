@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <unistd.h>
 #include <vector>
 #include <filesystem>
@@ -8,6 +9,11 @@
 
 namespace {
     std::filesystem::path get_install_prefix() {
+        auto install_dir = std::getenv("CHARGEFW2_INSTALL_DIR");
+        if (install_dir) {
+            return std::filesystem::path(install_dir);
+        }
+
         std::vector<char> buf(PATH_MAX);
         ssize_t len = readlink("/proc/self/exe", buf.data(), buf.size());
         if (len == -1) {
@@ -32,4 +38,8 @@ std::filesystem::path InstallPaths::libdir() {
 
 std::filesystem::path InstallPaths::datadir() {
     return prefix() / "share";
+}
+
+std::filesystem::path InstallPaths::parametersdir() {
+    return datadir() / "parameters";
 }

@@ -1,3 +1,4 @@
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <memory>
 #include <filesystem>
@@ -11,6 +12,7 @@
 #include <algorithm>
 
 #include "chargefw2.h"
+#include "exceptions/parameter_exception.h"
 #include "formats/reader.h"
 #include "formats/mol2.h"
 #include "formats/pqr.h"
@@ -27,8 +29,6 @@
 #include "exceptions/internal_exception.h"
 #include "utility/install.h"
 
-namespace fs = std::filesystem;
-
 
 int main(int argc, char **argv) {
     auto parsed = parse_args(argc, argv);
@@ -39,6 +39,15 @@ int main(int argc, char **argv) {
     auto ext = std::filesystem::path(config::input_file).extension().string();
 
     try {
+        if (config::mode == "available-methods") {
+            auto methods = get_available_methods();
+            for (const auto &method: methods) {
+                fmt::print("{:<10} - {}\n", method->metadata().internal_name, method->metadata().full_name);
+                fmt::print("{:<10}   doi: {}\n", "", method->metadata().publication.value_or("<none>"));
+            }
+            exit(EXIT_SUCCESS);
+        }
+
         MoleculeSet m = load_molecule_set(config::input_file);
 
         if (m.molecules().empty()) {
@@ -56,38 +65,36 @@ int main(int argc, char **argv) {
             std::string method_name;
             if (config::method_name.empty()) {
                 auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
-                method_name = std::get<0>(methods.front());
+                method_name = std::get<0>(methods.front())->metadata().internal_name;
                 fmt::print("Autoselecting the best method.\n");
             } else {
                 method_name = config::method_name;
             }
 
             auto method = load_method(method_name);
-            fmt::print("Method: {}\n", method->name());
+            fmt::print("Method: {}\n", method->metadata().name);
 
             setup_method_options(method, parsed);
 
             auto p = std::unique_ptr<Parameters>();
 
             if (method->has_parameters()) {
-                std::string par_name;
                 if (config::par_file.empty()) {
-                    par_name = best_parameters(m, method, is_protein_structure, config::permissive_types);
-                    if (par_name.empty()) {
+                    auto best_par = best_parameters(m, method, is_protein_structure, config::permissive_types);
+                    if (!best_par.has_value()) {
                         fmt::print(stderr, "No parameters found \n");
                         exit(EXIT_PARAMETER_ERROR);
                     }
-                    fmt::print("Best parameters found: {}\n", par_name);
-                    par_name = InstallPaths::datadir() / "parameters" / par_name;
+                    fmt::print("Best parameters found: {}\n", best_par->get()->name());
+                    p = std::move(best_par.value());
                 } else {
-                    par_name = config::par_file;
-                }
-
-                try {
-                    p = std::make_unique<Parameters>(par_name);
-                } catch (std::runtime_error &e) {
-                    fmt::print(stderr, "{}\n", e.what());
-                    exit(EXIT_FILE_ERROR);
+                    try {
+                        auto par_file = InstallPaths::parametersdir() / (config::par_file + ".json");
+                        p = std::make_unique<Parameters>(par_file);
+                    } catch (std::runtime_error &e) {
+                        fmt::print(stderr, "{}\n", e.what());
+                        exit(EXIT_FILE_ERROR);
+                    }    
                 }
 
                 p->print();
@@ -109,7 +116,7 @@ int main(int argc, char **argv) {
             m.info();
             m.fulfill_requirements(method->get_requirements());
 
-            auto charges = Charges(method->name(), method->has_parameters() ? method->parameters()->name(): "None");
+            auto charges = Charges(method->metadata().name, method->has_parameters() ? method->parameters()->name(): "None");
 
             for (auto &mol: m.molecules()) {
                 auto results = method->calculate_charges(mol);
@@ -152,7 +159,7 @@ int main(int argc, char **argv) {
                 auto log_file = std::fopen(config::log_file.c_str(), "a");
 
                 fmt::print(log_file, "{} [{}]; File: {}; Processed molecules: {}; Method: {}; Parameters: {}\n",
-                        current_time, pid, config::input_file, m.molecules().size(), method->name(), charges.parameters_name());
+                        current_time, pid, config::input_file, m.molecules().size(), method->metadata().name, charges.parameters_name());
 
                 fmt::print(log_file,
                         "{} [{}]; Walltime: {:.2f} s; User time: {:.2f} s; System time: {:.2f} s; Peak memory: {:.1f} MB \n",
@@ -161,22 +168,18 @@ int main(int argc, char **argv) {
         } else if (config::mode == "best-parameters") {
             const auto method = load_method(config::method_name);
 
-            if (!method->has_parameters()) {
-                fmt::print(stderr, "Method uses no parameters\n");
-                exit(EXIT_PARAMETER_ERROR);
-            }
             auto best = best_parameters(m, method, is_protein_structure, config::permissive_types);
-            if (best.empty()) {
+            if (not best.has_value()) {
                 fmt::print("There are no best parameters\n");
             } else {
-                fmt::print("Best parameters are: {}\n", best);
+                fmt::print("Best parameters are: {}\n", best->get()->metadata().internal_name);
             }
         } else if (config::mode == "suitable-methods") {
             auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
             for (const auto &[method, parameters]: methods) {
-                fmt::print("{}", method);
+                fmt::print("{}", method->metadata().internal_name);
                 for (const auto &parameter_set: parameters) {
-                    fmt::print(" {}", parameter_set);
+                    fmt::print(" {}", parameter_set->metadata().internal_name);
                 }
                 fmt::print("\n");
             }
@@ -191,6 +194,9 @@ int main(int argc, char **argv) {
     } catch (InternalException &e) {
         fmt::print(stderr, "{}\n", e.what());
         exit(EXIT_INTERNAL_ERROR);
+    } catch (ParameterException &e) {
+        fmt::print(stderr, "{}\n", e.what());
+        exit(EXIT_PARAMETER_ERROR);
     }
 
     return EXIT_SUCCESS;

@@ -11,8 +11,10 @@ class SQE : public Method {
     enum bond{kappa};
 
 public:
-    explicit SQE() : Method("SQE", {}, {"electronegativity", "hardness", "width"}, {"kappa"}, {}) {}
+    explicit SQE() : Method({}, {"electronegativity", "hardness", "width"}, {"kappa"}, {}) {}
 
+    [[nodiscard]] const MethodMetadata& metadata() const override;
+    
     [[nodiscard]] std::vector<double> calculate_charges(const Molecule &molecule) const override;
 
     [[nodiscard]] bool is_suitable_for_large_molecule() const override { return false; }
