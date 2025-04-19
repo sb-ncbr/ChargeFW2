@@ -230,6 +230,7 @@ PYBIND11_MODULE(chargefw2, m) {
         .def("info", &Molecules::info);
 
     py::class_<PythonMethodMetadata>(m, "MethodMetadata")
+        .def_readwrite("name", &PythonMethodMetadata::name)
         .def_readwrite("internal_name", &PythonMethodMetadata::internal_name)
         .def_readwrite("full_name", &PythonMethodMetadata::full_name)
         .def_readwrite("publication", &PythonMethodMetadata::publication)
