@@ -8,21 +8,6 @@
 
 CHARGEFW2_METHOD(ABEEM)
 
-namespace {
-    const MethodMetadata ABEEM_METADATA = {
-        .name = "ABEEM",
-        .internal_name = "abeem",
-        .full_name = "Atom-Bond Electronegativity Equalization Method",
-        .publication = "10.1021/jp9711048",
-        .type = "3D",
-        .priority = 190
-    };
-};
-
-const MethodMetadata& ABEEM::metadata() const {
-    return ABEEM_METADATA;
-};
-
 std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
 
     const auto n = static_cast<Eigen::Index>(molecule.atoms().size());

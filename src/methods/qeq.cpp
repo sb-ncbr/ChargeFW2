@@ -10,20 +10,6 @@
 
 CHARGEFW2_METHOD(QEq)
 
-namespace {
-    const MethodMetadata QEQ_METADATA = {
-        .name = "QEq",
-        .internal_name = "qeq",
-        .full_name = "Charge Equilibration",
-        .publication = "10.1021/j100161a070",
-        .type = "3D",
-        .priority = 170
-    };
-};
-
-const MethodMetadata& QEq::metadata() const {
-    return QEQ_METADATA;
-};
 
 double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::string &type) const {
     auto Ji = parameters_->atom()->parameter(atom::hardness)(atom_i);

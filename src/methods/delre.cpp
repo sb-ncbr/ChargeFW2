@@ -7,20 +7,6 @@
 
 CHARGEFW2_METHOD(DelRe)
 
-namespace {
-    const MethodMetadata DELRE_METADATA = {
-        .name = "DelRe",
-        .internal_name = "delre",
-        .full_name = "Method of Del Re",
-        .publication = "10.1039/JR9580004031",
-        .type = "2D",
-        .priority = 130
-    };
-};
-
-const MethodMetadata& DelRe::metadata() const {
-    return DELRE_METADATA;
-};
 
 std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {
 

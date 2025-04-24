@@ -9,20 +9,6 @@
 
 CHARGEFW2_METHOD(EQeqC)
 
-namespace {
-    const MethodMetadata EQEQC_METADATA = {
-        .name = "EQeq+C",
-        .internal_name = "eqeqc",
-        .full_name = "Bond-Order-Corrected Extended Charge Equilibration Method",
-        .publication = "10.1021/acs.jctc.5b00037",
-        .type = "3D",
-        .priority = 140
-    };
-};
-
-const MethodMetadata& EQeqC::metadata() const {
-    return EQEQC_METADATA;
-};
 
 Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

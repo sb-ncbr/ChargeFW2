@@ -1,22 +1,7 @@
 #include "formal.h"
-#include <optional>
 
 CHARGEFW2_METHOD(Formal)
 
-namespace {
-    const MethodMetadata FORMAL_METADATA = {
-        .name = "Formal charges (from file)",
-        .internal_name = "formal",
-        .full_name = "Formal charges",
-        .publication = std::nullopt,
-        .type = "other",
-        .priority = 10
-    };
-};
-
-const MethodMetadata& Formal::metadata() const {
-    return FORMAL_METADATA;
-};
 
 std::vector<double> Formal::calculate_charges(const Molecule &molecule) const {
     std::vector<double> res;

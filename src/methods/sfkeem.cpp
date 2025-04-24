@@ -9,20 +9,6 @@
 
 CHARGEFW2_METHOD(SFKEEM)
 
-namespace {
-    const MethodMetadata SFKEEM_METADATA = {
-        .name = "SFKEEM",
-        .internal_name = "sfkeem",
-        .full_name = "Selfconsistent Functional Kernel Equalized Electronegativity Method",
-        .publication = "10.1021/ci050505e",
-        .type = "3D",
-        .priority = 180
-    };
-};
-
-const MethodMetadata& SFKEEM::metadata() const {
-    return SFKEEM_METADATA;
-};
 
 Eigen::VectorXd SFKEEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
