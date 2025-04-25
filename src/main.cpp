@@ -12,11 +12,7 @@
 
 #include "chargefw2.h"
 #include "exceptions/parameter_exception.h"
-#include "formats/cif.h"
-#include "formats/mol2.h"
-#include "formats/pqr.h"
 #include "formats/reader.h"
-#include "formats/txt.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
 #include "charges.h"
