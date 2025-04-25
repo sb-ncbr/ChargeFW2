@@ -17,21 +17,17 @@ void save_charges(MoleculeSet &ms, Charges &charges,
   auto file_path = std::filesystem::path(filename);
   auto ext = file_path.extension().string();
 
-  try {
-    CIF().save_charges(ms, charges, filename);
+  auto txt_str = file_path.filename().string() + ".txt";
+  TXT().save_charges(ms, charges, out_dir / std::filesystem::path(txt_str));
 
-    auto txt_str = file_path.filename().string() + ".txt";
-    TXT().save_charges(ms, charges, out_dir / std::filesystem::path(txt_str));
+  CIF().save_charges(ms, charges, filename);
 
-    if (ms.has_proteins()) {
-      auto pqr_str = file_path.filename().string() + ".pqr";
-      PQR().save_charges(ms, charges, out_dir / std::filesystem::path(pqr_str));
-    } else {
-      auto mol2_str = file_path.filename().string() + ".mol2";
-      Mol2().save_charges(ms, charges,
-                          out_dir / std::filesystem::path(mol2_str));
-    }
-  } catch (std::exception &e) {
-    fmt::print("Error saving charges: {}\n", e.what());
+  if (ms.has_proteins()) {
+    auto pqr_str = file_path.filename().string() + ".pqr";
+    PQR().save_charges(ms, charges, out_dir / std::filesystem::path(pqr_str));
+  } else {
+    auto mol2_str = file_path.filename().string() + ".mol2";
+    Mol2().save_charges(ms, charges,
+                        out_dir / std::filesystem::path(mol2_str));
   }
 }

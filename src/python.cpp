@@ -214,6 +214,8 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         }
     }
 
+    config::input_file = molecules.input_file;
+
     save_charges(molecules.ms, charges, molecules.input_file);
 
     return result;
