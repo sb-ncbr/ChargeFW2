@@ -63,7 +63,7 @@ struct Molecules {
     [[nodiscard]] MoleculeSetStats info();
 };
 
-Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool ignore_water = true, bool permissive_types = false) {
+Molecules::Molecules(const std::string &filename, bool read_hetatm = true, bool ignore_water = false, bool permissive_types = true) {
     config::read_hetatm = read_hetatm;
     config::ignore_water = ignore_water;
     config::permissive_types = permissive_types;
@@ -260,7 +260,7 @@ PYBIND11_MODULE(chargefw2, m) {
 
     py::class_<Molecules>(m, "Molecules")
         .def(py::init<const std::string &, bool, bool, bool>(), py::arg("input_file"), py::arg("read_hetatm") = true,
-                py::arg("ignore_water") = false, py::arg("permissive_types") = false)
+                py::arg("ignore_water") = false, py::arg("permissive_types") = true)
         .def("__len__", &Molecules::length)
         .def("info", &Molecules::info);
 
@@ -283,7 +283,7 @@ PYBIND11_MODULE(chargefw2, m) {
     m.def("get_available_methods", &get_available_methods_python, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,
           "Return the list of all parameters of a given method");
-    m.def("get_best_parameters", &get_best_parameters, "molecules"_a, "method_name"_a, "permissive_types"_a = false,
+    m.def("get_best_parameters", &get_best_parameters, "molecules"_a, "method_name"_a, "permissive_types"_a = true,
           "Return the best parameters for a given set of molecules and method name");
     m.def("get_suitable_methods", &get_suitable_methods_python, "molecules"_a, "Get methods and parameters that are suitable for a given set of molecules");
     m.def("calculate_charges", &calculate_charges, "molecules"_a, "method_name"_a, py::arg("parameters_name") = py::none(), py::arg("chg_out_dir") = py::none(),
