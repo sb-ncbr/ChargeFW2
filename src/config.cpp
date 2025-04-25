@@ -18,7 +18,7 @@ namespace config {
 
 
 void check_common_args() {
-    if (config::input_file.empty()) {
+    if (config::mode != "available-methods" && config::input_file.empty()) {
         fmt::print(stderr, "Input file must be provided\n");
         exit(EXIT_PARAMETER_ERROR);
     }

@@ -4,11 +4,9 @@
 #include <Eigen/LU>
 
 #include "eqeq.h"
-#include "../parameters.h"
 #include "../geometry.h"
 
 CHARGEFW2_METHOD(EQeq)
-
 
 Eigen::VectorXd EQeq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

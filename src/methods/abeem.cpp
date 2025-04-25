@@ -8,7 +8,6 @@
 
 CHARGEFW2_METHOD(ABEEM)
 
-
 std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
 
     const auto n = static_cast<Eigen::Index>(molecule.atoms().size());
