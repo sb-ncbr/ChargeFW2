@@ -32,7 +32,7 @@ struct PythonMethodMetadata;
 std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name, std::optional<const std::string> &chg_out_dir);
 
-void save_charges_python(std::map<std::string, std::vector<double>> charges, Molecules &molecules, std::string method_name, std::optional<const std::string> parameters_name, std::optional<const std::string> chg_out_dir);
+void save_charges_python(std::map<std::string, std::vector<double>> charges, const Molecules &molecules, const std::string &method_name, std::optional<const std::string> parameters_name, std::optional<const std::string> chg_out_dir);
 
 std::vector<PythonMethodMetadata> get_available_methods_python();
 
@@ -221,12 +221,8 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
     return result;
 }
 
-void save_charges_python(
-    std::map<std::string, 
-    std::vector<double>> charges, 
-    Molecules &molecules,
-    std::string method_name, 
-    std::optional<const std::string> parameters_name = "None",
+void save_charges_python(std::map<std::string, std::vector<double>> charges, const Molecules &molecules,
+    const std::string &method_name, std::optional<const std::string> parameters_name = "None",
     std::optional<const std::string> chg_out_dir = ".") {
     config::chg_out_dir = chg_out_dir.value_or(".");
     config::input_file = molecules.input_file;

@@ -241,7 +241,7 @@ std::vector<Method*> get_available_methods() {
         }
     }
 
-    std::sort(results.begin(), results.end(), [](const auto &a, const auto &b) {
+    std::ranges::sort(results, [](const auto &a, const auto &b) {
         return a->metadata().priority > b->metadata().priority;
     });
 

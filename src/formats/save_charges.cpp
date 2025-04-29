@@ -1,6 +1,4 @@
-#include <exception>
 #include <filesystem>
-#include <fmt/core.h>
 
 #include "../charges.h"
 #include "../config.h"
@@ -11,7 +9,7 @@
 #include "save_charges.h"
 #include "txt.h"
 
-void save_charges(MoleculeSet &ms, Charges &charges,
+void save_charges(const MoleculeSet &ms, const Charges &charges,
                   const std::string &filename) {
   std::filesystem::path out_dir(config::chg_out_dir);
   auto file_path = std::filesystem::path(filename);
