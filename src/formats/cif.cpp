@@ -240,11 +240,15 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
 void CIF::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
     auto ext = std::filesystem::path(filename).extension().string();
     
-    if (ext == ".cif") {
-        generate_mmcif_from_cif_file(ms, charges, config::input_file);
-    } else if (ext == ".pdb" or ext == ".ent") {
-        generate_mmcif_from_pdb_file(ms, charges, config::input_file);
-    } else if (ext == ".mol2" or ext == ".sdf") {
-        generate_mmcif_from_atom_and_bond_data(ms, charges);
+    try {    
+        if (ext == ".cif") {
+            generate_mmcif_from_cif_file(ms, charges, config::input_file);
+        } else if (ext == ".pdb" or ext == ".ent") {
+            generate_mmcif_from_pdb_file(ms, charges, config::input_file);
+        } else if (ext == ".mol2" or ext == ".sdf") {
+            generate_mmcif_from_atom_and_bond_data(ms, charges);
+        }
+    } catch (std::out_of_range &) {
+        /* Do nothing */
     }
 }
