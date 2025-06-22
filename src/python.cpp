@@ -46,6 +46,8 @@ py::dict atom_type_count_to_dict(const MoleculeSetStats::AtomTypeCount &atom_typ
 
 py::dict molecule_info_to_dict(const MoleculeSetStats &stats);
 
+std::string format_charges_filename(Charges &charges, std::string input_filename);
+
 struct PythonMethodMetadata : public MethodMetadata {
     bool has_parameters;
 
@@ -202,7 +204,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         method->set_option_value(opt, info.default_value);
     }
 
-    auto charges = Charges();
+    auto charges = Charges(method->metadata().internal_name, parameters_name.value_or("None"));
     std::map<std::string, std::vector<double>> result;
     for (auto &mol: molecules.ms.molecules()) {
         auto results = method->calculate_charges(mol);
@@ -214,15 +216,16 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         }
     }
 
+    std::string filename = format_charges_filename(charges, molecules.input_file);
     config::input_file = molecules.input_file;
-
-    save_charges(molecules.ms, charges, molecules.input_file);
+    
+    save_charges(molecules.ms, charges, filename);
 
     return result;
 }
 
 void save_charges_python(std::map<std::string, std::vector<double>> charges, const Molecules &molecules,
-    const std::string &method_name, std::optional<const std::string> parameters_name = "None",
+    const std::string &method_name, std::optional<const std::string> parameters_name,
     std::optional<const std::string> chg_out_dir = ".") {
     config::chg_out_dir = chg_out_dir.value_or(".");
     config::input_file = molecules.input_file;
@@ -232,7 +235,19 @@ void save_charges_python(std::map<std::string, std::vector<double>> charges, con
         charges_to_save.insert(name, charges);
     }
 
-    save_charges(molecules.ms, charges_to_save, config::input_file);
+    std::string filename = format_charges_filename(charges_to_save, molecules.input_file);
+    config::input_file = molecules.input_file;
+
+    save_charges(molecules.ms, charges_to_save, filename);
+}
+
+std::string format_charges_filename(Charges &charges, std::string input_filename) {
+    auto original_path = std::filesystem::path(input_filename);
+    auto directory = original_path.parent_path().string();
+    auto stem = original_path.stem().string();
+    auto extension = original_path.extension().string();
+    
+    return fmt::format("{}-{}-{}{}", stem, charges.method_name(), charges.parameters_name(), extension);
 }
 
 PYBIND11_MODULE(chargefw2, m) {
