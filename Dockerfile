@@ -4,26 +4,32 @@ ARG DEPS="\
         cmake \
         make \
         g++ \
-        gemmi \
-        gemmi-dev \
         libboost-program-options-dev \
         libeigen3-dev \
         libfmt-dev \
         libnanoflann-dev \
         libomp-dev \
-        libstb-dev \
         nlohmann-json3-dev \
-        zlib1g-dev \
-        tao-pegtl-dev"
+        zlib1g-dev"
 
 RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
+
+ARG GEMMI_VERSION=0.7.3
+ADD https://github.com/project-gemmi/gemmi/archive/refs/tags/v${GEMMI_VERSION}.tar.gz .
+RUN tar xvzf v0.7.3.tar.gz && \
+    cd gemmi-0.7.3 && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make install
 
 COPY . ChargeFW2
 RUN     cd ChargeFW2 && \
         mkdir build && \
         cd build && \
         cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=OFF && \
-        make -j4 && \
+        make -j$(nproc) && \
         make install
 
 # bundle dependencies
@@ -35,6 +41,7 @@ RUN mv /ChargeFW2/build/bin \
 RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
         /usr/lib/x86_64-linux-gnu/libfmt.so* \
         /usr/lib/x86_64-linux-gnu/libboost_program_options.so* \
+        /usr/local/lib/libgemmi_cpp.so* \
         /dependencies
 
 

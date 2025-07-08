@@ -8,7 +8,7 @@ See the [short description](https://acc2.ncbr.muni.cz/static/assets/methods.pdf)
 ## Compilation requirements
 
 To compile ChargeFW2, several requirements have to be installed first.
-The compilation was tested on Ubuntu 23.10 with these versions of libraries:
+The compilation was tested on Ubuntu 24.04 with these versions of libraries:
 
 - [CMake](https://cmake.org/) 3.27
 - [GCC](https://gcc.gnu.org/) 13
@@ -17,7 +17,7 @@ The compilation was tested on Ubuntu 23.10 with these versions of libraries:
 - [fmt](https://fmt.dev) 9.1
 - [nanoflann](https://github.com/jlblancoc/nanoflann) 1.5
 - [JSON for Modern C++](https://github.com/nlohmann/json) 3.11
-- [GEMMI](https://github.com/project-gemmi/gemmi) 0.6.2
+- [GEMMI](https://github.com/project-gemmi/gemmi) 0.7.3
 - [pybind11](https://github.com/pybind/pybind11) 2.11
 
 Other version of the libraries might work too but these were not tested.

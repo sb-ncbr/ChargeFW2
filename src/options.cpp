@@ -35,12 +35,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
         if (vm.contains("help")) {
             fmt::print("ChargeFW2 (version {})\n", VERSION);
             fmt::print("by Tomáš Raček (2018-2023)\n");
-
-#if FMT_VERSION > 90000
             fmt::print("{}", fmt::streamed(desc));
-#else
-            fmt::print("{}", desc);
-#endif
             exit(EXIT_SUCCESS);
         }
         po::notify(vm);

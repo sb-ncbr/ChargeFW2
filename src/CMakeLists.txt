@@ -1,9 +1,9 @@
 find_package(Boost COMPONENTS program_options REQUIRED)
-find_package(fmt 5.3 REQUIRED)
+find_package(fmt 9.1 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(nanoflann 1.3 REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-find_package(gemmi 0.6.2 CONFIG REQUIRED)
+find_package(gemmi 0.7.1 CONFIG REQUIRED)
 
 option(PYTHON_MODULE "Build Python bindings" ON)
 

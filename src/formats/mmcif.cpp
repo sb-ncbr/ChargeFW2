@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <fmt/format.h>
-#include <gemmi/cif.hpp>
+#include <gemmi/read_cif.hpp>
 #include <gemmi/mmcif.hpp>
 
 #include "mmcif.h"
