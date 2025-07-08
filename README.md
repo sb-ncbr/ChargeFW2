@@ -8,19 +8,20 @@ See the [short description](https://acc2.ncbr.muni.cz/static/assets/methods.pdf)
 ## Compilation requirements
 
 To compile ChargeFW2, several requirements have to be installed first.
-The compilation was tested on Ubuntu 24.04 with these versions of libraries:
+The compilation was tested on Ubuntu 25.04 with these versions of libraries:
 
-- [CMake](https://cmake.org/) 3.27
-- [GCC](https://gcc.gnu.org/) 13
-- [Boost](https://www.boost.org/) 1.74
+- [CMake](https://cmake.org/) 3.31
+- [GCC](https://gcc.gnu.org/) 14
+- [Boost](https://www.boost.org/) 1.83
 - [Eigen](http://eigen.tuxfamily.org) 3.4
-- [fmt](https://fmt.dev) 9.1
-- [nanoflann](https://github.com/jlblancoc/nanoflann) 1.5
+- [fmt](https://fmt.dev) 10.1
+- [nanoflann](https://github.com/jlblancoc/nanoflann) 1.7
 - [JSON for Modern C++](https://github.com/nlohmann/json) 3.11
 - [GEMMI](https://github.com/project-gemmi/gemmi) 0.7.3
 - [pybind11](https://github.com/pybind/pybind11) 2.11
 
-Other version of the libraries might work too but these were not tested.
+Other versions of the libraries might work too, but it was not tested. See the `Dockerfile` as the formal description
+of dependencies.
 
 ## Installation
 After downloading and unpacking the sources, run the following in the ChargeFW2 directory:

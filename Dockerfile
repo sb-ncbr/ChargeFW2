@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 AS build
+FROM ubuntu:25.04 AS build
 
 ARG DEPS="\
         cmake \
@@ -14,6 +14,7 @@ ARG DEPS="\
 
 RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
 
+# Use newer version of Gemmi since Ubuntu currently ships only 0.6.5
 ARG GEMMI_VERSION=0.7.3
 ADD https://github.com/project-gemmi/gemmi/archive/refs/tags/v${GEMMI_VERSION}.tar.gz .
 RUN tar xvzf v0.7.3.tar.gz && \
@@ -45,7 +46,7 @@ RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
         /dependencies
 
 
-FROM ubuntu:24.04 AS app
+FROM ubuntu:25.04 AS app
 
 ENV PATH=/ChargeFW2/build/bin:${PATH}
 
