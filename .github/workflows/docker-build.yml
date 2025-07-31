@@ -1,0 +1,22 @@
+name: Docker Build and Smoke Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docker:
+    name: Build and Run in Docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t chargefw2 .
+
+      - name: Run CLI help
+        run: docker run --rm chargefw2 --help
+
