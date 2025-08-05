@@ -17,11 +17,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
 # Use newer version of Gemmi since Ubuntu currently ships only 0.6.5
 ARG GEMMI_VERSION=0.7.3
 ADD https://github.com/project-gemmi/gemmi/archive/refs/tags/v${GEMMI_VERSION}.tar.gz .
-RUN tar xvzf v0.7.3.tar.gz && \
-    cd gemmi-0.7.3 && \
+RUN tar xvzf v${GEMMI_VERSION}.tar.gz && \
+    cd gemmi-${GEMMI_VERSION} && \
     mkdir build && \
     cd build && \
-    cmake .. && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) && \
     make install
 
@@ -29,7 +29,7 @@ COPY . ChargeFW2
 RUN     cd ChargeFW2 && \
         mkdir build && \
         cd build && \
-        cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=OFF && \
+        cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=OFF -DCMAKE_BUILD_TYPE=Release && \
         make -j$(nproc) && \
         make install
 
@@ -44,7 +44,6 @@ RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
         /usr/lib/x86_64-linux-gnu/libboost_program_options.so* \
         /usr/local/lib/libgemmi_cpp.so* \
         /dependencies
-
 
 FROM ubuntu:25.04 AS app
 
