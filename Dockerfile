@@ -44,24 +44,15 @@ RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
         /usr/lib/x86_64-linux-gnu/libboost_program_options.so* \
         /usr/local/lib/libgemmi_cpp.so* \
         /dependencies
-
 FROM ubuntu:25.04 AS app
 
-ENV PATH=/ChargeFW2/build/bin:${PATH}
+ENV PATH=/ChargeFW2/bin:${PATH}
 
 # copy over the build artifacts
-COPY --from=build /build/ /ChargeFW2/build
+COPY --from=build /build/ /ChargeFW2/
 COPY --from=build /dependencies/* /usr/lib/x86_64-linux-gnu/
 
-# non-root user
-ARG UNAME=nonroot
-ARG UID=1000
-ARG GID=1000
-RUN groupadd -g ${GID} -o ${UNAME} && \
-        useradd -m -u ${UID} -g ${GID} -o -s /bin/bash ${UNAME}
-ENV HOME=/home/${UNAME}
-USER ${UNAME}
-WORKDIR ${HOME}
+USER ubuntu
 
 ENTRYPOINT [ "chargefw2" ]
 CMD ["--help"]

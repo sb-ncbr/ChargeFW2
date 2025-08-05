@@ -45,12 +45,6 @@ $ docker build -t chargefw2 .
 $ docker run -it --rm --entrypoint bash chargefw2
 ```
 
-A prebuild Linux image is available on [Docker Hub](https://hub.docker.com/r/frimen/chargefw2). However, it is not actively maintained, and therefore it should only be used as a demo. It's highly recommended to build and manage your own Docker images.
-
-```bash
-$ docker run -it --rm --entrypoint bash docker.io/frimen/chargefw2
-```
-
 ### CLI workflow
 
 The Docker container can be used in CLI workflows. However, since containers are run in isolated environments and don't have access to your local host files by default, you will need to create a [volume](https://docs.docker.com/storage/volumes/) or a [bind-mount](https://docs.docker.com/storage/bind-mounts/), which will allow sharing host files with the container.
