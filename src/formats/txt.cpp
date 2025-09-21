@@ -1,7 +1,6 @@
 #include <string>
-#include <fmt/format.h>
-#include <fmt/ranges.h>
-#include <fmt/os.h>
+#include <format>
+#include <fstream>
 
 #include "../charges.h"
 #include "txt.h"
@@ -10,14 +9,20 @@
 
 
 void TXT::save_charges(const MoleculeSet &, const Charges &charges, const std::string &filename) {
-    try {
-        auto file = fmt::output_file(filename);
-        for (const auto &name: charges.names()) {
-            file.print("{}\n", to_uppercase(name));
-            file.print("{:.5f}\n", fmt::join(charges[name], " "));
+    std::ofstream out(filename);
+    if (!out) {
+        throw FileException(std::format("Cannot open file: {}", filename));
+    }
+
+    for (const auto &name: charges.names()) {
+        std::println(out, "{}", to_uppercase(name));
+        auto const& vals = charges[name];
+
+        std::string_view sep{};
+        for (double v : vals) {
+            std::print(out, "{}{:.5f}", sep, v);
+            sep = " ";
         }
-        file.close();
-    } catch (std::system_error &e) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
+        std::print(out, "\n");
     }
 }

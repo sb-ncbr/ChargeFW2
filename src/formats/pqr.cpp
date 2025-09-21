@@ -1,4 +1,6 @@
 #include <string>
+#include <format>
+#include <print>
 
 #include "pqr.h"
 #include "../structures/molecule_set.h"
@@ -9,7 +11,7 @@
 void PQR::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
     auto file = std::fopen(filename.c_str(), "w");
     if (!file) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
+        throw FileException(std::format("Cannot open file: {}", filename));
     }
 
     const auto &molecule = ms.molecules()[0];
@@ -26,7 +28,7 @@ void PQR::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
             }
             name.append(atom.name());
 
-            fmt::print(file, "{:<6}{:>5d} {:<4s} {:>3s} {:1s} {:>3d}    {:>8.3f}{:>8.3f}{:>8.3f} {:>6.3f} {:>6.3f}\n",
+            std::println(file, "{:<6}{:>5d} {:<4s} {:>3s} {:1s} {:>3d}    {:>8.3f}{:>8.3f}{:>8.3f} {:>6.3f} {:>6.3f}",
                        atom.hetatm() ? "HETATM": "ATOM", i + 1, name, atom.residue(), atom.chain_id(), atom.residue_id(),
                        atom.pos()[0], atom.pos()[1], atom.pos()[2], chg[i], atom.element().vdw_radius());
         }

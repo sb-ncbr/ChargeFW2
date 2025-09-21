@@ -27,17 +27,3 @@ public:
 
     friend class MoleculeSet;
 };
-
-
-namespace fmt {
-    template<>
-    struct formatter<Bond> {
-        template<typename ParseContext>
-        constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
-
-        template<typename FormatContext>
-        auto format(const Bond &b, FormatContext &ctx) {
-            return format_to(ctx.begin(), "Bond ({}, {}): {}\n", b.first(), b.second(), b.order());
-        }
-    };
-}

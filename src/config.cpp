@@ -1,4 +1,4 @@
-#include <fmt/core.h>
+#include <print>
 
 #include "chargefw2.h"
 #include "config.h"
@@ -19,20 +19,20 @@ namespace config {
 
 void check_common_args() {
     if (config::mode != "available-methods" && config::input_file.empty()) {
-        fmt::print(stderr, "Input file must be provided\n");
+        std::println(stderr, "Input file must be provided");
         exit(EXIT_PARAMETER_ERROR);
     }
 
     if (config::mode == "best-parameters") {
         if (config::method_name.empty()) {
-            fmt::print(stderr, "No method selected.\n");
+            std::println(stderr, "No method selected.");
             exit(EXIT_PARAMETER_ERROR);
         }
     }
 
     if (config::mode == "charges") {
         if (config::chg_out_dir.empty()) {
-            fmt::print(stderr, "Directory where to store charges must be provided\n");
+            std::println(stderr, "Directory where to store charges must be provided");
             exit(EXIT_PARAMETER_ERROR);
         }
     }

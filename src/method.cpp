@@ -1,13 +1,12 @@
-#include <fmt/core.h>
 #include <memory>
 #include <regex>
+#include <print>
+#include <format>
 #include <vector>
 #include <map>
 #include <set>
 #include <filesystem>
 #include <dlfcn.h>
-#include <fmt/format.h>
-#include <fmt/ranges.h>
 #include <Eigen/Dense>
 #include <omp.h>
 
@@ -30,23 +29,23 @@ void Method::set_parameters(Parameters *parameters) {
         return;
     }
     if (parameters->common() != nullptr and parameters->common()->names() != common_parameters_) {
-        fmt::print(stderr, "Parameters don't match\n");
-        fmt::print(stderr, "Expected: {}\n", common_parameters_);
-        fmt::print(stderr, "Got: {}\n", parameters->common()->names());
+        std::println(stderr, "Parameters don't match");
+        std::println(stderr, "Expected: {}\n", common_parameters_);
+        std::println(stderr, "Got: {}\n", parameters->common()->names());
         throw std::runtime_error("Invalid common parameters provided");
     }
 
     if (parameters->atom() != nullptr and parameters->atom()->names() != atom_parameters_) {
-        fmt::print(stderr, "Parameters don't match\n");
-        fmt::print(stderr, "Expected: {}\n", atom_parameters_);
-        fmt::print(stderr, "Got: {}\n", parameters->atom()->names());
+        std::println(stderr, "Parameters don't match");
+        std::println(stderr, "Expected: {}", atom_parameters_);
+        std::println(stderr, "Got: {}", parameters->atom()->names());
         throw std::runtime_error("Invalid atom parameters provided");
     }
 
     if (parameters->bond() != nullptr and parameters->bond()->names() != bond_parameters_) {
-        fmt::print(stderr, "Parameters don't match\n");
-        fmt::print(stderr, "Expected: {}\n", bond_parameters_);
-        fmt::print(stderr, "Got: {}\n", parameters->bond()->names());
+        std::println(stderr, "Parameters don't match");
+        std::println(stderr, "Expected: {}", bond_parameters_);
+        std::println(stderr, "Got: {}", parameters->bond()->names());
         throw std::runtime_error("Invalid bond parameters provided");
     }
     parameters_ = parameters;
@@ -87,12 +86,12 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
     auto radius = get_option_value<double>("radius");
 
     if (method != "cover" and molecule.atoms().size() > 80000) {
-        fmt::print("Switching to cover as the molecule is too big\n");
-        fmt::print("Using radius {}\n", radius);
+        std::println("Switching to cover as the molecule is too big");
+        std::println("Using radius {}", radius);
         method = "cover";
     } else if (method == "full" and molecule.atoms().size() > 20000) {
-        fmt::print("Switching to cutoff as the molecule is too big\n");
-        fmt::print("Using radius {}\n", radius);
+        std::println("Switching to cutoff as the molecule is too big");
+        std::println("Using radius {}", radius);
         method = "cutoff";
     }
 
@@ -233,7 +232,7 @@ std::vector<Method*> get_available_methods() {
             try {
                 method = load_method(method_name);
             } catch (FileException &e){
-                fmt::print(stderr, "Failed to load method {}: \n", method_name);
+                std::println(stderr, "Failed to load method: {}", method_name);
                 continue;
             }
             

@@ -3,7 +3,7 @@
 #include <sstream>
 #include <filesystem>
 #include <stdexcept>
-#include <fmt/format.h>
+#include <format>
 
 #include "element.h"
 #include "periodic_table.h"
@@ -17,7 +17,7 @@ PeriodicTable::PeriodicTable() {
     std::string filename(InstallPaths::datadir() / "pte.csv");
     std::ifstream file(filename);
     if (!file) {
-        throw InternalException(fmt::format("Unable to open periodic table data file: {}", filename));
+        throw InternalException(std::format("Unable to open periodic table data file: {}", filename));
     }
 
     std::string line;
@@ -52,7 +52,7 @@ PeriodicTable::PeriodicTable() {
             symbol_Z_[symbol] = index;
         }
     } catch (std::invalid_argument &) {
-        throw InternalException(fmt::format("Unable to parse periodic table data file: {}", filename));
+        throw InternalException(std::format("Unable to parse periodic table data file: {}", filename));
     }
 }
 
@@ -70,7 +70,7 @@ const Element *PeriodicTable::get_element_by_symbol(const std::string &symbol) c
     }
 
     if (!symbol_Z_.contains(symbol)) {
-        throw std::runtime_error(fmt::format("No such element: {}", symbol));
+        throw std::runtime_error(std::format("No such element: {}", symbol));
     }
     return get_element_by_Z(symbol_Z_.at(symbol) - 1);
 }

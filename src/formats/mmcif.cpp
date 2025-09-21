@@ -1,7 +1,8 @@
 #include <string>
 #include <stdexcept>
 #include <fstream>
-#include <fmt/format.h>
+#include <print>
+#include <format>
 #include <gemmi/read_cif.hpp>
 #include <gemmi/mmcif.hpp>
 
@@ -34,7 +35,7 @@ void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::
                 auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
                 if(atom.charge) {
-                    fmt::print("Got charge {} on{}\n", atom.charge, atom.element.name());
+                    std::println("Got charge {} on {}", atom.charge, atom.element.name());
                 }
 
                 if (keep_atom(atom, residue)) {
@@ -76,7 +77,7 @@ void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vect
         auto residue_id = 0;
 
         if (charge) {
-            fmt::print("Got charge {} on {}\n", charge, atom_name);
+            std::println("Got charge {} on {}", charge, atom_name);
         }
 
         atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "", false);
@@ -140,7 +141,7 @@ void mmCIF::process_record(const std::string &structure_data, std::unique_ptr<st
         molecules->emplace_back(name, std::move(atoms), std::move(bonds));
 
     } catch (std::exception &e) {
-        fmt::print(stderr, "Error when reading {}: {}\n", name, e.what());
+        std::println(stderr, "Error when reading {}: {}", name, e.what());
     }
 }
 
@@ -154,7 +155,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
     try {
         std::ifstream file(filename);
         if (!file) {
-            throw FileException(fmt::format("Cannot open file: {}", filename));
+            throw FileException(std::format("Cannot open file: {}", filename));
         }
         while(std::getline(file, line)) {
             if (line.starts_with("#") or line.empty()) {
@@ -175,7 +176,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
         process_record(structure_data, molecules);
     }
     catch (std::exception &e) {
-        throw FileException(fmt::format("Cannot load structure from file: {} {}", filename, e.what()));
+        throw FileException(std::format("Cannot load structure from file: {} {}", filename, e.what()));
     }
     return MoleculeSet(std::move(molecules));
 }

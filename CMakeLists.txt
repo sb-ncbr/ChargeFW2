@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.30)
 project(ChargeFW2)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(WARNING_FLAGS "-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -Wno-padded\

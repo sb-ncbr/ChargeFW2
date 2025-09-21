@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <format>
 #include <stdexcept>
 #include <fstream>
 #include <filesystem>
@@ -57,7 +58,7 @@ static void append_charges_to_block(const Molecule &molecule, const Charges &cha
     auto& metadata_loop = block.init_loop(sb_ncbr_partial_atomic_charges_meta_prefix, sb_ncbr_partial_atomic_charges_meta_attributes);
     const auto id = "1";
     const auto type = "empirical";
-    const auto method = fmt::format("'{}/{}'", charges.method_name(), charges.parameters_name());
+    const auto method = std::format("'{}/{}'", charges.method_name(), charges.parameters_name());
     metadata_loop.add_row({
         id,
         type,
@@ -68,8 +69,8 @@ static void append_charges_to_block(const Molecule &molecule, const Charges &cha
     auto& charges_loop = block.init_loop(sb_ncbr_partial_atomic_charges_prefix, sb_ncbr_partial_atomic_charges_attributes);
     for (size_t i = 0; i < molecule.atoms().size(); ++i) {
         const auto &atom = molecule.atoms()[i];
-        const auto atomId = fmt::format("{}", atom.index() + 1);
-        const auto charge = fmt::format("{: 1.4f}", atom_charges[i]);
+        const auto atomId = std::format("{}", atom.index() + 1);
+        const auto charge = std::format("{: 1.4f}", atom_charges[i]);
         charges_loop.add_row({
             id,
             atomId,
@@ -185,16 +186,16 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
         auto& atom_site_loop = block.init_loop(atom_site_prefix, atom_site_attributes);
         for (const auto &atom: molecule.atoms()) {
             const std::string group_PDB = atom.hetatm() ? "HETATM" : "ATOM";
-            const std::string id = fmt::format("{}", atom.index() + 1);
+            const std::string id = std::format("{}", atom.index() + 1);
             const std::string type_symbol = atom.element().symbol();
             const std::string& label_atom_id = id;
             const std::string label_comp_id = atom.residue();
-            const std::string label_seq_id = fmt::format("{}", atom.residue_id());
+            const std::string label_seq_id = std::format("{}", atom.residue_id());
             const std::string label_asym_id = atom.chain_id().empty() ? "." : atom.chain_id();
             const std::string label_entity_id = "1";
-            const std::string cartn_x = fmt::format("{:.3f}", atom.pos()[0]);
-            const std::string cartn_y = fmt::format("{:.3f}", atom.pos()[1]);
-            const std::string cartn_z = fmt::format("{:.3f}", atom.pos()[2]);
+            const std::string cartn_x = std::format("{:.3f}", atom.pos()[0]);
+            const std::string cartn_y = std::format("{:.3f}", atom.pos()[1]);
+            const std::string cartn_z = std::format("{:.3f}", atom.pos()[2]);
             atom_site_loop.add_row({
                 group_PDB,
                 id,
@@ -220,8 +221,8 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
         // _chem_comp_bond
         auto& chem_comp_bond_loop = block.init_loop(chem_comp_bond_prefix, chem_comp_bond_attributes);
         for (const auto &bond: molecule.bonds()) {
-            const std::string atom_id_1 = fmt::format("{}", bond.first().index() + 1);
-            const std::string atom_id_2 = fmt::format("{}", bond.second().index() + 1);
+            const std::string atom_id_1 = std::format("{}", bond.first().index() + 1);
+            const std::string atom_id_2 = std::format("{}", bond.second().index() + 1);
             const std::string value_order = convert_bond_order_to_mmcif_value_order_string(bond.order());
             chem_comp_bond_loop.add_row({
                 comp_id,

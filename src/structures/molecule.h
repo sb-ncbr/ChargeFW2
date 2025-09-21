@@ -1,6 +1,5 @@
 #pragma once
 
-#include <fmt/format.h>
 #include <utility>
 #include <string>
 #include <vector>
@@ -74,21 +73,6 @@ public:
 
     friend class MoleculeSet;
 };
-
-
-namespace fmt {
-    template<>
-    struct formatter<Molecule> {
-        template<typename ParseContext>
-        constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
-
-        template<typename FormatContext>
-        auto format(const Molecule &m, FormatContext &ctx) {
-            return format_to(ctx.begin(), "Molecule {} Atoms: {} Bonds {}\n", m.name(), m.atoms().size(),
-                             m.bonds().size());
-        }
-    };
-}
 
 
 class AtomKDTreeAdaptor {

@@ -1,9 +1,9 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <print>
 #include <vector>
 #include <nlohmann/json.hpp>
-#include <fmt/format.h>
 
 #include "parameters.h"
 #include "method.h"
@@ -77,33 +77,33 @@ Parameters::Parameters(const std::string &filename) {
 
 
 void Parameters::print() const {
-    fmt::print("Parameters: {}\n", name_);
+    std::println("Parameters: {}", name_);
     if (common_) {
-        fmt::print("Common parameters\n");
+        std::println("Common parameters");
         for (size_t i = 0; i < common_->names().size(); i++) {
-            fmt::print("{}: {:.3f}\n", common_->names()[i], common_->parameters_[i]);
+            std::println("{}: {:.3f}", common_->names()[i], common_->parameters_[i]);
         }
     }
     if (atoms_) {
-        fmt::print("Atom parameters\n");
+        std::println("Atom parameters");
         for (size_t i = 0; i < atoms_->parameters_.size(); i++) {
             auto &[symbol, cls, type] = atoms_->keys()[i];
-            fmt::print("{:2s} {:6s} {:4s}: ", symbol, cls, type);
+            std::print("{:2s} {:6s} {:4s}: ", symbol, cls, type);
             for (double val: atoms_->parameters_[i]) {
-                fmt::print("{:>-6.3f} ", val);
+                std::print("{:>-6.3f} ", val);
             }
-            fmt::print("\n");
+            std::print("\n");
         }
     }
     if (bonds_) {
-        fmt::print("Bond parameters\n");
+        std::println("Bond parameters");
         for (size_t i = 0; i < bonds_->parameters_.size(); i++) {
             auto &[symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b] = bonds_->keys()[i];
-            fmt::print("{:2s} {:6s} {:4s} {:2s} {:6s} {:4s} {:2s} {:2s}: ", symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b);
+            std::print("{:2s} {:6s} {:4s} {:2s} {:6s} {:4s} {:2s} {:2s}: ", symbol1, cls1, type1, symbol2, cls2, type2, cls_b, type_b);
             for (double val: bonds_->parameters_[i]) {
-                fmt::print("{:>-6.3f} ", val);
+                std::print("{:>-6.3f} ", val);
             }
-            fmt::print("\n");
+            std::print("\n");
         }
     }
 }

@@ -1,10 +1,11 @@
 #include <map>
 #include <algorithm>
 #include <memory>
+#include <print>
+#include <format>
 #include <tuple>
 #include <string>
 #include <type_traits>
-#include <fmt/format.h>
 
 #include "molecule.h"
 #include "molecule_set.h"
@@ -34,12 +35,12 @@ MoleculeSet::MoleculeSet(std::unique_ptr<std::vector<Molecule> > molecules) : mo
 void MoleculeSet::info() const {
     auto [total_molecules, total_atoms, atom_type_counts] = get_stats();
 
-    fmt::print("Number of molecules: {}\n", total_molecules);
-    fmt::print("Number of atoms: {}\n", total_atoms);
+    std::println("Number of molecules: {}", total_molecules);
+    std::println("Number of atoms: {}", total_atoms);
 
     for (auto &atom_type_count: atom_type_counts) {
         auto[symbol, cls, type, count] = atom_type_count;
-        fmt::print("{:2s} {:6s} {:4s}: {}\n", symbol, cls, type, count);
+        std::println("{:2s} {:6s} {:4s}: {}", symbol, cls, type, count);
     }
 }
 
@@ -160,7 +161,7 @@ bool check_atom_type(const Molecule &molecule, const Atom &atom, const std::stri
     } else if (cls == "bonded") {
         current_type = molecule.get_bonded_elements()[atom.index()];
     } else {
-        throw InternalException(fmt::format("AtomClassifier {} not found", cls));
+        throw InternalException(std::format("AtomClassifier {} not found", cls));
     }
 
     return current_type == type;
@@ -180,7 +181,7 @@ bool check_bond_type(const Bond &bond, const std::string &cls, const std::string
         }
 
     } else {
-        throw InternalException(fmt::format("BondClassifier {} not found", cls));
+        throw InternalException(std::format("BondClassifier {} not found", cls));
     }
     return current_type == type;
 }

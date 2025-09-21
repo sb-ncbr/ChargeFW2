@@ -1,4 +1,4 @@
-FROM ubuntu:25.04 AS build
+FROM ubuntu:25.10 AS build
 
 ARG DEPS="\
         cmake \
@@ -6,11 +6,9 @@ ARG DEPS="\
         g++ \
         libboost-program-options-dev \
         libeigen3-dev \
-        libfmt-dev \
         libnanoflann-dev \
         libomp-dev \
-        nlohmann-json3-dev \
-        zlib1g-dev"
+        nlohmann-json3-dev"
 
 RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
 
@@ -40,11 +38,11 @@ RUN mv /ChargeFW2/build/bin \
         /ChargeFW2/build/share \
         /build
 RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
-        /usr/lib/x86_64-linux-gnu/libfmt.so* \
         /usr/lib/x86_64-linux-gnu/libboost_program_options.so* \
         /usr/local/lib/libgemmi_cpp.so* \
         /dependencies
-FROM ubuntu:25.04 AS app
+
+FROM ubuntu:25.10 AS app
 
 ENV PATH=/ChargeFW2/bin:${PATH}
 

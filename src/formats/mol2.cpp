@@ -1,12 +1,13 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <format>
+#include <print>
 #include <fstream>
 #include <sstream>
 #include <iterator>
 #include <stdexcept>
 #include <set>
-#include <fmt/format.h>
 
 #include "common.h"
 #include "../chargefw2.h"
@@ -97,7 +98,7 @@ void Mol2::read_until_end_of_record(std::ifstream &file) {
 MoleculeSet Mol2::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
+        throw FileException(std::format("Cannot open file: {}", filename));
     }
 
     auto molecules = std::make_unique<std::vector<Molecule>>();
@@ -128,7 +129,7 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
             molecules->emplace_back(name, std::move(atoms), std::move(bonds));
         }
         catch (std::exception &e) {
-            fmt::print(stderr, "Error when reading {}: {}\n", name, e.what());
+            std::println(stderr, "Error when reading {}: {}", name, e.what());
         }
         read_until_end_of_record(file);
     }
@@ -140,42 +141,42 @@ MoleculeSet Mol2::read_file(const std::string &filename) {
 void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {
     auto file = std::fopen(filename.c_str(), "w");
     if (!file) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
+        throw FileException(std::format("Cannot open file: {}", filename));
     }
 
     for (const auto &molecule: ms.molecules()) {
         try {
             auto chg = charges[molecule.name()];
-            fmt::print(file, "@<TRIPOS>MOLECULE\n");
-            fmt::print(file, "{}\n", molecule.name());
-            fmt::print(file, "{} {}\n", molecule.atoms().size(), molecule.bonds().size());
+            std::println(file, "@<TRIPOS>MOLECULE");
+            std::println(file, "{}", molecule.name());
+            std::println(file, "{} {}", molecule.atoms().size(), molecule.bonds().size());
 
             /* Try to guess if the molecule is protein or not */
             if (molecule.atoms()[0].chain_id().empty()) {
-                fmt::print(file, "SMALL\n");
+                std::println(file, "SMALL");
             } else {
-                fmt::print(file, "PROTEIN\n");
+                std::println(file, "PROTEIN");
             }
-            fmt::print(file, "USER_CHARGES\n");
-            fmt::print(file, "****\n");
-            fmt::print(file, "Charges calculated by ChargeFW2 {}, method: {}\n", VERSION, charges.method_name());
+            std::println(file, "USER_CHARGES");
+            std::println(file, "****");
+            std::println(file, "Charges calculated by ChargeFW2 {}, method: {}", VERSION, charges.method_name());
 
-            fmt::print(file, "@<TRIPOS>ATOM\n");
+            std::println(file, "@<TRIPOS>ATOM");
             for (size_t i = 0; i < molecule.atoms().size(); i++) {
                 const auto &atom = molecule.atoms()[i];
                 std::string atom_type = atom.atom_type_mol2();
                 if (atom_type.empty()) {
                     atom_type = atom.element().symbol();
                 }
-                fmt::print(file, "{:>5d} {:<6s} {:>8.3f} {:>8.3f} {:>8.3f} {:<5s} {:>3d} {:>3s} {:>6.3f}\n",
+                std::println(file, "{:>5d} {:<6s} {:>8.3f} {:>8.3f} {:>8.3f} {:<5s} {:>3d} {:>3s} {:>6.3f}",
                            i + 1, atom.name(), atom.pos()[0], atom.pos()[1], atom.pos()[2], atom_type,
                            atom.residue_id(), atom.residue(), chg[i]);
             }
 
-            fmt::print(file, "@<TRIPOS>BOND\n");
+            std::println(file, "@<TRIPOS>BOND");
             for (size_t i = 0; i < molecule.bonds().size(); i++) {
                 const auto &bond = molecule.bonds()[i];
-                fmt::print(file, "{:>5d} {:>5d} {:>5d} {:>2d}\n",
+                std::println(file, "{:>5d} {:>5d} {:>5d} {:>2d}",
                            i + 1, bond.first().index() + 1, bond.second().index() + 1, bond.order());
             }
         }

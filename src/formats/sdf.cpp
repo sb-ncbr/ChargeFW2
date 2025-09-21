@@ -1,11 +1,12 @@
 #include <string>
 #include <fstream>
+#include <format>
+#include <print>
 #include <sstream>
 #include <stdexcept>
 #include <set>
 #include <vector>
 #include <memory>
-#include <fmt/format.h>
 
 #include "../structures/atom.h"
 #include "../structures/bond.h"
@@ -27,7 +28,7 @@ void SDF::read_until_end_of_record(std::ifstream &file) {
 MoleculeSet SDF::read_file(const std::string &filename) {
     std::ifstream file(filename);
     if (!file) {
-        throw FileException(fmt::format("Cannot open file: {}", filename));
+        throw FileException(std::format("Cannot open file: {}", filename));
     }
 
     std::string line;
@@ -68,7 +69,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
             } else if (version == "V3000") {
                 read_V3000(file, line, atoms, bonds);
             } else {
-                throw std::runtime_error(fmt::format("Invalid MOL version \"{}\"", version));
+                throw std::runtime_error(std::format("Invalid MOL version \"{}\"", version));
             }
 
             if (atoms->empty()) {
@@ -77,7 +78,7 @@ MoleculeSet SDF::read_file(const std::string &filename) {
 
             molecules->emplace_back(name, std::move(atoms), std::move(bonds));
         } catch (std::exception &e) {
-            fmt::print(stderr, "Error when reading {}: {}\n", name, e.what());
+            std::println(stderr, "Error when reading {}: {}", name, e.what());
             read_until_end_of_record(file);
         }
     }

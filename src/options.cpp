@@ -1,10 +1,17 @@
 #include <boost/program_options.hpp>
-#include <fmt/core.h>
-#include <fmt/ostream.h>
+#include <print>
 
 #include "chargefw2.h"
 #include "config.h"
 #include "options.h"
+
+
+template <class T>
+std::string streamed(const T& x) {
+    std::ostringstream os;
+    os << x;
+    return std::move(os).str();
+}
 
 
 boost::program_options::parsed_options parse_args(int argc, char **argv) {
@@ -33,9 +40,9 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
 
         po::store(parsed, vm);
         if (vm.contains("help")) {
-            fmt::print("ChargeFW2 (version {})\n", VERSION);
-            fmt::print("by Tomáš Raček (2018-2023)\n");
-            fmt::print("{}", fmt::streamed(desc));
+            std::println("ChargeFW2 (version {})", VERSION);
+            std::println("by Tomáš Raček (2018-2023)");
+            std::print("{}", streamed(desc));
             exit(EXIT_SUCCESS);
         }
         po::notify(vm);
@@ -52,7 +59,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
 
         return parsed;
     } catch (const std::exception &e) {
-        fmt::print(stderr, "Incorrect arguments: {}\n", e.what());
+        std::println(stderr, "Incorrect arguments: {}", e.what());
         exit(EXIT_PARAMETER_ERROR);
     }
 }
@@ -66,7 +73,7 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
     for (const auto &[opt, info]: method->get_options()) {
         if (!info.choices.empty()) {
             if (std::ranges::find(info.choices, info.default_value) == info.choices.end()) {
-                fmt::print(stderr, "Default value: {} not in possible choices\n", info.default_value);
+                std::println(stderr, "Default value: {} not in possible choices", info.default_value);
                 exit(EXIT_INTERNAL_ERROR);
             }
         }
@@ -79,7 +86,7 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
     try {
         po::store(po::command_line_parser(opts).options(method_options).run(), vm);
     } catch (std::exception &e) {
-        fmt::print(stderr, "Incorrect arguments: {}\n", e.what());
+        std::println(stderr, "Incorrect arguments: {}", e.what());
         exit(EXIT_PARAMETER_ERROR);
     }
 
@@ -89,7 +96,7 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
             std::string val = vm[opt_name].as<std::string>();
             if (!info.choices.empty()) {
                 if (std::ranges::find(info.choices, val) == info.choices.end()) {
-                    fmt::print(stderr, "Provided value: {} not in possible choices\n", val);
+                    std::print(stderr, "Provided value: {} not in possible choices", val);
                     exit(EXIT_INTERNAL_ERROR);
                 }
             }

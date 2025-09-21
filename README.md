@@ -8,13 +8,12 @@ See the [short description](https://acc2.ncbr.muni.cz/static/assets/methods.pdf)
 ## Compilation requirements
 
 To compile ChargeFW2, several requirements have to be installed first.
-The compilation was tested on Ubuntu 25.04 with these versions of libraries:
+The compilation was tested on Ubuntu 25.10 with these versions of libraries:
 
 - [CMake](https://cmake.org/) 3.31
-- [GCC](https://gcc.gnu.org/) 14
+- [GCC](https://gcc.gnu.org/) 15.2
 - [Boost](https://www.boost.org/) 1.83
 - [Eigen](http://eigen.tuxfamily.org) 3.4
-- [fmt](https://fmt.dev) 10.1
 - [nanoflann](https://github.com/jlblancoc/nanoflann) 1.7
 - [JSON for Modern C++](https://github.com/nlohmann/json) 3.11
 - [GEMMI](https://github.com/project-gemmi/gemmi) 0.7.3

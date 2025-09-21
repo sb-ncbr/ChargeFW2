@@ -1,6 +1,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <format>
 #include <tuple>
 #include <fstream>
 #include <filesystem>
@@ -28,7 +29,7 @@ void load_residues_info(const std::string &filename,
                         std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> &residues_data) {
     std::ifstream file(filename);
     if (!file) {
-        throw InternalException(fmt::format("Unable to open amino acids data file: {}", filename));
+        throw InternalException(std::format("Unable to open amino acids data file: {}", filename));
     }
 
     std::string line;

@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <format>
 
 #include "reader.h"
 #include "sdf.h"
@@ -25,7 +26,7 @@ MoleculeSet load_molecule_set(const std::string &filename) {
     } else if (ext == ".cif") {
         reader = std::make_unique<mmCIF>();
     } else {
-        throw FileException(fmt::format("Filetype {} not supported", ext));
+        throw FileException(std::format("Filetype {} not supported", ext));
     }
 
     return reader->read_file(filename);

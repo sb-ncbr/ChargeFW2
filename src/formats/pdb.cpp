@@ -1,5 +1,6 @@
 #include <vector>
-#include <fmt/format.h>
+#include <print>
+#include <format>
 #include <gemmi/pdb.hpp>
 
 #include "../config.h"
@@ -16,7 +17,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
         structure = gemmi::read_pdb_file(filename);
     }
     catch (std::exception &) {
-        throw FileException(fmt::format("Cannot load structure from file: {}", filename));
+        throw FileException(std::format("Cannot load structure from file: {}", filename));
     }
 
     auto molecules = std::make_unique<std::vector<Molecule>>();
@@ -38,7 +39,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
                 try {
                     element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
                 } catch (std::exception &e) {
-                    fmt::print(stderr, "Error when reading {}: {}\n", structure.name, e.what());
+                    std::println(stderr, "Error when reading {}: {}", structure.name, e.what());
                     /* Return empty set */
                     return MoleculeSet(std::move(molecules));
                 }
@@ -52,7 +53,7 @@ MoleculeSet PDB::read_file(const std::string &filename) {
     }
 
     if (atoms->empty()) {
-        fmt::print(stderr, "Error when reading {}: No atoms were loaded\n", structure.name);
+        std::println(stderr, "Error when reading {}: No atoms were loaded", structure.name);
     } else {
         auto bonds = get_bonds(atoms);
         std::string name = structure.name;

@@ -1,5 +1,5 @@
 find_package(Boost COMPONENTS program_options REQUIRED)
-find_package(fmt 9.1 REQUIRED)
+find_package(OpenMP REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(nanoflann 1.3 REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
@@ -17,7 +17,7 @@ include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 SET(COMMON_LIBS parameters geometry element method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
-    target_link_libraries(${lib} structures exceptions fmt::fmt)
+    target_link_libraries(${lib} structures exceptions OpenMP::OpenMP_CXX)
 endforeach ()
 
 target_link_libraries(method Eigen3::Eigen)
@@ -35,7 +35,7 @@ add_library(common ${SOURCES})
 add_executable(chargefw2 main.cpp options.cpp options.h)
 add_dependencies(chargefw2 ${METHODS})
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats common exceptions utility Boost::program_options dl fmt::fmt gemmi::gemmi_cpp)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} formats common exceptions utility Boost::program_options dl gemmi::gemmi_cpp OpenMP::OpenMP_CXX)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 

@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <dlfcn.h>
-#include <fmt/core.h>
-#include <fmt/format.h>
+#include <format>
+#include <print>
 #include <filesystem>
 #include <pybind11/pybind11.h>
 #include <pybind11/pytypes.h>
@@ -176,7 +176,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
     try {
         method = load_method(method_name);
     } catch (FileException &e) {
-        throw std::runtime_error(fmt::format("Failed to load method {}: {}", method_name, e.what()));
+        throw std::runtime_error(std::format("Failed to load method {}: {}", method_name, e.what()));
     }
 
     molecules.ms.fulfill_requirements(method->get_requirements());
@@ -209,7 +209,7 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
     for (auto &mol: molecules.ms.molecules()) {
         auto results = method->calculate_charges(mol);
         if (std::ranges::any_of(results, [](double chg) noexcept { return not isfinite(chg); })) {
-            fmt::print("Incorrect values encountered for: {}. Skipping molecule.\n", mol.name());
+            std::println("Incorrect values encountered for: {}. Skipping molecule.", mol.name());
         } else {
             charges.insert(mol.name(), results);
             result[mol.name()] = results;
@@ -247,7 +247,7 @@ std::string format_charges_filename(Charges &charges, std::string input_filename
     auto stem = original_path.stem().string();
     auto extension = original_path.extension().string();
     
-    return fmt::format("{}-{}-{}{}", stem, charges.method_name(), charges.parameters_name(), extension);
+    return std::format("{}-{}-{}{}", stem, charges.method_name(), charges.parameters_name(), extension);
 }
 
 PYBIND11_MODULE(chargefw2, m) {

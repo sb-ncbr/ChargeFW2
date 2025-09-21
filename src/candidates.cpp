@@ -1,9 +1,7 @@
-#include <fmt/core.h>
 #include <iterator>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <filesystem>
-#include <fmt/format.h>
 #include <optional>
 #include <tuple>
 #include <vector>
