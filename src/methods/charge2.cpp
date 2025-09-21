@@ -3,9 +3,11 @@
 #include "charge2.h"
 #include "../structures/molecule.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(Charge2)
 
+[[maybe_unused]] const bool Charge2_registered_ =
+    (MethodRegistry::register_factory("charge2", &make_method<Charge2>), true);
 
 const int n_iters = 10;
 

@@ -3,9 +3,11 @@
 
 #include "denr.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(DENR)
 
+[[maybe_unused]] const bool DENR_registered_ =
+    (MethodRegistry::register_factory("denr", &make_method<DENR>), true);
 
 std::vector<double> DENR::calculate_charges(const Molecule &molecule) const {
 

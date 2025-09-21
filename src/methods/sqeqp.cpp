@@ -5,9 +5,11 @@
 #include "sqeqp.h"
 #include "../parameters.h"
 #include "../geometry.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(SQEqp)
 
+[[maybe_unused]] const bool SQEqp_registered_ =
+    (MethodRegistry::register_factory("sqeqp", &make_method<SQEqp>), true);
 
 std::vector<double> SQEqp::calculate_charges(const Molecule &molecule) const {
 

@@ -3,9 +3,11 @@
 #include "peoe.h"
 #include "../structures/bond.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(PEOE)
 
+[[maybe_unused]] const bool PEOE_registered_ =
+    (MethodRegistry::register_factory("peoe", &make_method<PEOE>), true);
 
 std::vector<double> PEOE::calculate_charges(const Molecule &molecule) const {
 

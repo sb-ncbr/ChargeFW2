@@ -1,7 +1,9 @@
 #include "veem.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(VEEM)
 
+[[maybe_unused]] const bool VEEM_registered_ =
+    (MethodRegistry::register_factory("veem", &make_method<VEEM>), true);
 
 std::vector<double> VEEM::calculate_charges(const Molecule &molecule) const {
     size_t n = molecule.atoms().size();

@@ -4,9 +4,11 @@
 
 #include "mgc.h"
 #include "../structures/molecule.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(MGC)
 
+[[maybe_unused]] const bool MGC_registered_ =
+    (MethodRegistry::register_factory("mgc", &make_method<MGC>), true);
 
 std::vector<double> MGC::calculate_charges(const Molecule &molecule) const {
 

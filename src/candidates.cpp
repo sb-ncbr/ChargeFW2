@@ -81,11 +81,9 @@ get_valid_parameters(MoleculeSet &ms, bool is_protein, bool permissive_types, co
 }
 
 
-std::vector<std::tuple<Method*, std::vector<std::unique_ptr<Parameters>>>>
-get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
-    std::vector<std::tuple<Method*, std::vector<std::unique_ptr<Parameters>>>> results;
-
-    auto methods = get_available_methods();
+std::vector<std::tuple<const Method *, std::vector<std::unique_ptr<Parameters>>>>
+get_suitable_methods(MoleculeSet &ms, const std::vector<std::unique_ptr<Method>>& methods, bool is_protein, bool permissive_types) {
+    std::vector<std::tuple<const Method *, std::vector<std::unique_ptr<Parameters>>>> results;
 
     for (auto &method: methods) {
         bool suitable = true;
@@ -104,13 +102,13 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
         /* Methods without parameters should be suitable */
         if (not method->has_parameters()) {
-            results.emplace_back(method, std::vector<std::unique_ptr<Parameters>>{});
+            results.emplace_back(method.get(), std::vector<std::unique_ptr<Parameters>>{});
             continue;
         }
 
         auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->metadata().internal_name);
         if (not parameters.empty()) {
-            results.emplace_back(method, std::move(parameters));
+            results.emplace_back(method.get(), std::move(parameters));
         }
     }
 
@@ -119,12 +117,12 @@ get_suitable_methods(MoleculeSet &ms, bool is_protein, bool permissive_types) {
 
 
 std::optional<std::unique_ptr<Parameters>>
-best_parameters(MoleculeSet &ms, const Method *method, bool is_protein, bool permissive_types) {
-    if (not method->has_parameters()) {
+best_parameters(MoleculeSet &ms, const Method&method, bool is_protein, bool permissive_types) {
+    if (not method.has_parameters()) {
         throw ParameterException("Method uses no parameters");
     }
     
-    auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method->metadata().internal_name);
+    auto parameters = get_valid_parameters(ms, is_protein, permissive_types, method.metadata().internal_name);
     
     if (parameters.empty()) {
         return std::nullopt;

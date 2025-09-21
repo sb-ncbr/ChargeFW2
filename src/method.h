@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -102,16 +101,12 @@ template<>
 template<>
 [[nodiscard]] int Method::get_option_value<int>(const std::string &name) const;
 
+std::unique_ptr<Method> load_method(std::string const& name);
 
-Method* load_method(const std::string &method_name);
+std::vector<std::unique_ptr<Method>> get_available_methods();
 
-std::vector<Method*> get_available_methods();
-
-
-#define CHARGEFW2_METHOD(name) extern "C" Method* get_method() {\
- static name method;\
- return &method;\
-}
+template<class T>
+std::unique_ptr<Method> make_method() { return std::make_unique<T>(); }
 
 
 extern "C" Method* get_method();

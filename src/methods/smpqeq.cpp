@@ -6,9 +6,11 @@
 #include "smpqeq.h"
 #include "../parameters.h"
 #include "../geometry.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(SMP_QEq)
 
+[[maybe_unused]] const bool SMP_QEq_registered_ =
+    (MethodRegistry::register_factory("smpqeq", &make_method<SMP_QEq>), true);
 
 Eigen::VectorXd SMP_QEq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

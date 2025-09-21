@@ -31,11 +31,6 @@ const std::filesystem::path& InstallPaths::prefix() {
     return cached;
 }
 
-std::filesystem::path InstallPaths::libdir() {
-    return prefix() / "lib";
-}
-
-
 std::filesystem::path InstallPaths::datadir() {
     return prefix() / "share";
 }

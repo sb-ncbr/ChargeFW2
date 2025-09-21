@@ -6,14 +6,12 @@
 #include <map>
 #include <set>
 #include <filesystem>
-#include <dlfcn.h>
-#include <Eigen/Dense>
-#include <omp.h>
 
 #include "method.h"
 #include "parameters.h"
 #include "exceptions/file_exception.h"
 #include "utility/install.h"
+#include "method_registry.h"
 
 
 namespace fs = std::filesystem;
@@ -75,47 +73,24 @@ int Method::get_option_value<int>(const std::string &name) const {
 }
 
 
-Method* load_method(const std::string &method_name) {
-    std::string file = InstallPaths::libdir() / ("lib" + method_name + ".so");
-
-    auto handle = dlopen(file.c_str(), RTLD_LAZY);
-
-    auto get_method_handle = reinterpret_cast<Method *(*)()>(dlsym(handle, "get_method"));
-    if (!get_method_handle) {
-        throw FileException(dlerror());
-    }
-
-    return (*get_method_handle)();
+std::unique_ptr<Method> load_method(std::string const& name) {
+    auto m = MethodRegistry::make(name);     // already returns unique_ptr<Method>
+    if (!m) throw FileException("Unknown method: " + name);
+    return m;                                // no release() — ownership stays with caller safely
 }
 
 
-std::vector<Method*> get_available_methods() {
-    std::vector<Method*> results;
-    std::regex method_pattern(R"(^lib(.*)\.so$)");
+std::vector<std::unique_ptr<Method>> get_available_methods() {
+    std::vector<std::unique_ptr<Method>> v;
+    v.reserve(MethodRegistry::names().size());
 
-    for (const auto &entry : fs::directory_iterator(InstallPaths::libdir())) {
-        auto filename = entry.path().filename().string();
-        std::smatch matches;
-
-        if (std::regex_match(filename, matches, method_pattern)) {
-            auto method_name = matches[1].str();
-            Method* method;
-            
-            try {
-                method = load_method(method_name);
-            } catch (FileException &e){
-                std::println(stderr, "Failed to load method: {}", method_name);
-                std::println("{}", e.what());
-                continue;
-            }
-            
-            results.emplace_back(method);
-        }
+    for (auto const& name : MethodRegistry::names()) {
+        if (auto m = MethodRegistry::make(name)) v.emplace_back(std::move(m));
     }
 
-    std::ranges::sort(results, [](const auto &a, const auto &b) {
+    std::ranges::sort(v, [](auto const& a, auto const& b) {
         return a->metadata().priority > b->metadata().priority;
     });
 
-    return results;
+    return v;
 }

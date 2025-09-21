@@ -1,7 +1,9 @@
 #include "formal.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(Formal)
 
+[[maybe_unused]] const bool Formal_registered_ =
+    (MethodRegistry::register_factory("formal", &make_method<Formal>), true);
 
 std::vector<double> Formal::calculate_charges(const Molecule &molecule) const {
     std::vector<double> res;

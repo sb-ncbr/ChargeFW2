@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <dlfcn.h>
 #include <format>
 #include <print>
 #include <filesystem>
@@ -27,6 +26,11 @@ namespace py = pybind11;
 using namespace pybind11::literals;
 
 struct PythonMethodMetadata;
+
+static std::vector<std::unique_ptr<Method>>& methods_pool() {
+    static std::vector<std::unique_ptr<Method>> pool = get_available_methods();
+    return pool;
+}
 
 
 std::map<std::string, std::vector<double>>
@@ -124,7 +128,8 @@ std::vector<ParametersMetadata> get_available_parameters(const std::string &meth
 }
 
 std::vector<std::tuple<PythonMethodMetadata, std::vector<ParametersMetadata>>> get_suitable_methods_python(struct Molecules &molecules) {
-    auto suitable = get_suitable_methods(molecules.ms, molecules.ms.has_proteins(), config::permissive_types);
+    auto &all_methods = methods_pool();
+    auto suitable = get_suitable_methods(molecules.ms, all_methods, molecules.ms.has_proteins(), config::permissive_types);
     auto result = std::vector<std::tuple<PythonMethodMetadata, std::vector<ParametersMetadata>>>();
     result.reserve(suitable.size());
 
@@ -149,9 +154,10 @@ std::vector<std::tuple<PythonMethodMetadata, std::vector<ParametersMetadata>>> g
 }
 
 std::vector<PythonMethodMetadata> get_available_methods_python() {
-    auto methods = get_available_methods();
+    auto &all_methods = methods_pool();
     std::vector<PythonMethodMetadata> result;
-    for (const auto &method : methods) {
+    result.reserve(all_methods.size());
+    for (const auto &method : all_methods) {
         result.emplace_back(PythonMethodMetadata(method->metadata(), method->has_parameters()));
     }
     return result;
@@ -159,7 +165,7 @@ std::vector<PythonMethodMetadata> get_available_methods_python() {
 
 std::optional<ParametersMetadata> get_best_parameters(struct Molecules &molecules, const std::string &method_name, bool permissive_types) {
     auto method = load_method(method_name);
-    auto parameters = best_parameters(molecules.ms, method, molecules.ms.has_proteins(), permissive_types);
+    auto parameters = best_parameters(molecules.ms, *method, molecules.ms.has_proteins(), permissive_types);
 
     if (not parameters.has_value()) {
         return std::nullopt;
@@ -172,7 +178,7 @@ std::map<std::string, std::vector<double>>
 calculate_charges(struct Molecules &molecules, const std::string &method_name, std::optional<const std::string> &parameters_name, std::optional<const std::string> &chg_out_dir) {
     config::chg_out_dir = chg_out_dir.value_or(".");
 
-    Method* method;
+    std::unique_ptr<Method> method;
     try {
         method = load_method(method_name);
     } catch (FileException &e) {

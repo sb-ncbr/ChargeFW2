@@ -3,7 +3,7 @@
 #include <string>
 #include <set>
 #include <print>
-
+#include <omp.h>
 
 #include "ee_method.h"
 

@@ -6,9 +6,11 @@
 #include "sfkeem.h"
 #include "../parameters.h"
 #include "../geometry.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(SFKEEM)
 
+[[maybe_unused]] const bool SFKEEM_registered_ =
+    (MethodRegistry::register_factory("sfkeem", &make_method<SFKEEM>), true);
 
 Eigen::VectorXd SFKEEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

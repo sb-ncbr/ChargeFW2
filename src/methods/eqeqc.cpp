@@ -6,9 +6,11 @@
 #include "eqeqc.h"
 #include "../parameters.h"
 #include "../geometry.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(EQeqC)
 
+[[maybe_unused]] const bool EQeqC_registered_ =
+    (MethodRegistry::register_factory("eqeqc", &make_method<EQeqC>), true);
 
 Eigen::VectorXd EQeqC::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 

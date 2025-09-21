@@ -65,12 +65,12 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
 }
 
 
-void setup_method_options(Method *method, const boost::program_options::parsed_options &parsed) {
+void setup_method_options(Method& method, const boost::program_options::parsed_options &parsed) {
     namespace po = boost::program_options;
 
     po::options_description method_options("Method options");
 
-    for (const auto &[opt, info]: method->get_options()) {
+    for (const auto &[opt, info]: method.get_options()) {
         if (!info.choices.empty()) {
             if (std::ranges::find(info.choices, info.default_value) == info.choices.end()) {
                 std::println(stderr, "Default value: {} not in possible choices", info.default_value);
@@ -90,7 +90,7 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
         exit(EXIT_PARAMETER_ERROR);
     }
 
-    for (const auto &[opt, info]: method->get_options()) {
+    for (const auto &[opt, info]: method.get_options()) {
         std::string opt_name = std::string("method-" + opt);
         if (vm.contains(opt_name)) {
             std::string val = vm[opt_name].as<std::string>();
@@ -100,9 +100,9 @@ void setup_method_options(Method *method, const boost::program_options::parsed_o
                     exit(EXIT_INTERNAL_ERROR);
                 }
             }
-            method->set_option_value(opt, val);
+            method.set_option_value(opt, val);
         } else {
-            method->set_option_value(opt, info.default_value);
+            method.set_option_value(opt, info.default_value);
         }
     }
 }

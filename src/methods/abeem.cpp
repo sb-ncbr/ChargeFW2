@@ -5,8 +5,10 @@
 #include "abeem.h"
 #include "../parameters.h"
 #include "../geometry.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(ABEEM)
+[[maybe_unused]] const bool ABEEM_registered_ =
+    (MethodRegistry::register_factory("abeem", &make_method<ABEEM>), true);
 
 std::vector<double> ABEEM::calculate_charges(const Molecule &molecule) const {
 

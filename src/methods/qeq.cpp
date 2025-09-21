@@ -7,9 +7,11 @@
 #include "../structures/atom.h"
 #include "../geometry.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(QEq)
 
+[[maybe_unused]] const bool QEq_registered_ =
+    (MethodRegistry::register_factory("qeq", &make_method<QEq>), true);
 
 double QEq::overlap_term(const Atom &atom_i, const Atom &atom_j, const std::string &type) const {
     auto Ji = parameters_->atom()->parameter(atom::hardness)(atom_i);

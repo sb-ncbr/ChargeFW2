@@ -10,7 +10,6 @@
 
 #include "structures/atom.h"
 #include "structures/bond.h"
-#include "method.h"
 
 
 struct ParametersMetadata {

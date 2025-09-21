@@ -5,9 +5,11 @@
 #include "kcm.h"
 #include "../structures/molecule.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(KCM)
 
+[[maybe_unused]] const bool KCM_registered_ =
+    (MethodRegistry::register_factory("kcm", &make_method<KCM>), true);
 
 std::vector<double> KCM::calculate_charges(const Molecule &molecule) const {
 

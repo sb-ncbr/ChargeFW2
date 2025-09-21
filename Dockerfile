@@ -34,7 +34,6 @@ RUN     cd ChargeFW2 && \
 # bundle dependencies
 RUN mkdir /dependencies /build
 RUN mv /ChargeFW2/build/bin \
-        /ChargeFW2/build/lib \
         /ChargeFW2/build/share \
         /build
 RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\

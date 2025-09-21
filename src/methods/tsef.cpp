@@ -3,9 +3,11 @@
 
 #include "tsef.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(TSEF)
 
+[[maybe_unused]] const bool TSEF_registered_ =
+    (MethodRegistry::register_factory("tsef", &make_method<TSEF>), true);
 
 double K(int i);
 

@@ -5,9 +5,11 @@
 #include "../structures/bond.h"
 #include "../geometry.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(GDAC)
 
+[[maybe_unused]] const bool GDAC_registered_ =
+    (MethodRegistry::register_factory("gdac", &make_method<GDAC>), true);
 
 std::vector<double> GDAC::calculate_charges(const Molecule &molecule) const {
 

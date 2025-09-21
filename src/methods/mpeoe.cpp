@@ -4,9 +4,11 @@
 #include "../structures/molecule.h"
 #include "../structures/bond.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(MPEOE)
 
+[[maybe_unused]] const bool MPEOE_registered_ =
+    (MethodRegistry::register_factory("mpeoe", &make_method<MPEOE>), true);
 
 std::vector<double> MPEOE::calculate_charges(const Molecule &molecule) const {
 

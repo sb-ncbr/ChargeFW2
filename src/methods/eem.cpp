@@ -4,8 +4,12 @@
 #include "eem.h"
 #include "../parameters.h"
 #include "../geometry.h"
+#include "../method.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(EEM)
+
+[[maybe_unused]] const bool EEM_registered_ =
+    (MethodRegistry::register_factory("eem", &make_method<EEM>), true);
 
 
 Eigen::VectorXd EEM::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {

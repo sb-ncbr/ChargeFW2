@@ -6,7 +6,6 @@
 #include <nlohmann/json.hpp>
 
 #include "parameters.h"
-#include "method.h"
 
 Parameters::Parameters(const std::string &filename) {
     using json = nlohmann::json;

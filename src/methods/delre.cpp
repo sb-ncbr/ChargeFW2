@@ -4,8 +4,11 @@
 #include "../structures/molecule.h"
 #include "../structures/bond.h"
 #include "../parameters.h"
+#include "../method_registry.h"
 
-CHARGEFW2_METHOD(DelRe)
+
+[[maybe_unused]] const bool DelRe_registered_ =
+    (MethodRegistry::register_factory("delre", &make_method<DelRe>), true);
 
 
 std::vector<double> DelRe::calculate_charges(const Molecule &molecule) const {

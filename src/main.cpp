@@ -19,6 +19,7 @@
 #include "method.h"
 #include "candidates.h"
 #include "config.h"
+#include "method_registry.h"
 #include "options.h"
 #include "exceptions/file_exception.h"
 #include "exceptions/internal_exception.h"
@@ -33,13 +34,14 @@ int main(int argc, char **argv) {
 
     auto ext = std::filesystem::path(config::input_file).extension().string();
 
+    auto all_methods = get_available_methods();
+
     try {
         if (config::mode == "available-methods") {
-            auto methods = get_available_methods();
-            for (const auto &method: methods) {
+            for (auto &method: all_methods) {
                 std::println("{:<10} - {}", method->metadata().internal_name, method->metadata().full_name);
-                std::println("{:<10}   doi: {}", "", method->metadata().publication.value_or("<none>"));
-            }
+                std::println("{:<10}   doi: {}", "", method->metadata().publication.value_or("<none>"));            }
+
             exit(EXIT_SUCCESS);
         }
 
@@ -59,7 +61,7 @@ int main(int argc, char **argv) {
         } else if (config::mode == "charges") {
             std::string method_name;
             if (config::method_name.empty()) {
-                auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+                auto methods = get_suitable_methods(m, all_methods, is_protein_structure, config::permissive_types);
                 method_name = std::get<0>(methods.front())->metadata().internal_name;
                 std::println("Autoselecting the best method.");
             } else {
@@ -69,13 +71,13 @@ int main(int argc, char **argv) {
             auto method = load_method(method_name);
             std::println("Method: {}", method->metadata().name);
 
-            setup_method_options(method, parsed);
+            setup_method_options(*method, parsed);
 
             auto p = std::unique_ptr<Parameters>();
 
             if (method->has_parameters()) {
                 if (config::par_file.empty()) {
-                    auto best_par = best_parameters(m, method, is_protein_structure, config::permissive_types);
+                    auto best_par = best_parameters(m, *method, is_protein_structure, config::permissive_types);
                     if (!best_par.has_value()) {
                         std::println(stderr, "No parameters found");
                         exit(EXIT_PARAMETER_ERROR);
@@ -151,14 +153,14 @@ int main(int argc, char **argv) {
         } else if (config::mode == "best-parameters") {
             const auto method = load_method(config::method_name);
 
-            auto best = best_parameters(m, method, is_protein_structure, config::permissive_types);
+            auto best = best_parameters(m, *method, is_protein_structure, config::permissive_types);
             if (not best.has_value()) {
                 std::println("There are no best parameters");
             } else {
                 std::println("Best parameters are: {}", best->get()->metadata().internal_name);
             }
         } else if (config::mode == "suitable-methods") {
-            auto methods = get_suitable_methods(m, is_protein_structure, config::permissive_types);
+            auto methods = get_suitable_methods(m, all_methods, is_protein_structure, config::permissive_types);
             for (const auto &[method, parameters]: methods) {
                 std::print("{}", method->metadata().internal_name);
                 for (const auto &parameter_set: parameters) {
