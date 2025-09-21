@@ -14,13 +14,14 @@ endif ()
 include_directories(${PROJECT_BINARY_DIR}/src)
 include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 
-SET(COMMON_LIBS parameters geometry element method config)
+SET(COMMON_LIBS parameters geometry element method ee_method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
     target_link_libraries(${lib} structures exceptions OpenMP::OpenMP_CXX)
 endforeach ()
 
 target_link_libraries(method Eigen3::Eigen)
+target_link_libraries(ee_method Eigen3::Eigen method)
 
 add_subdirectory(structures)
 add_subdirectory(methods)

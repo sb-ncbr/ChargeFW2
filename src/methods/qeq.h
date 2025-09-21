@@ -6,7 +6,7 @@
 
 #include "../structures/atom.h"
 #include "../structures/molecule.h"
-#include "../method.h"
+#include "../ee_method.h"
 
 
 class QEq : public EEMethod {

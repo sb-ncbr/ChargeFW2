@@ -1,0 +1,138 @@
+#include <Eigen/Core>
+#include <vector>
+#include <string>
+#include <set>
+#include <print>
+
+
+#include "ee_method.h"
+
+
+bool EEMethod::is_suitable_for_large_molecule() const {
+    return true;
+}
+
+
+Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
+        const std::function<Eigen::VectorXd(const std::vector<const Atom *> &, double)> &EE_function) const {
+
+    auto method = get_option_value<std::string>("type");
+    auto radius = get_option_value<double>("radius");
+
+    if (method != "cover" and molecule.atoms().size() > 80000) {
+        std::println("Switching to cover as the molecule is too big");
+        std::println("Using radius {}", radius);
+        method = "cover";
+    } else if (method == "full" and molecule.atoms().size() > 20000) {
+        std::println("Switching to cutoff as the molecule is too big");
+        std::println("Using radius {}", radius);
+        method = "cutoff";
+    }
+
+    if (method == "full") {
+        Eigen::setNbThreads(0);
+        std::vector<const Atom *> fragment_atoms;
+        for (const auto &atom: molecule.atoms()) {
+            fragment_atoms.push_back(&atom);
+        }
+
+        return EE_function(fragment_atoms, molecule.total_charge());
+
+    } else if (method == "cutoff") {
+        const size_t n = molecule.atoms().size();
+        Eigen::VectorXd results = Eigen::VectorXd::Zero(n);
+        Eigen::setNbThreads(1);
+
+#pragma omp parallel for default(none) shared(results, radius, molecule, EE_function) firstprivate(n)
+        for (size_t i = 0; i < n; i++) {
+            auto fragment_atoms = molecule.get_close_atoms(molecule.atoms()[i], radius);
+            Eigen::VectorXd res = EE_function(fragment_atoms,
+                                    static_cast<double>(molecule.total_charge()) * fragment_atoms.size() /
+                                    molecule.atoms().size());
+            results(i) = res(0);
+        }
+
+        double correction = molecule.total_charge() - results.sum();
+        correction /= molecule.atoms().size();
+
+        results.array() += correction;
+        return results;
+
+    } else /* method == "cover" */ {
+        Eigen::setNbThreads(1);
+
+        const size_t n = molecule.atoms().size();
+
+        /* 1st step - identify pivots */
+        std::map<size_t, std::set<size_t>> neighbors;
+        for (const auto &bond: molecule.bonds()) {
+            neighbors[bond.first().index()].insert(bond.second().index());
+            neighbors[bond.second().index()].insert(bond.first().index());
+        }
+
+        std::set<size_t> all;
+        for (size_t i = 0; i < n; i++) {
+            all.insert(i);
+        }
+
+        std::map<size_t, std::set<size_t>> bonding_sizes;
+        for (const auto &[key, val]: neighbors) {
+            bonding_sizes[val.size()].insert(key);
+        }
+
+        std::set<const Atom *> pivots;
+        for (auto it = bonding_sizes.rbegin(); it != bonding_sizes.rend(); it++) {
+            for (const auto &idx: it->second) {
+                if (all.contains(idx)) {
+                    pivots.insert(&molecule.atoms()[idx]);
+                    for (const auto &neighbor: neighbors[idx]) {
+                        all.erase(neighbor);
+                    }
+                }
+            }
+        }
+
+        /* 2nd step - solve EEM for fragments, sum up charges */
+        Eigen::VectorXd results = Eigen::VectorXd::Zero(n);
+        std::vector<int> charges_count(n, 0);
+
+        std::vector<const Atom *> pivots_vector(pivots.begin(), pivots.end());
+
+#pragma omp parallel for default(none) shared(radius, pivots_vector, neighbors, molecule, charges_count, results, EE_function) firstprivate(n)
+        for (size_t i = 0; i < pivots_vector.size(); i++) {
+            auto &atom = pivots_vector[i];
+            auto fragment_atoms = molecule.get_close_atoms(*atom, radius);
+            Eigen::VectorXd res = EE_function(fragment_atoms,
+                                    static_cast<double>(molecule.total_charge()) * fragment_atoms.size() / n);
+
+            std::set<size_t> close_atoms = {atom->index()};
+            for (const auto &j: neighbors[atom->index()]) {
+                close_atoms.insert(j);
+                for (const auto &k: neighbors[j]) {
+                    close_atoms.insert(k);
+                }
+            }
+
+            for (const auto &j: close_atoms) {
+#pragma omp atomic
+                charges_count[j]++;
+            }
+
+            for (size_t j = 0; j < fragment_atoms.size(); j++) {
+                if (close_atoms.contains(fragment_atoms[j]->index())) {
+#pragma omp atomic
+                    results(fragment_atoms[j]->index()) += res(j);
+                }
+            }
+        }
+
+        for (long i = 0; i < results.size(); i++) {
+            results(i) /= charges_count[i];
+        }
+
+        /* 3rd step - correct charges */
+        auto correction = (molecule.total_charge() - results.sum()) / n;
+        results.array() += correction;
+        return results;
+    }
+}

@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "../structures/molecule.h"
-#include "../method.h"
+#include "../ee_method.h"
 
 
 class EQeqC : public EEMethod {

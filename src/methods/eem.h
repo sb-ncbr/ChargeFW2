@@ -5,6 +5,7 @@
 
 #include "../structures/molecule.h"
 #include "../method.h"
+#include "../ee_method.h"
 
 
 class EEM : public EEMethod {
