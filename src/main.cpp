@@ -60,6 +60,10 @@ int main(int argc, char **argv) {
             std::string method_name;
             if (config::method_name.empty()) {
                 auto methods = get_suitable_methods(m, all_methods, is_protein_structure, config::permissive_types);
+                if (methods.empty()) {
+                    std::println(stderr, "No suitable methods found for the given molecule(s)");
+                    exit(to_int(ExitCode::ParameterError));
+                }
                 method_name = std::get<0>(methods.front())->metadata().internal_name;
                 std::println("Autoselecting the best method.");
             } else {
