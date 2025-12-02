@@ -5,7 +5,7 @@
 #include "../charges.h"
 
 
-class Mol2 : public Reader, public Writer {
+class Mol2 final : public Reader, public Writer {
     static void read_until_end_of_record(std::ifstream &file);
 
     static void read_record(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,

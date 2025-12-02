@@ -5,7 +5,7 @@
 #include "reader.h"
 
 
-class SDF: public Reader {
+class SDF final: public Reader {
     static void read_V2000(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,
                     std::unique_ptr<std::vector<Bond>> &bonds);
 

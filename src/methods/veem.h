@@ -3,7 +3,7 @@
 #include "../method.h"
 
 
-class VEEM : public Method {
+class VEEM final: public Method {
 public:
     inline static const MethodMetadata METADATA = {
         .name = "VEEM",

@@ -3,7 +3,7 @@
 #include "../method.h"
 
 
-class Formal : public Method {
+class Formal final: public Method {
     inline static const MethodMetadata METADATA = {
         .name = "Formal charges (from file)",
         .internal_name = "formal",

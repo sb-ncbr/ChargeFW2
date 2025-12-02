@@ -7,7 +7,7 @@
 #include "../charges.h"
 
 
-class PQR : public Writer {
+class PQR final: public Writer {
 public:
     void save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) override;
 };

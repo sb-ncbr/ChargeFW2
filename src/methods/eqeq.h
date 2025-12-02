@@ -6,7 +6,7 @@
 #include "../structures/molecule.h"
 #include "../ee_method.h"
 
-class EQeq : public EEMethod {
+class EQeq final: public EEMethod {
     inline static const MethodMetadata METADATA = {
         .name = "EQeq",
         .internal_name = "eqeq",

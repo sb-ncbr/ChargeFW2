@@ -8,7 +8,7 @@
 #include "../charges.h"
 
 
-class CIF : public Writer {
+class CIF final: public Writer {
 public:
     void save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) override;
 };

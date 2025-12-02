@@ -6,7 +6,7 @@
 #include "../method.h"
 
 
-class TSEF : public Method {
+class TSEF final: public Method {
     inline static const MethodMetadata METADATA = {
         .name = "TSEF",
         .internal_name = "tsef",

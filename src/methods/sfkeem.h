@@ -7,7 +7,7 @@
 #include "../ee_method.h"
 
 
-class SFKEEM : public EEMethod {
+class SFKEEM final: public EEMethod {
     inline static const MethodMetadata METADATA = {
         .name = "SFKEEM",
         .internal_name = "sfkeem",

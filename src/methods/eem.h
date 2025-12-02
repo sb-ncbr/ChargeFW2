@@ -8,7 +8,7 @@
 #include "../ee_method.h"
 
 
-class EEM : public EEMethod {
+class EEM final: public EEMethod {
     inline static const MethodMetadata METADATA = {
         .name = "EEM",
         .internal_name = "eem",

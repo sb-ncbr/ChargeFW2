@@ -6,7 +6,7 @@
 #include "../method.h"
 
 
-class MPEOE : public Method {
+class MPEOE final: public Method {
     inline static const MethodMetadata METADATA = {
         .name = "MPEOE",
         .internal_name = "mpeoe",

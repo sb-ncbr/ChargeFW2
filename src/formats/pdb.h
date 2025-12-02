@@ -2,7 +2,7 @@
 
 #include "reader.h"
 
-class PDB : public Reader {
+class PDB final : public Reader {
 
 public:
     PDB();

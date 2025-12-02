@@ -9,7 +9,7 @@
 #include "../ee_method.h"
 
 
-class QEq : public EEMethod {
+class QEq final: public EEMethod {
     inline static const MethodMetadata METADATA = {
         .name = "QEq",
         .internal_name = "qeq",
