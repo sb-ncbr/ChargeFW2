@@ -20,20 +20,20 @@ namespace config {
 void check_common_args() {
     if (config::mode != "available-methods" && config::input_file.empty()) {
         std::println(stderr, "Input file must be provided");
-        exit(EXIT_PARAMETER_ERROR);
+        exit(to_int(ExitCode::ParameterError));
     }
 
     if (config::mode == "best-parameters") {
         if (config::method_name.empty()) {
             std::println(stderr, "No method selected.");
-            exit(EXIT_PARAMETER_ERROR);
+            exit(to_int(ExitCode::ParameterError));
         }
     }
 
     if (config::mode == "charges") {
         if (config::chg_out_dir.empty()) {
             std::println(stderr, "Directory where to store charges must be provided");
-            exit(EXIT_PARAMETER_ERROR);
+            exit(to_int(ExitCode::ParameterError));
         }
     }
 }

@@ -60,7 +60,7 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
         return parsed;
     } catch (const std::exception &e) {
         std::println(stderr, "Incorrect arguments: {}", e.what());
-        exit(EXIT_PARAMETER_ERROR);
+        exit(to_int(ExitCode::ParameterError));
     }
 }
 
@@ -74,7 +74,7 @@ void setup_method_options(Method& method, const boost::program_options::parsed_o
         if (!info.choices.empty()) {
             if (std::ranges::find(info.choices, info.default_value) == info.choices.end()) {
                 std::println(stderr, "Default value: {} not in possible choices", info.default_value);
-                exit(EXIT_INTERNAL_ERROR);
+                exit(to_int(ExitCode::InternalError));
             }
         }
         method_options.add_options()(std::string("method-" + opt).c_str(), po::value<std::string>(),
@@ -87,7 +87,7 @@ void setup_method_options(Method& method, const boost::program_options::parsed_o
         po::store(po::command_line_parser(opts).options(method_options).run(), vm);
     } catch (std::exception &e) {
         std::println(stderr, "Incorrect arguments: {}", e.what());
-        exit(EXIT_PARAMETER_ERROR);
+        exit(to_int(ExitCode::ParameterError));
     }
 
     for (const auto &[opt, info]: method.get_options()) {
@@ -97,7 +97,7 @@ void setup_method_options(Method& method, const boost::program_options::parsed_o
             if (!info.choices.empty()) {
                 if (std::ranges::find(info.choices, val) == info.choices.end()) {
                     std::print(stderr, "Provided value: {} not in possible choices", val);
-                    exit(EXIT_INTERNAL_ERROR);
+                    exit(to_int(ExitCode::InternalError));
                 }
             }
             method.set_option_value(opt, val);

@@ -40,14 +40,14 @@ int main(int argc, char **argv) {
                 std::println("{:<10} - {}", method->metadata().internal_name, method->metadata().full_name);
                 std::println("{:<10}   doi: {}", "", method->metadata().publication.value_or("<none>"));            }
 
-            exit(EXIT_SUCCESS);
+            exit(to_int(ExitCode::Success));
         }
 
         MoleculeSet m = load_molecule_set(config::input_file);
 
         if (m.molecules().empty()) {
             std::println(stderr, "No molecules were loaded from the input file");
-            exit(EXIT_FILE_ERROR);
+            exit(to_int(ExitCode::FileError));
         }
 
         bool is_protein_structure = m.has_proteins();
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
                     auto best_par = best_parameters(m, *method, is_protein_structure, config::permissive_types);
                     if (!best_par.has_value()) {
                         std::println(stderr, "No parameters found");
-                        exit(EXIT_PARAMETER_ERROR);
+                        exit(to_int(ExitCode::ParameterError));
                     }
                     std::println("Best parameters found: {}", best_par->get()->name());
                     p = std::move(best_par.value());
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
                         p = std::make_unique<Parameters>(par_file);
                     } catch (std::runtime_error &e) {
                         std::println(stderr, "{}", e.what());
-                        exit(EXIT_FILE_ERROR);
+                        exit(to_int(ExitCode::FileError));
                     }    
                 }
 
@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
                     method->set_parameters(p.get());
                 } catch (std::runtime_error &e) {
                     std::println(stderr, "{}", e.what());
-                    exit(EXIT_FILE_ERROR);
+                    exit(to_int(ExitCode::FileError));
                 }
 
             } else {
@@ -169,18 +169,18 @@ int main(int argc, char **argv) {
         }
         else {
             std::println(stderr, "Unknown mode {}", config::mode);
-            exit(EXIT_PARAMETER_ERROR);
+            exit(to_int(ExitCode::ParameterError));
         }
     } catch (FileException &e) {
         std::println(stderr, "{}", e.what());
-        exit(EXIT_FILE_ERROR);
+        exit(to_int(ExitCode::FileError));
     } catch (InternalException &e) {
         std::println(stderr, "{}", e.what());
-        exit(EXIT_INTERNAL_ERROR);
+        exit(to_int(ExitCode::InternalError));
     } catch (ParameterException &e) {
         std::println(stderr, "{}", e.what());
-        exit(EXIT_PARAMETER_ERROR);
+        exit(to_int(ExitCode::ParameterError));
     }
 
-    return EXIT_SUCCESS;
+    return to_int(ExitCode::Success);
 }
