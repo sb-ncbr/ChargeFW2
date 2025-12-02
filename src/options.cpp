@@ -41,9 +41,9 @@ boost::program_options::parsed_options parse_args(int argc, char **argv) {
         po::store(parsed, vm);
         if (vm.contains("help")) {
             std::println("ChargeFW2 (version {})", VERSION);
-            std::println("by Tomáš Raček (2018-2023)");
+            std::println("by Tomáš Raček <tomas.racek@muni.cz>");
             std::print("{}", streamed(desc));
-            exit(EXIT_SUCCESS);
+            exit(to_int(ExitCode::Success));
         }
         po::notify(vm);
 
