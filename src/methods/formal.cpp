@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "formal.h"
 #include "../method_registry.h"
 

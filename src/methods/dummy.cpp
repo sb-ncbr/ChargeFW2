@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "dummy.h"
 
 #include "../method_registry.h"

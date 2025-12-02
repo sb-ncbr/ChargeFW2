@@ -67,7 +67,7 @@ public:
 
     void set_parameters(Parameters *parameters);
 
-    bool has_parameters() const {
+    [[nodiscard]] bool has_parameters() const {
         return (common_parameters_.size() + atom_parameters_.size() + bond_parameters_.size()) != 0;
     }
 
@@ -107,6 +107,3 @@ std::vector<std::unique_ptr<Method>> get_available_methods();
 
 template<class T>
 std::unique_ptr<Method> make_method() { return std::make_unique<T>(); }
-
-
-extern "C" Method* get_method();

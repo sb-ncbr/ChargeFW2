@@ -1,5 +1,6 @@
 #include <filesystem>
 #include <format>
+#include <ranges>
 
 #include "reader.h"
 #include "sdf.h"

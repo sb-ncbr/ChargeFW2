@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "veem.h"
 #include "../method_registry.h"
 

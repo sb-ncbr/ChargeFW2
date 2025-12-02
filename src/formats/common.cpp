@@ -4,7 +4,6 @@
 
 #include "common.h"
 #include "../config.h"
-#include "../structures/atom.h"
 #include "../utility/strings.h"
 
 

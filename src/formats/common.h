@@ -4,7 +4,6 @@
 #include <set>
 #include <gemmi/model.hpp>
 
-#include "../structures/atom.h"
 
 std::string sanitize_name(const std::string &name);
 
