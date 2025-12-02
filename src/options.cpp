@@ -10,7 +10,7 @@ template <class T>
 std::string streamed(const T& x) {
     std::ostringstream os;
     os << x;
-    return std::move(os).str();
+    return os.str();
 }
 
 
