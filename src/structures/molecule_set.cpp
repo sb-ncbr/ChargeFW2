@@ -11,7 +11,7 @@
 #include "molecule_set.h"
 #include "../parameters.h"
 #include "../method.h"
-#include "../exceptions/internal_exception.h"
+#include "../utility/exceptions.h"
 
 bool check_atom_type(const Molecule &molecule, const Atom &atom, const std::string &symbol, const std::string &cls,
                      const std::string &type, bool permissive);

@@ -11,7 +11,6 @@
 
 #include "charges.h"
 #include "formats/save_charges.h"
-#include "exceptions/file_exception.h"
 #include "method.h"
 #include "parameters.h"
 #include "structures/molecule_set.h"
@@ -19,6 +18,7 @@
 #include "config.h"
 #include "candidates.h"
 #include "utility/strings.h"
+#include "utility/exceptions.h"
 #include "utility/install.h"
 
 

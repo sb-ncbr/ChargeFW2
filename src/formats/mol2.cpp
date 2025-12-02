@@ -14,7 +14,7 @@
 #include "../charges.h"
 #include "../periodic_table.h"
 #include "mol2.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 void Mol2::read_record(std::ifstream &file, std::string &line, std::unique_ptr<std::vector<Atom>> &atoms,

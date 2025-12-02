@@ -12,7 +12,7 @@
 #include "common.h"
 #include "../structures/atom.h"
 #include "../structures/bond.h"
-#include "../exceptions/internal_exception.h"
+#include "../utility/exceptions.h"
 #include "../utility/install.h"
 
 namespace fs = std::filesystem;

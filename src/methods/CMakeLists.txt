@@ -1,4 +1,4 @@
-set(DEPS method parameters element geometry structures exceptions ee_method)
+set(DEPS method parameters element geometry structures ee_method)
 
 SET(METHODS dummy formal peoe eem sfkeem mgc mpeoe gdac veem kcm denr delre
             tsef charge2 qeq smpqeq eqeq eqeqc abeem sqe sqeq0 sqeqp)

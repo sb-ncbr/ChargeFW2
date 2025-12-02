@@ -1,1 +1,1 @@
-add_library(utility strings.h strings.cpp install.h install.cpp)
+add_library(utility strings.h strings.cpp install.h install.cpp exceptions.h)

@@ -9,7 +9,7 @@
 
 #include "chargefw2.h"
 #include "candidates.h"
-#include "exceptions/parameter_exception.h"
+#include "utility/exceptions.h"
 #include "method.h"
 #include "parameters.h"
 #include "utility/strings.h"

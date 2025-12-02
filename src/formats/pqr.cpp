@@ -5,7 +5,7 @@
 #include "pqr.h"
 #include "../structures/molecule_set.h"
 #include "../charges.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 void PQR::save_charges(const MoleculeSet &ms, const Charges &charges, const std::string &filename) {

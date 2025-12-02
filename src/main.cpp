@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "chargefw2.h"
-#include "exceptions/parameter_exception.h"
 #include "formats/reader.h"
 #include "structures/molecule_set.h"
 #include "parameters.h"
@@ -21,9 +20,8 @@
 #include "config.h"
 #include "method_registry.h"
 #include "options.h"
-#include "exceptions/file_exception.h"
-#include "exceptions/internal_exception.h"
 #include "utility/install.h"
+#include "utility/exceptions.h"
 
 
 int main(int argc, char **argv) {

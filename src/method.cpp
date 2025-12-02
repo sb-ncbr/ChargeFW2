@@ -9,8 +9,8 @@
 
 #include "method.h"
 #include "parameters.h"
-#include "exceptions/file_exception.h"
 #include "utility/install.h"
+#include "utility/exceptions.h"
 #include "method_registry.h"
 
 

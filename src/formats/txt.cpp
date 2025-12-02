@@ -5,7 +5,7 @@
 #include "../charges.h"
 #include "txt.h"
 #include "../utility/strings.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 void TXT::save_charges(const MoleculeSet &, const Charges &charges, const std::string &filename) {

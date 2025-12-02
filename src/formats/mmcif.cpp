@@ -13,7 +13,7 @@
 #include "../structures/bond.h"
 #include "../periodic_table.h"
 #include "../utility/strings.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {

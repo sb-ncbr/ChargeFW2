@@ -16,7 +16,7 @@
 #include "common.h"
 #include "../config.h"
 #include "../utility/strings.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 static std::string convert_bond_order_to_mmcif_value_order_string(int order) {

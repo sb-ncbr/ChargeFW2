@@ -7,7 +7,7 @@
 
 #include "element.h"
 #include "periodic_table.h"
-#include "exceptions/internal_exception.h"
+#include "utility/exceptions.h"
 #include "utility/install.h"
 
 namespace fs = std::filesystem;

@@ -8,7 +8,7 @@
 #include "common.h"
 #include "bonds.h"
 #include "../periodic_table.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 MoleculeSet PDB::read_file(const std::string &filename) {

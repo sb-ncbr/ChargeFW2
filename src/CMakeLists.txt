@@ -17,13 +17,12 @@ include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 SET(COMMON_LIBS parameters geometry element method ee_method config)
 foreach (lib ${COMMON_LIBS})
     add_library(${lib} ${lib}.h ${lib}.cpp)
-    target_link_libraries(${lib} structures exceptions)
+    target_link_libraries(${lib} structures utility)
 endforeach ()
 
 add_subdirectory(structures)
 add_subdirectory(methods)
 add_subdirectory(formats)
-add_subdirectory(exceptions)
 add_subdirectory(utility)
 
 SET(SOURCES periodic_table.cpp periodic_table.h charges.h charges.cpp candidates.h candidates.cpp method_registry.h)
@@ -32,7 +31,7 @@ add_library(common ${SOURCES})
 
 add_executable(chargefw2 main.cpp options.cpp options.h)
 
-target_link_libraries(chargefw2 structures ${COMMON_LIBS} methods formats common exceptions utility Boost::program_options gemmi::gemmi_cpp OpenMP::OpenMP_CXX)
+target_link_libraries(chargefw2 structures ${COMMON_LIBS} methods formats common utility Boost::program_options gemmi::gemmi_cpp OpenMP::OpenMP_CXX)
 
 set_target_properties(chargefw2 PROPERTIES LINK_FLAGS_RELEASE -s)
 

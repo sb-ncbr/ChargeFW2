@@ -14,7 +14,7 @@
 #include "../periodic_table.h"
 #include "common.h"
 #include "sdf.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 void SDF::read_until_end_of_record(std::ifstream &file) {

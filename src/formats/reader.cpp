@@ -7,7 +7,7 @@
 #include "mmcif.h"
 #include "mol2.h"
 #include "../utility/strings.h"
-#include "../exceptions/file_exception.h"
+#include "../utility/exceptions.h"
 
 
 Reader::~Reader() = default;
