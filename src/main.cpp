@@ -133,8 +133,9 @@ int main(int argc, char **argv) {
                 struct rusage usage = {};
                 getrusage(RUSAGE_SELF, &usage);
 
-                double utime = usage.ru_utime.tv_sec + static_cast<double>(usage.ru_utime.tv_usec) / 10e6;
-                double stime = usage.ru_stime.tv_sec + static_cast<double>(usage.ru_stime.tv_usec) / 10e6;
+                constexpr double MICROSECONDS_IN_SECOND = 1'000'000.0;
+                double utime = usage.ru_utime.tv_sec + static_cast<double>(usage.ru_utime.tv_usec) / MICROSECONDS_IN_SECOND;
+                double stime = usage.ru_stime.tv_sec + static_cast<double>(usage.ru_stime.tv_usec) / MICROSECONDS_IN_SECOND;
                 double mem = static_cast<double>(usage.ru_maxrss) / 1024;
                 auto now = time(nullptr);
                 char current_time[100];
@@ -144,6 +145,10 @@ int main(int argc, char **argv) {
 
                 auto pid = getpid();
                 auto log_file = std::fopen(config::log_file.c_str(), "a");
+                if (log_file == nullptr) {
+                    std::println(stderr, "Unable to open log file {}", config::log_file);
+                    exit(to_int(ExitCode::FileError));
+                }
 
                 std::println(log_file, "{} [{}]; File: {}; Processed molecules: {}; Method: {}; Parameters: {}",
                         current_time, pid, config::input_file, m.molecules().size(), method->metadata().name, charges.parameters_name());
@@ -151,6 +156,8 @@ int main(int argc, char **argv) {
                 std::println(log_file,
                         "{} [{}]; Walltime: {:.2f} s; User time: {:.2f} s; System time: {:.2f} s; Peak memory: {:.1f} MB",
                         current_time, pid, walltime.count(), utime, stime, mem);
+
+                std::fclose(log_file);
             }
         } else if (config::mode == "best-parameters") {
             const auto method = load_method(config::method_name);
