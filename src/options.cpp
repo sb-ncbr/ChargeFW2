@@ -96,7 +96,7 @@ void setup_method_options(Method& method, const boost::program_options::parsed_o
             std::string val = vm[opt_name].as<std::string>();
             if (!info.choices.empty()) {
                 if (std::ranges::find(info.choices, val) == info.choices.end()) {
-                    std::print(stderr, "Provided value: {} not in possible choices", val);
+                    std::println(stderr, "Provided value: {} not in possible choices", val);
                     exit(to_int(ExitCode::InternalError));
                 }
             }

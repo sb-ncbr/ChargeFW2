@@ -103,6 +103,10 @@ static void filter_out_altloc_atoms(gemmi::cif::Block &block) {
 }
 
 static void generate_mmcif_from_block(gemmi::cif::Block &block, const MoleculeSet &ms, const Charges &charges) {
+    if (ms.molecules().empty()) {
+        return;
+    }
+
     const Molecule &molecule = ms.molecules()[0];
 
     filter_out_altloc_atoms(block);

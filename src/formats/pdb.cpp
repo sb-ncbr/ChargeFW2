@@ -23,6 +23,10 @@ MoleculeSet PDB::read_file(const std::string &filename) {
     auto molecules = std::make_unique<std::vector<Molecule>>();
     auto atoms = std::make_unique<std::vector<Atom>>();
 
+    if (structure.models.empty()) {
+        throw FileException(std::format("No models found in file: {}", filename));
+    }
+
     /* Read first model only */
     auto model = structure.models[0];
     size_t idx = 0;

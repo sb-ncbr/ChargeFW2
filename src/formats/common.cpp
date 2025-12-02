@@ -33,6 +33,9 @@ std::string get_unique_name(const std::string &name, const std::set<std::string>
 
 std::string get_element_symbol(const std::string &substring) {
     auto element_symbol = trim(substring);
+    if (element_symbol.empty()) {
+        return element_symbol;
+    }
     element_symbol = to_lowercase(element_symbol);
     element_symbol[0] = static_cast<char>(std::toupper(element_symbol[0]));
 

@@ -127,7 +127,9 @@ Eigen::VectorXd EEMethod::solve_EE(const Molecule &molecule,
         }
 
         for (long i = 0; i < results.size(); i++) {
-            results(i) /= charges_count[i];
+            if (charges_count[i] > 0) {
+                results(i) /= charges_count[i];
+            }
         }
 
         /* 3rd step - correct charges */

@@ -237,8 +237,8 @@ void save_charges_python(std::map<std::string, std::vector<double>> charges, con
     config::input_file = molecules.input_file;
 
     Charges charges_to_save(method_name, parameters_name.value_or("None"));
-    for (const auto &[name, charges] : charges) {
-        charges_to_save.insert(name, charges);
+    for (const auto &[name, chg] : charges) {
+        charges_to_save.insert(name, chg);
     }
 
     std::string filename = format_charges_filename(charges_to_save, molecules.input_file);

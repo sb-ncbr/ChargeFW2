@@ -152,7 +152,7 @@ void Mol2::save_charges(const MoleculeSet &ms, const Charges &charges, const std
             std::println(file, "{} {}", molecule.atoms().size(), molecule.bonds().size());
 
             /* Try to guess if the molecule is protein or not */
-            if (molecule.atoms()[0].chain_id().empty()) {
+            if (molecule.atoms().empty() or molecule.atoms()[0].chain_id().empty()) {
                 std::println(file, "SMALL");
             } else {
                 std::println(file, "PROTEIN");

@@ -67,7 +67,7 @@ public:
 
     [[nodiscard]] int total_charge() const;
 
-    [[nodiscard]] bool is_protein() const { return not(*atoms_)[0].chain_id().empty(); }
+    [[nodiscard]] bool is_protein() const { return not atoms_->empty() and not(*atoms_)[0].chain_id().empty(); }
 
     friend class MoleculeSet;
 };

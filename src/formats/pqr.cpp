@@ -14,6 +14,11 @@ void PQR::save_charges(const MoleculeSet &ms, const Charges &charges, const std:
         throw FileException(std::format("Cannot open file: {}", filename));
     }
 
+    if (ms.molecules().empty()) {
+        fclose(file);
+        return;
+    }
+
     const auto &molecule = ms.molecules()[0];
 
     try {

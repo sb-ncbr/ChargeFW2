@@ -56,6 +56,10 @@ void load_residues_info(const std::string &filename,
 
 void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, const std::map<std::string, const Atom *> &residue_atoms) {
 
+    if (residue_atoms.empty()) {
+        return;
+    }
+
     static std::map<std::string, std::vector<std::tuple<std::string, std::string, int>>> residues_data;
     static bool basic_loaded = false;
     static bool all_loaded = false;
@@ -91,6 +95,10 @@ void update_bonds(std::unique_ptr<std::vector<Bond>> &bonds, const std::map<std:
 std::unique_ptr<std::vector<Bond>> get_bonds(std::unique_ptr<std::vector<Atom>> &atoms) {
 
     auto bonds = std::make_unique<std::vector<Bond>>();
+
+    if (atoms->empty()) {
+        return bonds;
+    }
 
     std::map<std::string, const Atom *> residue_atoms;
 
