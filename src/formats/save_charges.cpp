@@ -13,7 +13,6 @@ void save_charges(const MoleculeSet &ms, const Charges &charges,
                   const std::string &filename) {
   std::filesystem::path out_dir(config::chg_out_dir);
   auto file_path = std::filesystem::path(filename);
-  auto ext = file_path.extension().string();
 
   auto txt_str = file_path.filename().string() + ".txt";
   TXT().save_charges(ms, charges, out_dir / std::filesystem::path(txt_str));

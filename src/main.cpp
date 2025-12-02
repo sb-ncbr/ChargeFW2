@@ -30,8 +30,6 @@ int main(int argc, char **argv) {
 
     auto start = std::chrono::system_clock::now();
 
-    auto ext = std::filesystem::path(config::input_file).extension().string();
-
     auto all_methods = get_available_methods();
 
     try {
