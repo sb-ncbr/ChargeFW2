@@ -36,6 +36,22 @@ static std::string convert_bond_order_to_mmcif_value_order_string(int order) {
     }
 }
 
+static void append_audit_conform(gemmi::cif::Block& block) {
+    auto& audit_conform = block.init_loop("_audit_conform.", {
+                                              "dict_name",
+                                              "dict_version",
+                                              "dict_location"
+                                          }
+    );
+
+    audit_conform.add_row({
+        "mmcif_charges_v10.dic",
+        "1.0",
+        "https://sb-ncbr.github.io/charges-schema/schemas/mmcif_charges_v10.dic"
+    });
+}
+
+
 static void append_charges_to_block(const Molecule &molecule, const Charges &charges, gemmi::cif::Block &block) {
     const std::string sb_ncbr_partial_atomic_charges_meta_prefix = "_sb_ncbr_partial_atomic_charges_meta.";
     const std::string sb_ncbr_partial_atomic_charges_prefix = "_sb_ncbr_partial_atomic_charges.";
@@ -106,6 +122,7 @@ static void generate_mmcif_from_block(gemmi::cif::Block &block, const MoleculeSe
     const Molecule &molecule = ms.molecules()[0];
 
     filter_out_altloc_atoms(block);
+    append_audit_conform(block);
     append_charges_to_block(molecule, charges, block);
     
     const std::filesystem::path out_dir{config::chg_out_dir};
@@ -232,6 +249,7 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
             });
         }
 
+        append_audit_conform(block);
         append_charges_to_block(molecule, charges, block);
 
         gemmi::cif::write_cif_block_to_stream(out_stream, block);
