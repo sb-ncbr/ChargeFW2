@@ -8,7 +8,8 @@ ARG DEPS="\
         libeigen3-dev \
         libnanoflann-dev \
         libomp-dev \
-        nlohmann-json3-dev"
+        nlohmann-json3-dev\
+        python3-pybind11"
 
 RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
 
@@ -27,13 +28,14 @@ COPY . ChargeFW2
 RUN     cd ChargeFW2 && \
         mkdir build && \
         cd build && \
-        cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=OFF -DCMAKE_BUILD_TYPE=Release && \
+        cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=ON -DCMAKE_BUILD_TYPE=Release && \
         make -j$(nproc) && \
         make install
 
 # bundle dependencies
 RUN mkdir /dependencies /build
 RUN mv /ChargeFW2/build/bin \
+        /ChargeFW2/build/lib \
         /ChargeFW2/build/share \
         /build
 RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
@@ -48,6 +50,11 @@ ENV PATH=/ChargeFW2/bin:${PATH}
 # copy over the build artifacts
 COPY --from=build /build/ /ChargeFW2/
 COPY --from=build /dependencies/* /usr/lib/x86_64-linux-gnu/
+
+# Setup ENV variables for use with Python bindings
+ENV CHARGEFW2_INSTALL_DIR=/ChargeFW2/
+ENV LD_LIBRARY_PATH=${CHARGEFW2_INSTALL_DIR}/lib:$LD_LIBRARY_PATH
+ENV PYTHONPATH=${CHARGEFW2_INSTALL_DIR}/lib
 
 USER ubuntu
 
