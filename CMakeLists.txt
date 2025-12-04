@@ -15,7 +15,15 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
         -Woverloaded-virtual -Wsign-promo -Wstrict-null-sentinel -Wundef -Wno-format-y2k")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -fPIC -march=native -fopenmp -fsized-deallocation")
+option(CHARGEFW2_PORTABLE "Build portable binary (no -march=native)" OFF)
+if (CHARGEFW2_PORTABLE)
+    set(CHARGEFW2_MARCH_FLAGS "-march=x86-64 -mtune=generic")
+else()
+    set(CHARGEFW2_MARCH_FLAGS "-march=native")
+endif()
+
+set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${WARNING_FLAGS} -fPIC ${CHARGEFW2_MARCH_FLAGS} -fopenmp -fsized-deallocation"
+)
 
 # Remove executable permission on shared libraries
 set(CMAKE_INSTALL_SO_NO_EXE 1)

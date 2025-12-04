@@ -14,7 +14,7 @@ ARG DEPS="\
 RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
 
 # Use newer version of Gemmi since Ubuntu currently ships only 0.6.5
-ARG GEMMI_VERSION=0.7.3
+ARG GEMMI_VERSION=0.7.4
 ADD https://github.com/project-gemmi/gemmi/archive/refs/tags/v${GEMMI_VERSION}.tar.gz .
 RUN tar xvzf v${GEMMI_VERSION}.tar.gz && \
     cd gemmi-${GEMMI_VERSION} && \
@@ -24,11 +24,16 @@ RUN tar xvzf v${GEMMI_VERSION}.tar.gz && \
     make -j$(nproc) && \
     make install
 
+ARG PORTABLE=OFF
 COPY . ChargeFW2
 RUN     cd ChargeFW2 && \
         mkdir build && \
         cd build && \
-        cmake .. -DCMAKE_INSTALL_PREFIX=. -DPYTHON_MODULE=ON -DCMAKE_BUILD_TYPE=Release && \
+        cmake .. \
+        -DCMAKE_INSTALL_PREFIX=. \
+        -DPYTHON_MODULE=ON \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCHARGEFW2_PORTABLE=${PORTABLE} && \
         make -j$(nproc) && \
         make install
 
