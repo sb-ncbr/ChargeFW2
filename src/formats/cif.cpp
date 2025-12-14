@@ -205,7 +205,7 @@ static void generate_mmcif_from_atom_and_bond_data(const MoleculeSet &ms, const 
             const std::string group_PDB = atom.hetatm() ? "HETATM" : "ATOM";
             const std::string id = std::format("{}", atom.index() + 1);
             const std::string type_symbol = atom.element().symbol();
-            const std::string& label_atom_id = id;
+            const std::string& label_atom_id = type_symbol;
             const std::string label_comp_id = atom.residue();
             const std::string label_seq_id = std::format("{}", atom.residue_id());
             const std::string label_asym_id = atom.chain_id().empty() ? "." : atom.chain_id();
