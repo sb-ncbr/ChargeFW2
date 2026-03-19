@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Yakovenko 2008 (initial)",
     "method": "kcm",
-    "publication": "10.1007/BFb0029840"
+    "publication": "10.1007/BFb0029840",
+    "notes": "Parameterised to reproduce MMFF94 charges"
   },
 
   "atom":

@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Rappe 1991",
     "method": "qeq",
-    "publication": "10.1021/j100161a070"
+    "publication": "10.1021/j100161a070",
+    "notes": "Derived from experimental atomic IPs and EAs"
   },
   "atom":
   {

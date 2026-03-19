@@ -2,7 +2,8 @@
   "metadata": {
     "method": "sqeqp",
     "name": "Schindler 2021 (DTP_small)",
-    "publication": "10.1186/s13321-021-00528-w"
+    "publication": "10.1186/s13321-021-00528-w",
+    "notes": "Parameterised to reproduce B3LYP/6-311G/NPA charges"
   },
   "atom": {
     "names": ["electronegativity", "hardness", "width", "q0"],

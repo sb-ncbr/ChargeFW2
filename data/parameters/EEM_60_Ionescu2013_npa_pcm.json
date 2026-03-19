@@ -3,7 +3,8 @@
     "name": "Ionescu 2013 (EX-NPA_6-31Gd_PCM)",
     "method": "eem",
     "publication": "10.1021/ci400448n",
-    "source": "protein"
+    "source": "protein",
+    "notes": "Parameterised to reproduce HF/6-31G**/NPA/polarisable-continuum-model charges"
   },
   "common": {
     "names": ["kappa"],

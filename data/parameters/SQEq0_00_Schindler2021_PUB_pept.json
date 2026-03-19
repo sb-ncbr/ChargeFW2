@@ -3,7 +3,8 @@
     "method": "sqeq0",
     "name": "Schindler 2021 (PUB_pept)",
     "publication": "10.1186/s13321-021-00528-w",
-    "source": "protein"
+    "source": "protein",
+    "notes": "Parameterised to reproduce B3LYP/6-31G*/NPA charges"
   },
   "atom": {
     "names": ["electronegativity", "hardness", "width"],

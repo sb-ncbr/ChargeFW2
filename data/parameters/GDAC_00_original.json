@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Cho 2001",
     "method": "gdac",
-    "publication": "10.1021/jp0023213"
+    "publication": "10.1021/jp0023213",
+    "notes": "Parameterised to reproduce B3LYP/6-31G** dipole moments and MPA charges"
   },
 
   "atom":

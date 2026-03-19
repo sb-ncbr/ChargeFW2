@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Ouyang 2009 (131 calibrated set)",
     "method": "eem",
-    "publication": "10.1039/b821696g"
+    "publication": "10.1039/b821696g",
+    "notes": "Parameterised to reproduce B3LYP/6-31G*/NPA charges"
   },
   "common": {
     "names": ["kappa"],

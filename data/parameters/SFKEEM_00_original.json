@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Chaves 2006",
     "method": "sfkeem",
-    "publication": "10.1021/ci050505e"
+    "publication": "10.1021/ci050505e",
+    "notes": "Parameterised to reproduce B3LYP/6-31G*/MPA charges"
   },
   "common":
   {

@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Bultinck 2002 (NPA)",
     "method": "eem",
-    "publication": "10.1021/jp020547v"
+    "publication": "10.1021/jp020547v",
+    "notes": "Parameterised to reproduce B3LYP/6-31G*/NPA charges"
   },
   "common": {
     "names": ["kappa"],

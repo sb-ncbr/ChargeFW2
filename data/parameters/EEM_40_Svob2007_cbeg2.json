@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Svobodova 2007 (cbeg2)",
     "method": "eem",
-    "publication": "10.3390/i8070572"
+    "publication": "10.3390/i8070572",
+    "notes": "Parameterised to reproduce HF/STO-3G/MPA charges"
   },
   "common": {
     "names": ["kappa"],

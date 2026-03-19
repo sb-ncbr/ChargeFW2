@@ -2,7 +2,8 @@
   "metadata": {
     "name": "Zhang 2009",
     "method": "smpqeq",
-    "publication": "10.1021/jp8063273"
+    "publication": "10.1021/jp8063273",
+    "notes": "Fitted to DFT (SVWN) energy derivatives"
   },
   "atom":
   {

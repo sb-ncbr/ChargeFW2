@@ -2,7 +2,9 @@
   "metadata": {
     "name": "Racek 2016 (ccd2016_mpa)",
     "method": "eem",
-    "publication": "10.1186/s13321-016-0171-1"
+    "publication": "10.1186/s13321-016-0171-1",
+    "notes": "Parameterised to reproduce B3LYP/6-311G/MPA charges"
+
   },
   "common": {
     "names": ["kappa"],
