@@ -28,7 +28,8 @@ Parameters::Parameters(const std::string &filename) {
             .full_name = j["metadata"]["name"],
             .internal_name = internal_name,
             .method = j["metadata"]["method"],
-            .publication = j["metadata"]["publication"]
+            .publication = j["metadata"]["publication"],
+            .notes = j["metadata"]["notes"],
         };
 
         if (j["metadata"].count("source")) {

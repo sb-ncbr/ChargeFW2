@@ -295,7 +295,8 @@ PYBIND11_MODULE(chargefw2, m) {
         .def_readwrite("internal_name", &ParametersMetadata::internal_name)
         .def_readwrite("full_name", &ParametersMetadata::full_name)
         .def_readwrite("method", &ParametersMetadata::method)
-        .def_readwrite("publication", &ParametersMetadata::publication);
+        .def_readwrite("publication", &ParametersMetadata::publication)
+        .def_readwrite("notes", &ParametersMetadata::notes);
 
     m.def("get_available_methods", &get_available_methods_python, "Return the list of all available methods");
     m.def("get_available_parameters", &get_available_parameters, "method_name"_a,

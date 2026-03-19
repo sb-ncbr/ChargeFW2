@@ -16,6 +16,7 @@ struct ParametersMetadata {
     std::string internal_name;
     std::string method;
     std::string publication;
+    std::string notes;
 };
 
 class MoleculeSet;
