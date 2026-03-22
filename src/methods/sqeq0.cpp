@@ -1,6 +1,7 @@
 #include <vector>
 #include <cmath>
 #include <Eigen/LU>
+#include <Eigen/Sparse>
 
 #include "sqeq0.h"
 #include "../parameters.h"
@@ -25,14 +26,18 @@ std::vector<double> SQEq0::calculate_charges(const Molecule &molecule) const {
         hardness(i) = parameters_->atom()->parameter(atom::hardness)(atom);
     }
 
-    Eigen::MatrixXd T = Eigen::MatrixXd::Zero(m, n);
+    Eigen::SparseMatrix<double> T(m, n);
+    std::vector<Eigen::Triplet<double>> triplets;
+    triplets.reserve(2 * m);
+
     for (Eigen::Index i = 0; i < static_cast<Eigen::Index>(molecule.bonds().size()); i++) {
         const auto &bond = molecule.bonds()[i];
         auto i1 = static_cast<Eigen::Index>(bond.first().index());
         auto i2 = static_cast<Eigen::Index>(bond.second().index());
-        T(i, i1) = 1;
-        T(i, i2) = -1;
+        triplets.emplace_back(i, i1, 1.0);
+        triplets.emplace_back(i, i2, -1.0);
     }
+    T.setFromTriplets(triplets.begin(), triplets.end());
 
     Eigen::MatrixXd A = Eigen::MatrixXd::Zero(n, n);
     Eigen::VectorXd b = Eigen::VectorXd::Zero(n);
