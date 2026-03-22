@@ -8,7 +8,7 @@
 
 class SQEq0 final: public Method {
     inline static const MethodMetadata METADATA = {
-        .name = "SQEq0",
+        .name = "SQE+q0",
         .internal_name = "sqeq0",
         .full_name = "Split-charge equilibration with initial formal charges",
         .publication = "10.1021/ct200512e",
