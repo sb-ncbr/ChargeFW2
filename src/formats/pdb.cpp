@@ -16,8 +16,8 @@ MoleculeSet PDB::read_file(const std::string &filename) {
     try {
         structure = gemmi::read_pdb_file(filename);
     }
-    catch (std::exception &) {
-        throw FileException(std::format("Cannot load structure from file: {}", filename));
+    catch (std::exception &e) {
+        throw FileException(std::format("Cannot load structure: {}", e.what()));
     }
 
     auto molecules = std::make_unique<std::vector<Molecule>>();
@@ -53,16 +53,16 @@ MoleculeSet PDB::read_file(const std::string &filename) {
     }
 
     if (atoms->empty()) {
-        std::println(stderr, "Error when reading {}: No atoms were loaded", structure.name);
-    } else {
-        auto bonds = get_bonds(atoms);
-        std::string name = structure.name;
-        auto it = structure.info.find("_entry.id");
-        if (it != structure.info.end()) {
-            name = it->second;
-        }
-        molecules->emplace_back(sanitize_name(name), std::move(atoms), std::move(bonds));
+        throw FileException(std::format("Error when reading {}: No atoms were loaded", structure.name));
     }
+
+    auto bonds = get_bonds(atoms);
+    std::string name = structure.name;
+    auto it = structure.info.find("_entry.id");
+    if (it != structure.info.end()) {
+        name = it->second;
+    }
+    molecules->emplace_back(sanitize_name(name), std::move(atoms), std::move(bonds));
 
     return MoleculeSet(std::move(molecules));
 }

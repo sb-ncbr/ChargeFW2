@@ -1,7 +1,6 @@
 #include <string>
 #include <stdexcept>
 #include <fstream>
-#include <print>
 #include <format>
 #include <gemmi/read_cif.hpp>
 #include <gemmi/mmcif.hpp>
@@ -17,10 +16,10 @@
 void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms) {
     auto structure = gemmi::make_structure_from_block(data);
     if (structure.models.empty()) {
-        throw std::runtime_error("Not enough information to create a structure");
+        throw std::runtime_error("The provided structure has no models");
     }
 
-    /* Read first model only */
+    /* Read the first model only */
     auto model = structure.models[0];
     size_t idx = 0;
     for (const auto &chain: model.chains) {
