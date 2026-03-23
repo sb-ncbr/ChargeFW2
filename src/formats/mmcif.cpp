@@ -9,10 +9,8 @@
 #include "mmcif.h"
 #include "common.h"
 #include "bonds.h"
-#include "../config.h"
 #include "../structures/bond.h"
 #include "../periodic_table.h"
-#include "../utility/strings.h"
 #include "../utility/exceptions.h"
 
 
@@ -34,10 +32,6 @@ void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::
                 double z = atom.pos.z;
                 auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(atom.element.name()));
 
-                if(atom.charge) {
-                    std::println("Got charge {} on {}", atom.charge, atom.element.name());
-                }
-
                 if (keep_atom(atom, residue)) {
                     atoms->emplace_back(idx, element, x, y, z, atom.name, residue.seqid.num.value, residue.name, chain.name, hetatm);
                     atoms->back()._set_formal_charge(atom.charge);
@@ -48,101 +42,29 @@ void mmCIF::read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::
     }
 }
 
-
-void mmCIF::read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms, std::unique_ptr<std::vector<Bond>> &bonds) {
-    auto atom_table = data.find("_chem_comp_atom.", {"model_Cartn_x", "model_Cartn_y", "model_Cartn_z",
-                                                     "type_symbol", "atom_id", "comp_id", "charge"});
-    size_t idx = 0;
-
-    std::map<std::string, const Atom*> atom_names;
-    for (const auto row: atom_table) {
-        double x, y, z;
-        try {
-            x = std::stod(row[0]);
-            y = std::stod(row[1]);
-            z = std::stod(row[2]);
-        } catch (std::exception &) {
-            throw std::runtime_error("Cannot load coordinates");
-        }
-
-        auto element = PeriodicTable::pte().get_element_by_symbol(get_element_symbol(row[3]));
-        auto atom_name = row[4];
-        auto residue = row[5];
-        int charge  = 0;
-        try {
-            charge = std::stoi(row[6]);
-        } catch (std::exception &){
-            /* Keep default */
-        }
-        auto residue_id = 0;
-
-        if (charge) {
-            std::println("Got charge {} on {}", charge, atom_name);
-        }
-
-        atoms->emplace_back(idx, element, x, y, z, atom_name, residue_id, residue, "", false);
-        atoms->back()._set_formal_charge(charge);
-        idx++;
-    }
-
-    for(const auto &atom: *atoms) {
-        atom_names[atom.name()] = &atom;
-    }
-
-    auto bond_table = data.find("_chem_comp_bond.", {"atom_id_1", "atom_id_2", "value_order"});
-    for (const auto row: bond_table) {
-        const std::string &atom1_name = row[0];
-        const std::string &atom2_name = row[1];
-        const std::string &order_str = row[2];
-        int order;
-        if (order_str == "SING") {
-            order = 1;
-        } else if (order_str == "DOUB") {
-            order = 2;
-        } else if (order_str == "TRIP") {
-            order = 3;
-        } else {
-            continue;
-        }
-        bonds->emplace_back(atom_names[atom1_name], atom_names[atom2_name], order);
-    }
-}
-
-
 void mmCIF::process_record(const std::string &structure_data, std::unique_ptr<std::vector<Molecule>> &molecules) {
 
     auto atoms = std::make_unique<std::vector<Atom>>();
     auto bonds = std::make_unique<std::vector<Bond>>();
 
-    std::string name;
-    try {
-        gemmi::cif::Document doc = gemmi::cif::read_string(structure_data);
-        auto data = doc.sole_block();
-        name = data.name;
-        const auto names = data.get_mmcif_category_names();
+    gemmi::cif::Document doc = gemmi::cif::read_string(structure_data);
+    auto data = doc.sole_block();
+    std::string name = data.name;
+    const auto names = data.get_mmcif_category_names();
 
-        bool has_atom_site = std::ranges::find(names, "_atom_site.") != names.end();
-        bool has_chem_comp = std::ranges::find(names, "_chem_comp_atom.") != names.end();
-
-        if (has_atom_site) {
-            read_protein_molecule(data, atoms);
-        } else if (has_chem_comp) {
-            read_ccd_molecule(data, atoms, bonds);
-        }
-
-        if (atoms->empty()) {
-            throw std::runtime_error("No atoms were loaded");
-        }
-
-        if (has_atom_site) {
-            bonds = get_bonds(atoms);
-        }
-
-        molecules->emplace_back(name, std::move(atoms), std::move(bonds));
-
-    } catch (std::exception &e) {
-        std::println(stderr, "Error when reading {}: {}", name, e.what());
+    if (std::ranges::find(names, "_atom_site.") != names.end()) {
+        read_protein_molecule(data, atoms);
     }
+    else {
+        throw std::runtime_error("The mmCIF file does not have _atom_site category");
+    }
+
+    if (atoms->empty()) {
+        throw std::runtime_error("No atoms were loaded");
+    }
+
+    bonds = get_bonds(atoms);
+    molecules->emplace_back(name, std::move(atoms), std::move(bonds));
 }
 
 
@@ -176,7 +98,7 @@ MoleculeSet mmCIF::read_file(const std::string &filename) {
         process_record(structure_data, molecules);
     }
     catch (std::exception &e) {
-        throw FileException(std::format("Cannot load structure from file: {} {}", filename, e.what()));
+        throw FileException(std::format("Cannot load structure: {}", e.what()));
     }
     return MoleculeSet(std::move(molecules));
 }

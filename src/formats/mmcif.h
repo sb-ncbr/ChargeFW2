@@ -10,8 +10,6 @@ class mmCIF final: public Reader {
 
     static void read_protein_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms);
 
-    static void read_ccd_molecule(gemmi::cif::Block &data, std::unique_ptr<std::vector<Atom>> &atoms, std::unique_ptr<std::vector<Bond>> &bonds);
-
 public:
     mmCIF();
 

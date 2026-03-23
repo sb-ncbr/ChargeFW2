@@ -41,7 +41,14 @@ int main(int argc, char **argv) {
             exit(to_int(ExitCode::Success));
         }
 
-        MoleculeSet m = load_molecule_set(config::input_file);
+        MoleculeSet m;
+        try {
+            m = load_molecule_set(config::input_file);
+        }
+        catch (std::runtime_error &e) {
+            std::println(stderr, "{}: {}", config::input_file, e.what());
+            exit(to_int(ExitCode::FileError));
+        }
 
         if (m.molecules().empty()) {
             std::println(stderr, "No molecules were loaded from the input file");
