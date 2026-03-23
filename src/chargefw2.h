@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-inline constexpr std::string_view VERSION = "3.0.0-alpha.1";
+inline constexpr std::string_view VERSION = "3.0.0";
 
 
 enum class ExitCode : int {
