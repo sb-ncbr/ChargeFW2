@@ -1,4 +1,4 @@
-FROM ubuntu:25.10 AS build
+FROM ubuntu:26.04 AS build
 
 ARG DEPS="\
         cmake \
@@ -8,21 +8,12 @@ ARG DEPS="\
         libeigen3-dev \
         libnanoflann-dev \
         libomp-dev \
+        gemmi \
+        libgemmi-dev \
         nlohmann-json3-dev\
         python3-pybind11"
 
 RUN apt-get update && apt-get install -y --no-install-recommends ${DEPS}
-
-# Use newer version of Gemmi since Ubuntu currently ships only 0.6.5
-ARG GEMMI_VERSION=0.7.4
-ADD https://github.com/project-gemmi/gemmi/archive/refs/tags/v${GEMMI_VERSION}.tar.gz .
-RUN tar xvzf v${GEMMI_VERSION}.tar.gz && \
-    cd gemmi-${GEMMI_VERSION} && \
-    mkdir build && \
-    cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j$(nproc) && \
-    make install
 
 ARG PORTABLE=OFF
 COPY . ChargeFW2
@@ -45,10 +36,9 @@ RUN mv /ChargeFW2/build/bin \
         /build
 RUN mv /usr/lib/x86_64-linux-gnu/libgomp.so.1*\
         /usr/lib/x86_64-linux-gnu/libboost_program_options.so* \
-        /usr/local/lib/libgemmi_cpp.so* \
         /dependencies
 
-FROM ubuntu:25.10 AS app
+FROM ubuntu:26.04 AS app
 
 ENV PATH=/ChargeFW2/bin:${PATH}
 
