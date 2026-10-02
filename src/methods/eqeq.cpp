@@ -5,7 +5,11 @@
 
 #include "eqeq.h"
 #include "../geometry.h"
+#include "../method_registry.h"
 
+
+[[maybe_unused]] const bool EQeq_registered_ =
+    (MethodRegistry::register_factory("eqeq", &make_method<EQeq>), true);
 
 Eigen::VectorXd EQeq::EE_system(const std::vector<const Atom *> &atoms, double total_charge) const {
 
