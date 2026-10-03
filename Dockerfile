@@ -48,7 +48,7 @@ COPY --from=build /dependencies/* /usr/lib/x86_64-linux-gnu/
 
 # Setup ENV variables for use with Python bindings
 ENV CHARGEFW2_INSTALL_DIR=/ChargeFW2/
-ENV LD_LIBRARY_PATH=${CHARGEFW2_INSTALL_DIR}/lib:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=${CHARGEFW2_INSTALL_DIR}/lib
 ENV PYTHONPATH=${CHARGEFW2_INSTALL_DIR}/lib
 
 USER ubuntu
