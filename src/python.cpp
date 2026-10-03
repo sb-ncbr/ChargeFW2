@@ -10,6 +10,7 @@
 #include <string>
 
 #include "charges.h"
+#include "chargefw2.h"
 #include "formats/save_charges.h"
 #include "method.h"
 #include "parameters.h"
@@ -183,6 +184,17 @@ calculate_charges(struct Molecules &molecules, const std::string &method_name, s
         method = load_method(method_name);
     } catch (FileException &e) {
         throw std::runtime_error(std::format("Failed to load method {}: {}", method_name, e.what()));
+    }
+
+    if (not method->is_suitable_for_large_molecule()) {
+        for (const auto &mol : molecules.ms.molecules()) {
+            if (mol.atoms().size() > LARGE_MOLECULE_ATOM_COUNT) {
+                throw std::runtime_error(std::format(
+                    "Method '{}' is not suitable for molecules with more than {} atoms.",
+                    method_name, LARGE_MOLECULE_ATOM_COUNT
+                ));
+            }
+        }
     }
 
     molecules.ms.fulfill_requirements(method->get_requirements());
